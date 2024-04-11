@@ -7,10 +7,14 @@ import {
 import { TokensService } from 'apps/first-app/src/auth/utils/tokens.service';
 import { Request } from 'express';
 import { AccessTokenPayloadType } from '../../apps/first-app/src/auth/types/tokens.models';
+import { UserQueryRepository } from '../../apps/first-app/src/auth/repositories/query/user.queryRepository';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly tokensService: TokensService) {}
+  constructor(
+    private readonly tokensService: TokensService,
+    private readonly userQueryRepository: UserQueryRepository,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: Request & { [prop: string]: any } = context
@@ -35,6 +39,14 @@ export class AuthGuard implements CanActivate {
       await this.tokensService.verifyAccessToken(accessTokenWithoutBearer);
 
     if (!accessTokenPayload) {
+      throw new UnauthorizedException(errorDescription);
+    }
+
+    const foundUserFromDB = await this.userQueryRepository.getUserById(
+      +accessTokenPayload.userId,
+    );
+
+    if (!foundUserFromDB) {
       throw new UnauthorizedException(errorDescription);
     }
 
