@@ -9,7 +9,7 @@ import { CreateUserProfileHandler } from './application/commandHandlers/userProf
 import { UserQueryRepository } from '../auth/repositories/query/user.queryRepository';
 import { UpdateUserProfileHandler } from './application/commandHandlers/userProfile/updateUserProfile.handler';
 import { PrismaService } from 'shared/database/prisma.service';
-import { FileResourseModule } from '../file-resourse/file-resource.module';
+import { FileResourceModule } from '../file-resourse/file-resource.module';
 import { ProfileImageRepository } from './repositories/profile-image.repository';
 import { ProfileImageQueryRepository } from './repositories/query/profile-image-query.repository';
 
@@ -24,7 +24,7 @@ const queryRepos = [
 ];
 
 @Module({
-  imports: [JwtModule, CqrsModule, FileResourseModule],
+  imports: [JwtModule, CqrsModule, FileResourceModule],
   controllers: [UserProfileController],
   providers: [
     TokensService,
