@@ -1,19 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../shared/database/prisma.service';
 import { Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { websocketsMainPageStateEvents } from '../../websocket/main-page/websocketsMainPage.service';
 
 @Injectable()
 export class UserPostsRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async createPost(data: { userId: number; description?: string }) {
-    return this.prisma.userPost.create({
-      data: {
-        userId: data.userId,
-        description: data.description ?? null,
-      } as Prisma.UserPostUncheckedCreateInput,
-      include: { images: true, user: true },
-    });
+    try {
+      this.eventEmitter.emit(websocketsMainPageStateEvents.CREATE_POST);
+
+      return this.prisma.userPost.create({
+        data: {
+          userId: data.userId,
+          description: data.description ?? null,
+        } as Prisma.UserPostUncheckedCreateInput,
+        include: { images: true, user: true },
+      });
+    } catch (err) {
+      console.error('Cant create new post', err);
+    }
   }
 
   async updatePostDescriptionByPostId(data: {

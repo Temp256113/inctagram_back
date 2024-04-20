@@ -7,9 +7,15 @@ import { UserProfileModule } from './user-profile/user-profile.module';
 import { FileResourceModule } from './file-resourse/file-resource.module';
 import { UserPostsModule } from './user-posts/user-posts.module';
 import { WebsocketsModule } from './websocket/websockets.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot({
+      delimiter: '.',
+      wildcard: true,
+      ignoreErrors: true,
+    }),
     AuthModule,
     EnvModule,
     UserProfileModule,
