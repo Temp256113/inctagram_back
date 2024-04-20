@@ -71,4 +71,8 @@ export class UserQueryRepository {
       include: { userEmailInfo: true, userChangePasswordRequests: true },
     });
   }
+
+  async getUsersAmount() {
+    return this.prisma.user.count();
+  }
 }

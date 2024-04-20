@@ -7,10 +7,15 @@ import {
   UserSession,
 } from '@prisma/client';
 import { PrismaService } from '../../../../../shared/database/prisma.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { websocketsMainPageStateEvents } from '../../websocket/main-page/websocketsMainPage.service';
 
 @Injectable()
 export class UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async createUser(userCreateDTO: {
     user: {
@@ -51,6 +56,8 @@ export class UserRepository {
         },
         include: { userEmailInfo: true },
       });
+
+      this.eventEmitter.emit(websocketsMainPageStateEvents.CREATE_USER);
 
       return newUser;
     } catch (err) {
