@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserProfileSwaggerType {
+export class UserProfileReturnType {
   @ApiProperty({ example: 1 })
-  userId: string;
+  userId: number;
 
   @ApiProperty({ example: 'SunRise' })
   username: string;
@@ -32,5 +32,10 @@ export class UserProfileSwaggerType {
   updatedAt: Date;
 
   @ApiProperty()
-  deletedAt?: string;
+  deletedAt?: Date;
+}
+
+export class UserProfileByIdReturnType extends UserProfileReturnType {
+  @ApiProperty({ type: 'boolean', example: true })
+  canModify: boolean;
 }

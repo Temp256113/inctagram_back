@@ -15,12 +15,17 @@ export class UserPostReturnType {
   @ApiProperty({ type: 'string' })
   postDescription?: string;
 
-  @ApiProperty({ type: 'timestamp' })
+  @ApiProperty({ example: '2024-02-03T09:19:30.434Z' })
   createdAt: Date;
 
-  @ApiProperty({ type: 'timestamp' })
+  @ApiProperty({ example: '2024-02-03T09:19:30.434Z' })
   updatedAt: Date;
 
   @ApiProperty({ type: [PostImagesType] })
   postImages: { imageId: number; imageUrl: string }[];
+}
+
+export class UserPostByIdReturnType extends UserPostReturnType {
+  @ApiProperty({ type: 'boolean', example: true })
+  canModify: boolean;
 }

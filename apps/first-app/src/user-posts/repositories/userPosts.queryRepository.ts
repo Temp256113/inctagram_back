@@ -60,6 +60,7 @@ export class UserPostsQueryRepository {
     const mappedPosts: UserPostReturnType[] = foundPosts.map((post) => {
       return {
         postId: post.id,
+        ownerId: post.userId,
         postDescription: post.description ?? null,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
