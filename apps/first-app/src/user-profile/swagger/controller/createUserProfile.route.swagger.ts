@@ -5,7 +5,7 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UserProfileSwaggerType } from '../type/userProfile.swagger-type';
+import { UserProfileReturnType } from '../../dto/userProfileReturnTypes';
 
 export const CreateUserProfileRouteSwaggerDescription = () => {
   return applyDecorators(
@@ -14,7 +14,7 @@ export const CreateUserProfileRouteSwaggerDescription = () => {
     }),
     ApiOkResponse({
       description: `User profile create successfully`,
-      type: UserProfileSwaggerType,
+      type: UserProfileReturnType,
     }),
     ApiBadRequestResponse({
       description: 'Something went wrong',

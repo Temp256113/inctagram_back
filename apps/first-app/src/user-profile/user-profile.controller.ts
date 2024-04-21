@@ -1,37 +1,65 @@
-import { Controller, Get, Post, Body, Patch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  UseGuards,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { AuthGuard } from 'shared/guards/auth.guard';
 import { User } from 'shared/decorators/user.decorator';
 import { UserDecoratorType } from 'shared/types/user/user.type';
-import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserProfileCommand } from './application/commandHandlers/userProfile/createUserProfile.handler';
-import { UpdateUserProfileCommand } from './application/commandHandlers/userProfile/updateUserProfile.handler';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { UserProfileQueryRepository } from './repositories/query/user-profile-query.repository';
 import { CreateUserProfileRouteSwaggerDescription } from './swagger/controller/createUserProfile.route.swagger';
 import { UpdateUserProfileRouteSwaggerDescription } from './swagger/controller/updateUserProfile.route.swagger';
 import { GetUserProfileRouteSwaggerDescription } from './swagger/controller/getUserProfile.route.swagger';
 import { ApiTags } from '@nestjs/swagger';
+import { AccessToken } from '../../../../shared/decorators/accessToken.decorator';
+import { UserProfileByIdReturnType } from './dto/userProfileReturnTypes';
+import { GetProfileByIdQuery } from './application/query-handlers/getProfileById.handler';
+import { CreateUserProfileCommand } from './application/command-handlers/createUserProfile.handler';
+import { UpdateUserProfileCommand } from './application/command-handlers/updateUserProfile.handler';
+import { GetUserProfileByIdRouteSwaggerDescription } from './swagger/controller/getUserProfileById.route.swagger';
 
 @Controller('user-profile')
-@UseGuards(AuthGuard)
 @ApiTags('user profile controller')
 export class UserProfileController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly userProfileQueryRepository: UserProfileQueryRepository,
   ) {}
 
+  @Get('me')
+  @UseGuards(AuthGuard)
   @GetUserProfileRouteSwaggerDescription()
-  @Get()
   async findOne(@User() user: UserDecoratorType) {
-    return this.userProfileQueryRepository.getProfile(user.userId, {
+    return this.userProfileQueryRepository.getProfileByUserId(user.userId, {
       profileImage: { include: { image: true } },
     });
   }
 
-  @CreateUserProfileRouteSwaggerDescription()
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @GetUserProfileByIdRouteSwaggerDescription()
+  async getUserProfileById(
+    @Param('id') profileId: number,
+    @AccessToken() accessToken: string | undefined,
+  ): Promise<UserProfileByIdReturnType> {
+    return this.queryBus.execute(
+      new GetProfileByIdQuery({ profileId, accessToken }),
+    );
+  }
+
   @Post()
+  @UseGuards(AuthGuard)
+  @CreateUserProfileRouteSwaggerDescription()
   async create(
     @User() user: UserDecoratorType,
     @Body() createUserProfileDto: CreateUserProfileDto,
@@ -46,8 +74,9 @@ export class UserProfileController {
     return userProfile;
   }
 
-  @UpdateUserProfileRouteSwaggerDescription()
   @Patch()
+  @UseGuards(AuthGuard)
+  @UpdateUserProfileRouteSwaggerDescription()
   async update(
     @User() user: UserDecoratorType,
     @Body() updateUserProfileDto: UpdateUserProfileDto,

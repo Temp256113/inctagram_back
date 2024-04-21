@@ -4,12 +4,12 @@ import {
   ProfileImagesKind,
   UserProfile,
 } from '@prisma/client';
-import { UserProfileRepository } from '../../../repositories/user-profile.repository';
 import { differenceInYears } from 'date-fns';
 import { BadRequestException } from '@nestjs/common';
 import { FileResourceService } from 'apps/first-app/src/file-resourse/file-resource.service';
-import { ProfileImageRepository } from '../../../repositories/profile-image.repository';
-import { CreateUserProfileDto } from '../../../dto/create-user-profile.dto';
+import { CreateUserProfileDto } from '../../dto/create-user-profile.dto';
+import { UserProfileRepository } from '../../repositories/user-profile.repository';
+import { ProfileImageRepository } from '../../repositories/profile-image.repository';
 
 export class CreateUserProfileCommand {
   constructor(public readonly data: CreateUserProfileDto) {}

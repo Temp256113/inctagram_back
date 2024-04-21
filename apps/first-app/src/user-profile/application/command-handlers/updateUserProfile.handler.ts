@@ -4,13 +4,13 @@ import {
   ProfileImagesKind,
   UserProfile,
 } from '@prisma/client';
-import { UserProfileRepository } from '../../../repositories/user-profile.repository';
 import { differenceInYears } from 'date-fns';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'shared/database/prisma.service';
 import { FileResourceService } from 'apps/first-app/src/file-resourse/file-resource.service';
-import { ProfileImageQueryRepository } from '../../../repositories/query/profile-image-query.repository';
-import { ProfileImageRepository } from '../../../repositories/profile-image.repository';
+import { UserProfileRepository } from '../../repositories/user-profile.repository';
+import { ProfileImageQueryRepository } from '../../repositories/query/profile-image-query.repository';
+import { ProfileImageRepository } from '../../repositories/profile-image.repository';
 
 export class UpdateUserProfileCommand {
   constructor(

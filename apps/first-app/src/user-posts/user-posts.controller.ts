@@ -18,32 +18,39 @@ import { AuthGuard } from '../../../../shared/guards/auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateUserPostDto } from './dto/createUserPost.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserPostCommand } from './application/createUserPost.handler';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { User } from '../../../../shared/decorators/user.decorator';
 import { UserDecoratorType } from '../../../../shared/types/user/user.type';
 import { CreateUserPostRouteSwaggerDescription } from './swagger/controller/createUserPost.route.swagger';
 import { UpdateUserPostDto } from './dto/updateUserPost.dto';
-import { UpdateUserPostCommand } from './application/updateUserPost.handler';
 import { UpdateUserPostRouteSwaggerDescription } from './swagger/controller/updateUserPost.route.swagger';
-import { UserPostReturnType } from './dto/userPostReturnTypes';
-import { DeleteUserPostCommand } from './application/deleteUserPost.handler';
+import {
+  UserPostByIdReturnType,
+  UserPostReturnType,
+} from './dto/userPostReturnTypes';
 import { DeleteUserPostRouteSwaggerDescription } from './swagger/controller/deleteUserPost.route.swagger';
 import { UserPostsQueryRepository } from './repositories/userPosts.queryRepository';
 import { GetUserPostsRouteSwaggerDescription } from './swagger/controller/getUserPosts.route.swagger';
+import { AccessToken } from '../../../../shared/decorators/accessToken.decorator';
+import { GetPostByIdQuery } from './application/query-handlers/getPostById.handler';
+import { CreateUserPostCommand } from './application/command-handlers/createUserPost.handler';
+import { UpdateUserPostCommand } from './application/command-handlers/updateUserPost.handler';
+import { DeleteUserPostCommand } from './application/command-handlers/deleteUserPost.handler';
+import { GetUserPostByIdRouteSwaggerDescription } from './swagger/controller/getUserPostById.route.swagger';
 
 const picsErrorMessage = `The photo(s) must be less than or equal 0,5 Mb and have JPEG or PNG format`;
 
 @ApiTags('user-posts controller')
 @Controller('user-posts')
-@UseGuards(AuthGuard)
 export class UserPostsController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly userPostsQueryRepository: UserPostsQueryRepository,
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(FilesInterceptor('files', 10))
   @CreateUserPostRouteSwaggerDescription()
@@ -76,6 +83,7 @@ export class UserPostsController {
   }
 
   @Patch()
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @UpdateUserPostRouteSwaggerDescription()
   async updatePost(
@@ -92,6 +100,7 @@ export class UserPostsController {
   }
 
   @Delete(':postId')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @DeleteUserPostRouteSwaggerDescription()
   async deletePost(
@@ -103,10 +112,11 @@ export class UserPostsController {
     );
   }
 
-  @Get(':page')
+  @Get('my-posts/:page')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @GetUserPostsRouteSwaggerDescription()
-  async getPosts(
+  async getMyPosts(
     @Param('page') page: number,
     @User() user: UserDecoratorType,
   ): Promise<UserPostReturnType[]> {
@@ -114,5 +124,15 @@ export class UserPostsController {
       userId: user.userId,
       page,
     });
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @GetUserPostByIdRouteSwaggerDescription()
+  async getPostById(
+    @Param('id') postId: number,
+    @AccessToken() accessToken: string | undefined,
+  ): Promise<UserPostByIdReturnType> {
+    return this.queryBus.execute(new GetPostByIdQuery({ postId, accessToken }));
   }
 }
