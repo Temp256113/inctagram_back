@@ -49,13 +49,13 @@ export class UpdateUserProfileHandler
       this.checkAge(dateOfBirth);
     }
 
-    await this.fileResourceService.canManageFileResource({
-      userId,
-      fileId,
-      type: FileResourceTypes.profilePhoto,
-    });
-
     if (typeof fileId !== 'undefined') {
+      await this.fileResourceService.canManageFileResource({
+        userId,
+        fileId,
+        type: FileResourceTypes.profilePhoto,
+      });
+
       const profileImage = await this.getProfileImage({ userId, fileId });
 
       await this.fileResourceService.delete({
