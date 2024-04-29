@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaService } from '../../../../shared/database/prisma.service';
 import { UserPostsController } from './user-posts.controller';
-import { FileResourceModule } from '../file-resourse/file-resource.module';
+import { FileResourceModule } from '../file-resource/file-resource.module';
 import { UserPostsRepository } from './repositories/userPosts.repository';
 import { UserPostsQueryRepository } from './repositories/userPosts.queryRepository';
 import { GuardsModule } from '../../../../shared/guards/guards.module';

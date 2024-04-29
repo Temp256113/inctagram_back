@@ -7,7 +7,7 @@ import { UserProfileRepository } from './repositories/user-profile.repository';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserQueryRepository } from '../auth/repositories/query/user.queryRepository';
 import { PrismaService } from 'shared/database/prisma.service';
-import { FileResourceModule } from '../file-resourse/file-resource.module';
+import { FileResourceModule } from '../file-resource/file-resource.module';
 import { ProfileImageRepository } from './repositories/profile-image.repository';
 import { ProfileImageQueryRepository } from './repositories/query/profile-image-query.repository';
 import { CreateUserProfileHandler } from './application/command-handlers/createUserProfile.handler';

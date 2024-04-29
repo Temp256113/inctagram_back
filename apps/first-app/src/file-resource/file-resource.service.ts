@@ -3,7 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { S3StorageAdapter } from 'shared/services/s3StorageAdapter.servece';
+import { S3StorageAdapter } from '../../../../shared/services/s3StorageAdapter.service';
 import { FileResource, FileResourceTypes } from '@prisma/client';
 import { flatten } from 'lodash';
 import { FileResourceRepository } from 'shared/repositories/file-resourse.repository';
