@@ -6,7 +6,7 @@ import {
 } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { BadRequestException } from '@nestjs/common';
-import { FileResourceService } from 'apps/first-app/src/file-resourse/file-resource.service';
+import { FileResourceService } from '../../../file-resource/file-resource.service';
 import { CreateUserProfileDto } from '../../dto/create-user-profile.dto';
 import { UserProfileRepository } from '../../repositories/user-profile.repository';
 import { ProfileImageRepository } from '../../repositories/profile-image.repository';

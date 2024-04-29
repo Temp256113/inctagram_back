@@ -7,7 +7,7 @@ import {
 import { differenceInYears } from 'date-fns';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'shared/database/prisma.service';
-import { FileResourceService } from 'apps/first-app/src/file-resourse/file-resource.service';
+import { FileResourceService } from '../../../file-resource/file-resource.service';
 import { UserProfileRepository } from '../../repositories/user-profile.repository';
 import { ProfileImageQueryRepository } from '../../repositories/query/profile-image-query.repository';
 import { ProfileImageRepository } from '../../repositories/profile-image.repository';
