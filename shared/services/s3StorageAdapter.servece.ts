@@ -4,7 +4,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Inject, Injectable } from '@nestjs/common';
-import appConfig from '../../shared/config/app.config.service';
+import appConfig from '@app/config/app.config.service';
 import { ConfigType } from '@nestjs/config';
 
 @Injectable()

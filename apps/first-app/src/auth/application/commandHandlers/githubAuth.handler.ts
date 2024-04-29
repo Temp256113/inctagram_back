@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, UnauthorizedException } from '@nestjs/common';
-import authConfig from '../../../../../../shared/config/auth.config.service';
+import authConfig from '@app/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
 import { Providers } from '@prisma/client';
 import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
