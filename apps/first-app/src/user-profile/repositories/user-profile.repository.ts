@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserProfileDto } from '../dto/create-user-profile.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
-import { PrismaService } from '@libs/orm-prisma-service';
+import { PrismaService } from '@libs/orm-prisma';
 
 @Injectable()
 export class UserProfileRepository {

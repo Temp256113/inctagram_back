@@ -25,17 +25,23 @@
       "@libs/config/*": [
         "libs/config/src/*"
       ],
-      "@libs/orm-prisma-service": [
-        "libs/orm-prisma-service/src"
+      "@libs/orm-prisma": [
+        "libs/orm-prisma/src"
       ],
-      "@libs/orm-prisma-service/*": [
-        "libs/orm-prisma-service/src/*"
+      "@libs/orm-prisma/*": [
+        "libs/orm-prisma/src/*"
       ],
       "@libs/common-decorators": [
         "libs/common-decorators/src"
       ],
       "@libs/common-decorators/*": [
         "libs/common-decorators/src/*"
+      ],
+      "@libs/jwt-token": [
+        "libs/jwt-token/src"
+      ],
+      "@libs/jwt-token/*": [
+        "libs/jwt-token/src/*"
       ]
     }
   }

@@ -1,28 +1,28 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthController } from './controllers/auth.controller';
-import { RegistrationHandler } from './application/commandHandlers/registration.handler';
+import { RegistrationHandler } from './application/command-handlers/registration.handler';
 import { NodemailerService } from './utils/nodemailer.service';
 import { BcryptService } from './utils/bcrypt.service';
 import { TokensService } from './utils/tokens.service';
 import { JwtModule } from '@nestjs/jwt';
-import { LoginHandler } from './application/commandHandlers/login.handler';
-import { PasswordRecoveryCodeCheckHandler } from './application/commandHandlers/passwordRecovery/passwordRecoveryCodeCheck.handler';
+import { LoginHandler } from './application/command-handlers/login.handler';
+import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 import { UserRepository } from './repositories/user.repository';
 import { UserQueryRepository } from './repositories/query/user.queryRepository';
-import { PasswordRecoveryRequestHandler } from './application/commandHandlers/passwordRecovery/passwordRecoveryRequest.handler';
-import { GithubAuthHandler } from './application/commandHandlers/githubAuth.handler';
-import { GoogleAuthHandler } from './application/commandHandlers/googleAuth.handler';
-import { LogoutHandler } from './application/commandHandlers/logout.handler';
-import { UpdateTokensPairHandler } from './application/commandHandlers/updateTokensPair.handler';
+import { PasswordRecoveryRequestHandler } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
+import { GithubAuthHandler } from './application/command-handlers/githubAuth.handler';
+import { GoogleAuthHandler } from './application/command-handlers/googleAuth.handler';
+import { LogoutHandler } from './application/command-handlers/logout.handler';
+import { UpdateTokensPairHandler } from './application/command-handlers/updateTokensPair.handler';
 import { CheckRegisterCodeHandler } from './application/checkRegisterCode.handler';
 import { RecaptchaService } from './utils/recaptcha.service';
-import { ResendRegisterEmailHandler } from './application/commandHandlers/resendRegisterEmail.handler';
-import { PasswordRecoveryHandler } from './application/commandHandlers/passwordRecovery/passwordRecovery.handler';
+import { ResendRegisterEmailHandler } from './application/command-handlers/resendRegisterEmail.handler';
+import { PasswordRecoveryHandler } from './application/command-handlers/password-recovery/passwordRecovery.handler';
 import { RegisterController } from './controllers/register.controller';
 import { PasswordRecoveryController } from './controllers/passwordRecovery.controller';
 import { SideAuthController } from './controllers/sideAuth.controller';
-import { OrmPrismaModule } from '@libs/orm-prisma-service';
+import { OrmPrismaModule } from '@libs/orm-prisma';
 
 const commandHandlers = [
   RegistrationHandler,

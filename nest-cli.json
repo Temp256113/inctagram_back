@@ -54,6 +54,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common-decorators/tsconfig.lib.json"
       }
+    },
+    "jwt-token": {
+      "type": "library",
+      "root": "libs/jwt-token",
+      "entryFile": "index",
+      "sourceRoot": "libs/jwt-token/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/jwt-token/tsconfig.lib.json"
+      }
     }
   }
 }

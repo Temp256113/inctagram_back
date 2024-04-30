@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FileResourceTypes } from '@prisma/client';
-import { PrismaService } from '@libs/orm-prisma-service';
+import { PrismaService } from '@libs/orm-prisma';
 
 @Injectable()
 export class FileResourceQueryRepository {

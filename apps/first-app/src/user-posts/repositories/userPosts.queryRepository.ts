@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@libs/orm-prisma-service';
+import { PrismaService } from '@libs/orm-prisma';
 import { UserPostReturnType } from '../dto/userPostReturnTypes';
 
 @Injectable()

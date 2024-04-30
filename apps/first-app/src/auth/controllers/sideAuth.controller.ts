@@ -14,8 +14,8 @@ import { refreshTokenCookieTitle } from '../variables/refreshTokenTitle';
 import { SideAuthDto } from '../dto/sideAuth.dto';
 import { Response as Res } from 'express';
 import { SideAuthResponseType } from '../dto/response/sideAuth.responseType';
-import { GoogleAuthCommand } from '../application/commandHandlers/googleAuth.handler';
-import { GithubAuthCommand } from '../application/commandHandlers/githubAuth.handler';
+import { GoogleAuthCommand } from '../application/command-handlers/googleAuth.handler';
+import { GithubAuthCommand } from '../application/command-handlers/githubAuth.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')

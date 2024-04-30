@@ -16,11 +16,11 @@ import { Response as Res } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { refreshTokenCookieTitle } from '../variables/refreshTokenTitle';
 import { LoginRouteSwaggerDescription } from '../swagger/controllers/auth/login.route.swagger';
-import { LoginCommand } from '../application/commandHandlers/login.handler';
+import { LoginCommand } from '../application/command-handlers/login.handler';
 import { UpdateTokensPairRouteSwaggerDescription } from '../swagger/controllers/auth/updateTokensPair.route.swagger';
-import { UpdateTokensPairCommand } from '../application/commandHandlers/updateTokensPair.handler';
+import { UpdateTokensPairCommand } from '../application/command-handlers/updateTokensPair.handler';
 import { LogoutRouteSwaggerDescription } from '../swagger/controllers/auth/logout.route.swagger';
-import { LogoutCommand } from '../application/commandHandlers/logout.handler';
+import { LogoutCommand } from '../application/command-handlers/logout.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')

@@ -14,11 +14,11 @@ import {
   PasswordRecoveryDto,
   PasswordRecoveryRequestDTO,
 } from '../dto/passwordRecovery.dto';
-import { PasswordRecoveryRequestCommand } from '../application/commandHandlers/passwordRecovery/passwordRecoveryRequest.handler';
+import { PasswordRecoveryRequestCommand } from '../application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
 import { PasswordRecoveryCodeCheckRouteSwaggerDescription } from '../swagger/controllers/passwordRecovery/passwordRecoveryCodeCheck.route.swagger';
-import { PasswordRecoveryCodeCheckCommand } from '../application/commandHandlers/passwordRecovery/passwordRecoveryCodeCheck.handler';
+import { PasswordRecoveryCodeCheckCommand } from '../application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 import { PasswordRecoveryRouteSwaggerDescription } from '../swagger/controllers/passwordRecovery/passwordRecovery.route.swagger';
-import { PasswordRecoveryCommand } from '../application/commandHandlers/passwordRecovery/passwordRecovery.handler';
+import { PasswordRecoveryCommand } from '../application/command-handlers/password-recovery/passwordRecovery.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')

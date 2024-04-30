@@ -12,7 +12,7 @@ import { ProfileImageQueryRepository } from './repositories/query/profile-image-
 import { CreateUserProfileHandler } from './application/command-handlers/createUserProfile.handler';
 import { UpdateUserProfileHandler } from './application/command-handlers/updateUserProfile.handler';
 import { GetProfileByIdHandler } from './application/query-handlers/getProfileById.handler';
-import { OrmPrismaModule } from '@libs/orm-prisma-service';
+import { OrmPrismaModule } from '@libs/orm-prisma';
 
 const commandHandlers = [CreateUserProfileHandler, UpdateUserProfileHandler];
 

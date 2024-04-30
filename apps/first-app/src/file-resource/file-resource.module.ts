@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { FileResourceRepository } from 'shared/repositories/file-resourse.repository';
 import { FileResourceQueryRepository } from 'shared/repositories/query/file-resource-query.repository';
 import { GuardsModule } from '../../../../shared/guards/guards.module';
-import { OrmPrismaModule } from '@libs/orm-prisma-service';
+import { OrmPrismaModule } from '@libs/orm-prisma';
 
 @Module({
   imports: [JwtModule, GuardsModule, OrmPrismaModule],

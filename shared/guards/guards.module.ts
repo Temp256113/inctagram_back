@@ -4,7 +4,7 @@ import { UserQueryRepository } from '../../apps/first-app/src/auth/repositories/
 import { TokensService } from '../../apps/first-app/src/auth/utils/tokens.service';
 import { EnvModule } from '@libs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { OrmPrismaModule } from '@libs/orm-prisma-service';
+import { OrmPrismaModule } from '@libs/orm-prisma';
 
 const guards = [AuthGuard];
 const queryRepositories = [UserQueryRepository];

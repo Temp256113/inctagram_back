@@ -10,7 +10,7 @@ import { GetPostByIdHandler } from './application/query-handlers/getPostById.han
 import { CreateUserPostHandler } from './application/command-handlers/createUserPost.handler';
 import { UpdateUserPostHandler } from './application/command-handlers/updateUserPost.handler';
 import { DeleteUserPostHandler } from './application/command-handlers/deleteUserPost.handler';
-import { OrmPrismaModule } from '@libs/orm-prisma-service';
+import { OrmPrismaModule } from '@libs/orm-prisma';
 
 const commandHandlers = [
   CreateUserPostHandler,
