@@ -36,6 +36,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
       }
+    },
+    "orm-prisma-service": {
+      "type": "library",
+      "root": "libs/orm-prisma-service",
+      "entryFile": "index",
+      "sourceRoot": "libs/orm-prisma-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/orm-prisma-service/tsconfig.lib.json"
+      }
     }
   }
 }

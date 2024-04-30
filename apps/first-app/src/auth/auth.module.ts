@@ -18,11 +18,11 @@ import { UpdateTokensPairHandler } from './application/commandHandlers/updateTok
 import { CheckRegisterCodeHandler } from './application/checkRegisterCode.handler';
 import { RecaptchaService } from './utils/recaptcha.service';
 import { ResendRegisterEmailHandler } from './application/commandHandlers/resendRegisterEmail.handler';
-import { PrismaService } from '../../../../shared/database/prisma.service';
 import { PasswordRecoveryHandler } from './application/commandHandlers/passwordRecovery/passwordRecovery.handler';
 import { RegisterController } from './controllers/register.controller';
 import { PasswordRecoveryController } from './controllers/passwordRecovery.controller';
 import { SideAuthController } from './controllers/sideAuth.controller';
+import { OrmPrismaModule } from '@libs/orm-prisma-service';
 
 const commandHandlers = [
   RegistrationHandler,
@@ -43,7 +43,7 @@ const repos = [UserRepository];
 const queryRepos = [UserQueryRepository];
 
 @Module({
-  imports: [CqrsModule, JwtModule],
+  imports: [CqrsModule, JwtModule, OrmPrismaModule],
   controllers: [
     AuthController,
     RegisterController,
@@ -57,7 +57,6 @@ const queryRepos = [UserQueryRepository];
     TokensService,
     NodemailerService,
     BcryptService,
-    PrismaService,
     RecaptchaService,
   ],
 })

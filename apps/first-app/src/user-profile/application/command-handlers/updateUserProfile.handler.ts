@@ -6,7 +6,7 @@ import {
 } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'shared/database/prisma.service';
+import { PrismaService } from '@libs/orm-prisma-service';
 import { FileResourceService } from '../../../file-resource/file-resource.service';
 import { UserProfileRepository } from '../../repositories/user-profile.repository';
 import { ProfileImageQueryRepository } from '../../repositories/query/profile-image-query.repository';

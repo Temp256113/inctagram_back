@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RecaptchaResponseType } from '../types/recapcha.types';
-import appConfig from '@app/config/app.config.service';
+import appConfig from '@libs/config/app.config.service';
 import { ConfigType } from '@nestjs/config';
 
 @Injectable()

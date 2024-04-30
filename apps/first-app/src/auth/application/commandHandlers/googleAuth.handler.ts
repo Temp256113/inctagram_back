@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SideAuthResponseType } from '../../dto/response/sideAuth.responseType';
 import { Inject, UnauthorizedException } from '@nestjs/common';
-import authConfig from '@app/config/auth.config.service';
+import authConfig from '@libs/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
 import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
 import { UserRepository } from '../../repositories/user.repository';

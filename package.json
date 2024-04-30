@@ -105,7 +105,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1"
+      "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
+      "^@libs/orm-prisma-service(|/.*)$": "<rootDir>/libs/orm-prisma-service/src/$1"
     }
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'shared/database/prisma.service';
+import { PrismaService } from '@libs/orm-prisma-service';
 
 @Injectable()
 export class FileResourceRepository {

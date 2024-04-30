@@ -6,7 +6,7 @@ import {
   UserEmailInfo,
   UserSession,
 } from '@prisma/client';
-import { PrismaService } from '../../../../../shared/database/prisma.service';
+import { PrismaService } from '@libs/orm-prisma-service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { websocketsMainPageStateEvents } from '../../websocket/main-page/websocketsMainPage.service';
 

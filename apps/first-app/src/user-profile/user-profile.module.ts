@@ -6,13 +6,13 @@ import { UserProfileQueryRepository } from './repositories/query/user-profile-qu
 import { UserProfileRepository } from './repositories/user-profile.repository';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserQueryRepository } from '../auth/repositories/query/user.queryRepository';
-import { PrismaService } from 'shared/database/prisma.service';
 import { FileResourceModule } from '../file-resource/file-resource.module';
 import { ProfileImageRepository } from './repositories/profile-image.repository';
 import { ProfileImageQueryRepository } from './repositories/query/profile-image-query.repository';
 import { CreateUserProfileHandler } from './application/command-handlers/createUserProfile.handler';
 import { UpdateUserProfileHandler } from './application/command-handlers/updateUserProfile.handler';
 import { GetProfileByIdHandler } from './application/query-handlers/getProfileById.handler';
+import { OrmPrismaModule } from '@libs/orm-prisma-service';
 
 const commandHandlers = [CreateUserProfileHandler, UpdateUserProfileHandler];
 
@@ -27,11 +27,10 @@ const queryRepos = [
 ];
 
 @Module({
-  imports: [JwtModule, CqrsModule, FileResourceModule],
+  imports: [JwtModule, CqrsModule, FileResourceModule, OrmPrismaModule],
   controllers: [UserProfileController],
   providers: [
     TokensService,
-    PrismaService,
     ...repos,
     ...queryRepos,
     ...commandHandlers,

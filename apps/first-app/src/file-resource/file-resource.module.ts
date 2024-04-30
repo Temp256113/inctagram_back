@@ -5,18 +5,17 @@ import { S3StorageAdapter } from '../../../../shared/services/s3StorageAdapter.s
 import { JwtModule } from '@nestjs/jwt';
 import { FileResourceRepository } from 'shared/repositories/file-resourse.repository';
 import { FileResourceQueryRepository } from 'shared/repositories/query/file-resource-query.repository';
-import { PrismaService } from 'shared/database/prisma.service';
 import { GuardsModule } from '../../../../shared/guards/guards.module';
+import { OrmPrismaModule } from '@libs/orm-prisma-service';
 
 @Module({
-  imports: [JwtModule, GuardsModule],
+  imports: [JwtModule, GuardsModule, OrmPrismaModule],
   controllers: [FileResourseController],
   providers: [
     FileResourceService,
     S3StorageAdapter,
     FileResourceRepository,
     FileResourceQueryRepository,
-    PrismaService,
   ],
   exports: [FileResourceService],
 })
