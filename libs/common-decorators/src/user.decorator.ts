@@ -6,3 +6,7 @@ export const User = createParamDecorator(
     return req.user;
   },
 );
+
+export type UserDecoratorType = {
+  userId: number;
+};

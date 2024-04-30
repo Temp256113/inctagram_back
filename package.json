@@ -106,7 +106,8 @@
     ],
     "moduleNameMapper": {
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@libs/orm-prisma-service(|/.*)$": "<rootDir>/libs/orm-prisma-service/src/$1"
+      "^@libs/orm-prisma-service(|/.*)$": "<rootDir>/libs/orm-prisma-service/src/$1",
+      "^@libs/common-decorators(|/.*)$": "<rootDir>/libs/common-decorators/src/$1"
     }
   }
 }

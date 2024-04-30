@@ -30,6 +30,12 @@
       ],
       "@libs/orm-prisma-service/*": [
         "libs/orm-prisma-service/src/*"
+      ],
+      "@libs/common-decorators": [
+        "libs/common-decorators/src"
+      ],
+      "@libs/common-decorators/*": [
+        "libs/common-decorators/src/*"
       ]
     }
   }
