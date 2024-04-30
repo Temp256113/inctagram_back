@@ -4,7 +4,7 @@ import { UserPostsController } from './user-posts.controller';
 import { FileResourceModule } from '../file-resource/file-resource.module';
 import { UserPostsRepository } from './repositories/userPosts.repository';
 import { UserPostsQueryRepository } from './repositories/userPosts.queryRepository';
-import { GuardsModule } from '../../../../shared/guards/guards.module';
+import { CommonGuardsModule } from '@libs/common-guards';
 import { GetPostByIdHandler } from './application/query-handlers/getPostById.handler';
 import { CreateUserPostHandler } from './application/command-handlers/createUserPost.handler';
 import { UpdateUserPostHandler } from './application/command-handlers/updateUserPost.handler';
@@ -24,7 +24,7 @@ const queryHandlers = [GetPostByIdHandler];
   imports: [
     CqrsModule,
     FileResourceModule,
-    GuardsModule,
+    CommonGuardsModule,
     OrmPrismaModule,
     JwtTokenModule,
   ],

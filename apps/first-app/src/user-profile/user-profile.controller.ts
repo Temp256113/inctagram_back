@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
-import { AuthGuard } from 'shared/guards/auth.guard';
+import { AuthGuard } from '@libs/common-guards';
 import { User, UserDecoratorType } from '@libs/common-decorators';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { UserProfileQueryRepository } from './repositories/query/user-profile-query.repository';

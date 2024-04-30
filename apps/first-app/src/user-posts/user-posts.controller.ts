@@ -14,7 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '../../../../shared/guards/auth.guard';
+import { AuthGuard } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateUserPostDto } from './dto/createUserPost.dto';
 import { ApiTags } from '@nestjs/swagger';

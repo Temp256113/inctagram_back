@@ -42,6 +42,12 @@
       ],
       "@libs/jwt-token/*": [
         "libs/jwt-token/src/*"
+      ],
+      "@libs/common-guards": [
+        "libs/common-guards/src"
+      ],
+      "@libs/common-guards/*": [
+        "libs/common-guards/src/*"
       ]
     }
   }

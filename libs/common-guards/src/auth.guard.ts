@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { UserQueryRepository } from '../../apps/first-app/src/auth/repositories/query/user.queryRepository';
+import { UserQueryRepository } from '../../../apps/first-app/src/auth/repositories/query/user.queryRepository';
 import { AccessTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 @Injectable()

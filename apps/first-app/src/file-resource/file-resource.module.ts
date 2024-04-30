@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GuardsModule } from '../../../../shared/guards/guards.module';
+import { CommonGuardsModule } from '@libs/common-guards';
 import { FileResourceService } from './file-resource.service';
 import { FileResourseController } from './file-resource.controller';
 import { S3StorageAdapter } from '../../../../shared/services/s3StorageAdapter.service';
@@ -8,7 +8,7 @@ import { FileResourceQueryRepository } from 'shared/repositories/query/file-reso
 import { OrmPrismaModule } from '@libs/orm-prisma';
 
 @Module({
-  imports: [GuardsModule, OrmPrismaModule],
+  imports: [CommonGuardsModule, OrmPrismaModule],
   controllers: [FileResourseController],
   providers: [
     FileResourceService,
