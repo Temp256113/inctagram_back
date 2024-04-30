@@ -4,10 +4,9 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { TokensService } from 'apps/first-app/src/auth/utils/tokens.service';
 import { Request } from 'express';
-import { AccessTokenPayloadType } from '../../apps/first-app/src/auth/types/tokens.models';
 import { UserQueryRepository } from '../../apps/first-app/src/auth/repositories/query/user.queryRepository';
+import { AccessTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

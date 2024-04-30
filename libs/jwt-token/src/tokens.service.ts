@@ -3,13 +3,25 @@ import appConfig from '@libs/config/app.config.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { add, getUnixTime } from 'date-fns';
 import { JwtService } from '@nestjs/jwt';
-import {
-  AccessTokenPayloadType,
-  RefreshTokenPayloadType,
-} from '../types/tokens.models';
 import * as crypto from 'crypto';
 import { Response } from 'express';
-import { refreshTokenCookieTitle } from '../variables/refreshTokenTitle';
+
+export type AccessTokenPayloadType = {
+  userId: number;
+  iat?: number;
+  exp?: number;
+};
+
+export type RefreshTokenPayloadType = {
+  userId: number;
+  uuid: string;
+  iat?: number;
+  exp?: number;
+};
+
+export enum TokensVariables {
+  REFRESH_TOKEN_COOKIE_TITLE = 'refreshToken',
+}
 
 @Injectable()
 export class TokensService {
@@ -78,7 +90,7 @@ export class TokensService {
       this.getTokenPayload(refreshToken).exp * 1000,
     );
 
-    res.cookie(refreshTokenCookieTitle, refreshToken, {
+    res.cookie(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE, refreshToken, {
       httpOnly: true,
       secure: true,
       expires: expiresDate,
@@ -87,7 +99,7 @@ export class TokensService {
   }
 
   removeRefreshTokenInCookie(res: Response) {
-    res.cookie(refreshTokenCookieTitle, null, {
+    res.cookie(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE, null, {
       sameSite: 'none',
       secure: true,
       httpOnly: true,

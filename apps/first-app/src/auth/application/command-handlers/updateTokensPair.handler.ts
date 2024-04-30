@@ -1,9 +1,8 @@
 import { Response } from 'express';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RefreshTokenPayloadType } from '../../types/tokens.models';
 import { HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { TokensService } from '../../utils/tokens.service';
 import { UserRepository } from '../../repositories/user.repository';
+import { RefreshTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 export class UpdateTokensPairCommand {
   constructor(public readonly data: { refreshToken: string; res: Response }) {}

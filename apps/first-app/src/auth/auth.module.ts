@@ -4,7 +4,6 @@ import { AuthController } from './controllers/auth.controller';
 import { RegistrationHandler } from './application/command-handlers/registration.handler';
 import { NodemailerService } from './utils/nodemailer.service';
 import { BcryptService } from './utils/bcrypt.service';
-import { TokensService } from './utils/tokens.service';
 import { JwtModule } from '@nestjs/jwt';
 import { LoginHandler } from './application/command-handlers/login.handler';
 import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
@@ -23,6 +22,7 @@ import { RegisterController } from './controllers/register.controller';
 import { PasswordRecoveryController } from './controllers/passwordRecovery.controller';
 import { SideAuthController } from './controllers/sideAuth.controller';
 import { OrmPrismaModule } from '@libs/orm-prisma';
+import { JwtTokenModule } from '@libs/jwt-token';
 
 const commandHandlers = [
   RegistrationHandler,
@@ -43,7 +43,7 @@ const repos = [UserRepository];
 const queryRepos = [UserQueryRepository];
 
 @Module({
-  imports: [CqrsModule, JwtModule, OrmPrismaModule],
+  imports: [CqrsModule, JwtModule, OrmPrismaModule, JwtTokenModule],
   controllers: [
     AuthController,
     RegisterController,
@@ -54,7 +54,6 @@ const queryRepos = [UserQueryRepository];
     ...commandHandlers,
     ...repos,
     ...queryRepos,
-    TokensService,
     NodemailerService,
     BcryptService,
     RecaptchaService,

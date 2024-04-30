@@ -1,10 +1,9 @@
 import { UserQueryRepository } from '../../../repositories/query/user.queryRepository';
 import { UserRepository } from '../../../repositories/user.repository';
-import { TokensService } from '../../../utils/tokens.service';
 import { Response } from 'express';
-import { RefreshTokenPayloadType } from '../../../types/tokens.models';
 import { Providers } from '@prisma/client';
 import * as crypto from 'crypto';
+import { RefreshTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 export type CreateUserType = {
   username: string;

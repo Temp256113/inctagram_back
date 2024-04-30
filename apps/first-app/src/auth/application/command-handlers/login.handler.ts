@@ -4,10 +4,9 @@ import { HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { BcryptService } from '../../utils/bcrypt.service';
 import { Response } from 'express';
 import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
-import { TokensService } from '../../utils/tokens.service';
-import { RefreshTokenPayloadType } from '../../types/tokens.models';
 import * as crypto from 'crypto';
 import { UserRepository } from '../../repositories/user.repository';
+import { RefreshTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 export class LoginCommand {
   constructor(

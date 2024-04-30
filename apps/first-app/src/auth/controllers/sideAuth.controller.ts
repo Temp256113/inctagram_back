@@ -10,12 +10,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { SideAuthRouteSwaggerDescription } from '../swagger/controllers/sideAuth/sideAuth.route.swagger';
 import { Cookies } from '../decorators/cookies.decorator';
-import { refreshTokenCookieTitle } from '../variables/refreshTokenTitle';
 import { SideAuthDto } from '../dto/sideAuth.dto';
 import { Response as Res } from 'express';
 import { SideAuthResponseType } from '../dto/response/sideAuth.responseType';
 import { GoogleAuthCommand } from '../application/command-handlers/googleAuth.handler';
 import { GithubAuthCommand } from '../application/command-handlers/githubAuth.handler';
+import { TokensVariables } from '@libs/jwt-token';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -26,7 +26,8 @@ export class SideAuthController {
   @HttpCode(HttpStatus.OK)
   @SideAuthRouteSwaggerDescription()
   async authViaGoogle(
-    @Cookies(refreshTokenCookieTitle) refreshToken: string | undefined,
+    @Cookies(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE)
+    refreshToken: string | undefined,
     @Body() googleAuthCode: SideAuthDto,
     @Response({ passthrough: true }) res: Res,
   ): Promise<SideAuthResponseType> {
@@ -45,7 +46,8 @@ export class SideAuthController {
   @HttpCode(HttpStatus.OK)
   @SideAuthRouteSwaggerDescription()
   async authViaGithub(
-    @Cookies(refreshTokenCookieTitle) refreshToken: string | undefined,
+    @Cookies(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE)
+    refreshToken: string | undefined,
     @Body() githubAuthCode: SideAuthDto,
     @Response({ passthrough: true }) res: Res,
   ): Promise<SideAuthResponseType> {

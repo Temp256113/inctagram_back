@@ -5,7 +5,6 @@ import { ConfigType } from '@nestjs/config';
 import { Providers } from '@prisma/client';
 import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
 import { UserRepository } from '../../repositories/user.repository';
-import { TokensService } from '../../utils/tokens.service';
 import { NodemailerService } from '../../utils/nodemailer.service';
 import axios from 'axios';
 import { Response } from 'express';
@@ -14,7 +13,7 @@ import {
   SideAuthCommonFunctions,
 } from './common/sideAuth.commonFunctions';
 import { SideAuthResponseType } from '../../dto/response/sideAuth.responseType';
-import { RefreshTokenPayloadType } from '../../types/tokens.models';
+import { TokensService, RefreshTokenPayloadType } from '@libs/jwt-token';
 
 export class GithubAuthCommand {
   constructor(

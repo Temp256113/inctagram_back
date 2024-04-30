@@ -14,13 +14,13 @@ import { CommandBus } from '@nestjs/cqrs';
 import { Cookies } from '../decorators/cookies.decorator';
 import { Response as Res } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { refreshTokenCookieTitle } from '../variables/refreshTokenTitle';
 import { LoginRouteSwaggerDescription } from '../swagger/controllers/auth/login.route.swagger';
 import { LoginCommand } from '../application/command-handlers/login.handler';
 import { UpdateTokensPairRouteSwaggerDescription } from '../swagger/controllers/auth/updateTokensPair.route.swagger';
 import { UpdateTokensPairCommand } from '../application/command-handlers/updateTokensPair.handler';
 import { LogoutRouteSwaggerDescription } from '../swagger/controllers/auth/logout.route.swagger';
 import { LogoutCommand } from '../application/command-handlers/logout.handler';
+import { TokensVariables } from '@libs/jwt-token';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -41,7 +41,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @UpdateTokensPairRouteSwaggerDescription()
   async updateTokensPair(
-    @Cookies(refreshTokenCookieTitle) refreshToken: string,
+    @Cookies(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE) refreshToken: string,
     @Response() res: Res,
   ): Promise<void> {
     if (!refreshToken) {
@@ -59,7 +59,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @LogoutRouteSwaggerDescription()
   async logout(
-    @Cookies(refreshTokenCookieTitle) refreshToken: string,
+    @Cookies(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE) refreshToken: string,
   ): Promise<void> {
     if (!refreshToken) {
       throw new UnauthorizedException('Provide refresh token for logout');

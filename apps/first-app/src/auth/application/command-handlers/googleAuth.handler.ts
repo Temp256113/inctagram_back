@@ -5,7 +5,6 @@ import authConfig from '@libs/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
 import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
 import { UserRepository } from '../../repositories/user.repository';
-import { TokensService } from '../../utils/tokens.service';
 import { NodemailerService } from '../../utils/nodemailer.service';
 import { Response as Res } from 'express';
 import axios from 'axios';
@@ -14,7 +13,7 @@ import {
   CreateUserType,
   SideAuthCommonFunctions,
 } from './common/sideAuth.commonFunctions';
-import { RefreshTokenPayloadType } from '../../types/tokens.models';
+import { RefreshTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 export class GoogleAuthCommand {
   constructor(

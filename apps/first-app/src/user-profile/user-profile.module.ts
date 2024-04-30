@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UserProfileController } from './user-profile.controller';
-import { TokensService } from '../auth/utils/tokens.service';
 import { JwtModule } from '@nestjs/jwt';
 import { UserProfileQueryRepository } from './repositories/query/user-profile-query.repository';
 import { UserProfileRepository } from './repositories/user-profile.repository';
@@ -13,6 +12,7 @@ import { CreateUserProfileHandler } from './application/command-handlers/createU
 import { UpdateUserProfileHandler } from './application/command-handlers/updateUserProfile.handler';
 import { GetProfileByIdHandler } from './application/query-handlers/getProfileById.handler';
 import { OrmPrismaModule } from '@libs/orm-prisma';
+import { JwtTokenModule } from '@libs/jwt-token';
 
 const commandHandlers = [CreateUserProfileHandler, UpdateUserProfileHandler];
 
@@ -27,14 +27,14 @@ const queryRepos = [
 ];
 
 @Module({
-  imports: [JwtModule, CqrsModule, FileResourceModule, OrmPrismaModule],
-  controllers: [UserProfileController],
-  providers: [
-    TokensService,
-    ...repos,
-    ...queryRepos,
-    ...commandHandlers,
-    ...queryHandlers,
+  imports: [
+    JwtModule,
+    CqrsModule,
+    FileResourceModule,
+    OrmPrismaModule,
+    JwtTokenModule,
   ],
+  controllers: [UserProfileController],
+  providers: [...repos, ...queryRepos, ...commandHandlers, ...queryHandlers],
 })
 export class UserProfileModule {}

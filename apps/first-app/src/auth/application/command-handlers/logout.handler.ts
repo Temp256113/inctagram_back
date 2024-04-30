@@ -1,8 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RefreshTokenPayloadType } from '../../types/tokens.models';
 import { UnauthorizedException } from '@nestjs/common';
-import { TokensService } from '../../utils/tokens.service';
 import { UserRepository } from '../../repositories/user.repository';
+import { RefreshTokenPayloadType, TokensService } from '@libs/jwt-token';
 
 export class LogoutCommand {
   constructor(public readonly data: { refreshToken: string }) {}
