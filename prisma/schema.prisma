@@ -16,10 +16,12 @@
 // чтобы использовать миграции перед деплоем нужно использовать prisma migrate deploy
 // эта команда применяет существующие миграции
 
+// "debian-openssl-1.1.x" нужен для того чтобы это работало в докер контейнере с системой FROM node:version
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
-  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
+  binaryTargets   = ["native", "rhel-openssl-1.0.x", "debian-openssl-1.1.x"]
 }
 
 datasource db {
