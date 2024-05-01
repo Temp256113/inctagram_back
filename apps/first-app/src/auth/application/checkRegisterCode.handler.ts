@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserQueryRepository } from '../repositories/query/user.queryRepository';
 import { GoneException, NotFoundException } from '@nestjs/common';
 import { isBefore } from 'date-fns';
-import { UserRepository } from '../repositories/user.repository';
 import { NodemailerService } from '../utils/nodemailer.service';
 import { RegisterCodeCheckResponseTypeSwagger } from '../dto/register.dto';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
+import { UserRepository } from '@libs/repositories/repos/user.repository';
 
 export class CheckRegisterCodeCommand {
   constructor(public readonly code: string) {}

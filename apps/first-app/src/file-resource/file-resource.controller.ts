@@ -10,9 +10,8 @@ import {
 } from '@nestjs/common';
 import { FileResourceService } from './file-resource.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AuthGuard } from 'shared/guards/auth.guard';
-import { User } from 'shared/decorators/user.decorator';
-import { UserDecoratorType } from 'shared/types/user/user.type';
+import { AuthGuard } from '@libs/common-guards';
+import { User, UserDecoratorType } from '@libs/common-decorators';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateFileResourceRouteSwaggerDescription } from './swagger/createFileResource.swagger';

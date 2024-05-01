@@ -14,13 +14,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '../../../../shared/guards/auth.guard';
+import { AuthGuard } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateUserPostDto } from './dto/createUserPost.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { User } from '../../../../shared/decorators/user.decorator';
-import { UserDecoratorType } from '../../../../shared/types/user/user.type';
+import { User, UserDecoratorType } from '@libs/common-decorators';
 import { CreateUserPostRouteSwaggerDescription } from './swagger/controller/createUserPost.route.swagger';
 import { UpdateUserPostDto } from './dto/updateUserPost.dto';
 import { UpdateUserPostRouteSwaggerDescription } from './swagger/controller/updateUserPost.route.swagger';
@@ -29,14 +28,14 @@ import {
   UserPostReturnType,
 } from './dto/userPostReturnTypes';
 import { DeleteUserPostRouteSwaggerDescription } from './swagger/controller/deleteUserPost.route.swagger';
-import { UserPostsQueryRepository } from './repositories/userPosts.queryRepository';
 import { GetUserPostsRouteSwaggerDescription } from './swagger/controller/getUserPosts.route.swagger';
-import { AccessToken } from '../../../../shared/decorators/accessToken.decorator';
+import { AccessToken } from '@libs/common-decorators';
 import { GetPostByIdQuery } from './application/query-handlers/getPostById.handler';
 import { CreateUserPostCommand } from './application/command-handlers/createUserPost.handler';
 import { UpdateUserPostCommand } from './application/command-handlers/updateUserPost.handler';
 import { DeleteUserPostCommand } from './application/command-handlers/deleteUserPost.handler';
 import { GetUserPostByIdRouteSwaggerDescription } from './swagger/controller/getUserPostById.route.swagger';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 
 const picsErrorMessage = `The photo(s) must be less than or equal 0,5 Mb and have JPEG or PNG format`;
 

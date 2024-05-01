@@ -36,6 +36,42 @@
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
       }
+    },
+    "common-decorators": {
+      "type": "library",
+      "root": "libs/common-decorators",
+      "entryFile": "index",
+      "sourceRoot": "libs/common-decorators/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common-decorators/tsconfig.lib.json"
+      }
+    },
+    "jwt-token": {
+      "type": "library",
+      "root": "libs/jwt-token",
+      "entryFile": "index",
+      "sourceRoot": "libs/jwt-token/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/jwt-token/tsconfig.lib.json"
+      }
+    },
+    "common-guards": {
+      "type": "library",
+      "root": "libs/common-guards",
+      "entryFile": "index",
+      "sourceRoot": "libs/common-guards/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common-guards/tsconfig.lib.json"
+      }
+    },
+    "repositories": {
+      "type": "library",
+      "root": "libs/repositories",
+      "entryFile": "index",
+      "sourceRoot": "libs/repositories/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/repositories/tsconfig.lib.json"
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserPostReturnType } from '../../dto/userPostReturnTypes';
 import { FileResourceService } from '../../../file-resource/file-resource.service';
-import { UserPostsRepository } from '../../repositories/userPosts.repository';
+import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 
 export class CreateUserPostCommand {
   constructor(

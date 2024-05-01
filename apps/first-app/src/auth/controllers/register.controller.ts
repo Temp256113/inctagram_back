@@ -14,11 +14,11 @@ import {
   RegisterDTO,
   ResendRegisterEmailDto,
 } from '../dto/register.dto';
-import { RegistrationCommand } from '../application/commandHandlers/registration.handler';
+import { RegistrationCommand } from '../application/command-handlers/registration.handler';
 import { RegisterCodeCheckRouteSwaggerDescription } from '../swagger/controllers/register/registerCodeCheck.route.swagger';
 import { CheckRegisterCodeCommand } from '../application/checkRegisterCode.handler';
 import { ResendRegisterEmailRouteSwaggerDescription } from '../swagger/controllers/register/resendRegisterEmail.route.swagger';
-import { ResendRegisterEmailCommand } from '../application/commandHandlers/resendRegisterEmail.handler';
+import { ResendRegisterEmailCommand } from '../application/command-handlers/resendRegisterEmail.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')
