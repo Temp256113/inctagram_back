@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CommonGuardsModule } from '@libs/common-guards';
 import { FileResourceService } from './file-resource.service';
 import { FileResourseController } from './file-resource.controller';
-import { S3StorageAdapter } from '../../../../shared/services/s3StorageAdapter.service';
+import { S3StorageAdapter } from './s3StorageAdapter.service';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 @Module({
