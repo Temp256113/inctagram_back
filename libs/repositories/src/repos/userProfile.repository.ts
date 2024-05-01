@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateUserProfileDto } from '../dto/create-user-profile.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
-import { PrismaService } from '@libs/orm-prisma';
+import { PrismaService } from '@libs/repositories/prisma.service';
+import { CreateUserProfileDto } from '../../../../apps/first-app/src/user-profile/dto/create-user-profile.dto';
+import { UpdateUserProfileDto } from '../../../../apps/first-app/src/user-profile/dto/update-user-profile.dto';
 
 @Injectable()
 export class UserProfileRepository {

@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserRepository } from '../../repositories/user.repository';
 import { NodemailerService } from '../../utils/nodemailer.service';
-import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
 import { GoneException, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { add } from 'date-fns';
 import { ResendRegisterEmailDto } from '../../dto/register.dto';
+import { UserRepository } from '@libs/repositories/repos/user.repository';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 
 export class ResendRegisterEmailCommand {
   constructor(public readonly data: ResendRegisterEmailDto) {}

@@ -7,8 +7,6 @@ import { BcryptService } from './utils/bcrypt.service';
 import { JwtModule } from '@nestjs/jwt';
 import { LoginHandler } from './application/command-handlers/login.handler';
 import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
-import { UserRepository } from './repositories/user.repository';
-import { UserQueryRepository } from './repositories/query/user.queryRepository';
 import { PasswordRecoveryRequestHandler } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
 import { GithubAuthHandler } from './application/command-handlers/githubAuth.handler';
 import { GoogleAuthHandler } from './application/command-handlers/googleAuth.handler';
@@ -21,8 +19,8 @@ import { PasswordRecoveryHandler } from './application/command-handlers/password
 import { RegisterController } from './controllers/register.controller';
 import { PasswordRecoveryController } from './controllers/passwordRecovery.controller';
 import { SideAuthController } from './controllers/sideAuth.controller';
-import { OrmPrismaModule } from '@libs/orm-prisma';
 import { JwtTokenModule } from '@libs/jwt-token';
+import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 const commandHandlers = [
   RegistrationHandler,
@@ -38,12 +36,8 @@ const commandHandlers = [
   PasswordRecoveryHandler,
 ];
 
-const repos = [UserRepository];
-
-const queryRepos = [UserQueryRepository];
-
 @Module({
-  imports: [CqrsModule, JwtModule, OrmPrismaModule, JwtTokenModule],
+  imports: [CqrsModule, JwtModule, RepositoriesModule, JwtTokenModule],
   controllers: [
     AuthController,
     RegisterController,
@@ -52,8 +46,6 @@ const queryRepos = [UserQueryRepository];
   ],
   providers: [
     ...commandHandlers,
-    ...repos,
-    ...queryRepos,
     NodemailerService,
     BcryptService,
     RecaptchaService,

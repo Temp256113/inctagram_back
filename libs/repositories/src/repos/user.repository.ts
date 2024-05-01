@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   Providers,
   User,
@@ -6,9 +6,9 @@ import {
   UserEmailInfo,
   UserSession,
 } from '@prisma/client';
-import { PrismaService } from '@libs/orm-prisma';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { websocketsMainPageStateEvents } from '../../websocket/main-page/websocketsMainPage.service';
+import { websocketsMainPageStateEvents } from '../../../../apps/first-app/src/websocket/main-page/websocketsMainPage.service';
+import { PrismaService } from '@libs/repositories/prisma.service';
 
 @Injectable()
 export class UserRepository {

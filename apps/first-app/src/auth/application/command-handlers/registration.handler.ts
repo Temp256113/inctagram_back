@@ -4,9 +4,9 @@ import { NodemailerService } from '../../utils/nodemailer.service';
 import { add } from 'date-fns';
 import * as crypto from 'crypto';
 import { ConflictException } from '@nestjs/common';
-import { UserRepository } from '../../repositories/user.repository';
-import { UserQueryRepository } from '../../repositories/query/user.queryRepository';
 import { RegisterDTO } from '../../dto/register.dto';
+import { UserRepository } from '@libs/repositories/repos/user.repository';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 
 export class RegistrationCommand {
   constructor(public readonly userRegisterDTO: RegisterDTO) {}

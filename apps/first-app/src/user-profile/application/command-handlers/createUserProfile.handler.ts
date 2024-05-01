@@ -8,8 +8,8 @@ import { differenceInYears } from 'date-fns';
 import { BadRequestException } from '@nestjs/common';
 import { FileResourceService } from '../../../file-resource/file-resource.service';
 import { CreateUserProfileDto } from '../../dto/create-user-profile.dto';
-import { UserProfileRepository } from '../../repositories/user-profile.repository';
-import { ProfileImageRepository } from '../../repositories/profile-image.repository';
+import { UserProfileRepository } from '@libs/repositories/repos/userProfile.repository';
+import { ProfileImageRepository } from '@libs/repositories/repos/profileImage.repository';
 
 export class CreateUserProfileCommand {
   constructor(public readonly data: CreateUserProfileDto) {}

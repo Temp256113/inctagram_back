@@ -5,10 +5,10 @@ import {
 } from '@nestjs/websockets';
 import { OnModuleInit } from '@nestjs/common';
 import { UserPostReturnType } from '../../user-posts/dto/userPostReturnTypes';
-import { UserPostsQueryRepository } from '../../user-posts/repositories/userPosts.queryRepository';
-import { UserQueryRepository } from '../../auth/repositories/query/user.queryRepository';
 import { OnEvent } from '@nestjs/event-emitter';
 import { minutesToMilliseconds } from 'date-fns';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 
 export enum websocketsMainPageStateEvents {
   CREATE_USER = 'websocketsMainPageState.createNewUser',

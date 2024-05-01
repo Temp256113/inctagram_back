@@ -3,19 +3,12 @@ import { CommonGuardsModule } from '@libs/common-guards';
 import { FileResourceService } from './file-resource.service';
 import { FileResourseController } from './file-resource.controller';
 import { S3StorageAdapter } from '../../../../shared/services/s3StorageAdapter.service';
-import { FileResourceRepository } from 'shared/repositories/file-resourse.repository';
-import { FileResourceQueryRepository } from 'shared/repositories/query/file-resource-query.repository';
-import { OrmPrismaModule } from '@libs/orm-prisma';
+import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 @Module({
-  imports: [CommonGuardsModule, OrmPrismaModule],
+  imports: [CommonGuardsModule, RepositoriesModule],
   controllers: [FileResourseController],
-  providers: [
-    FileResourceService,
-    S3StorageAdapter,
-    FileResourceRepository,
-    FileResourceQueryRepository,
-  ],
+  providers: [FileResourceService, S3StorageAdapter],
   exports: [FileResourceService],
 })
 export class FileResourceModule {}

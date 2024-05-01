@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UserPostsRepository } from '../../repositories/userPosts.repository';
-import { UserPostsQueryRepository } from '../../repositories/userPosts.queryRepository';
 import { FileResourceService } from '../../../file-resource/file-resource.service';
+import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 
 export class DeleteUserPostCommand {
   constructor(public readonly data: { userId: number; userPostId: number }) {}

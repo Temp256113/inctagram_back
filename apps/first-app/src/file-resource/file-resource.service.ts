@@ -6,8 +6,8 @@ import {
 import { S3StorageAdapter } from '../../../../shared/services/s3StorageAdapter.service';
 import { FileResource, FileResourceTypes } from '@prisma/client';
 import { flatten } from 'lodash';
-import { FileResourceRepository } from 'shared/repositories/file-resourse.repository';
-import { FileResourceQueryRepository } from 'shared/repositories/query/file-resource-query.repository';
+import { FileResourceRepository } from '@libs/repositories/repos/fileResource.repository';
+import { FileResourceQueryRepository } from '@libs/repositories/query-repos/fileResource.queryRepository';
 
 type CanManageFileType = {
   userId: number;

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { UserPostReturnType } from '../../dto/userPostReturnTypes';
-import { UserPostsRepository } from '../../repositories/userPosts.repository';
-import { UserPostsQueryRepository } from '../../repositories/userPosts.queryRepository';
+import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 
 export class UpdateUserPostCommand {
   constructor(

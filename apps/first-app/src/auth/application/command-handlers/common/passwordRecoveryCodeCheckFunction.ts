@@ -1,9 +1,9 @@
 import { UserChangePasswordRequestStates } from '@prisma/client';
 import { GoneException, NotFoundException } from '@nestjs/common';
 import { isBefore } from 'date-fns';
-import { UserQueryRepository } from '../../../repositories/query/user.queryRepository';
-import { UserRepository } from '../../../repositories/user.repository';
 import { PasswordRecoveryCodeCheckResponseTypeSwagger } from '../../../dto/passwordRecovery.dto';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
+import { UserRepository } from '@libs/repositories/repos/user.repository';
 
 export class PasswordRecoveryCodeCheckFunction {
   constructor(

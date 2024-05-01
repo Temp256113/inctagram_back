@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@libs/orm-prisma';
 import { Prisma } from '@prisma/client';
+import { PrismaService } from '@libs/repositories/prisma.service';
 
 @Injectable()
 export class ProfileImageRepository {

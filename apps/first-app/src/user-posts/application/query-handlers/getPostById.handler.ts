@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { UserPostByIdReturnType } from '../../dto/userPostReturnTypes';
-import { UserQueryRepository } from '../../../auth/repositories/query/user.queryRepository';
-import { UserPostsQueryRepository } from '../../repositories/userPosts.queryRepository';
 import { NotFoundException } from '@nestjs/common';
 import { AccessTokenPayloadType, TokensService } from '@libs/jwt-token';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 
 export class GetPostByIdQuery {
   constructor(

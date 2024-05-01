@@ -2,15 +2,13 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserPostsController } from './user-posts.controller';
 import { FileResourceModule } from '../file-resource/file-resource.module';
-import { UserPostsRepository } from './repositories/userPosts.repository';
-import { UserPostsQueryRepository } from './repositories/userPosts.queryRepository';
 import { CommonGuardsModule } from '@libs/common-guards';
 import { GetPostByIdHandler } from './application/query-handlers/getPostById.handler';
 import { CreateUserPostHandler } from './application/command-handlers/createUserPost.handler';
 import { UpdateUserPostHandler } from './application/command-handlers/updateUserPost.handler';
 import { DeleteUserPostHandler } from './application/command-handlers/deleteUserPost.handler';
-import { OrmPrismaModule } from '@libs/orm-prisma';
 import { JwtTokenModule } from '@libs/jwt-token';
+import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 const commandHandlers = [
   CreateUserPostHandler,
@@ -25,15 +23,10 @@ const queryHandlers = [GetPostByIdHandler];
     CqrsModule,
     FileResourceModule,
     CommonGuardsModule,
-    OrmPrismaModule,
+    RepositoriesModule,
     JwtTokenModule,
   ],
   controllers: [UserPostsController],
-  providers: [
-    ...commandHandlers,
-    ...queryHandlers,
-    UserPostsRepository,
-    UserPostsQueryRepository,
-  ],
+  providers: [...commandHandlers, ...queryHandlers],
 })
 export class UserPostsModule {}

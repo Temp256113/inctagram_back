@@ -6,11 +6,11 @@ import {
 } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@libs/orm-prisma';
 import { FileResourceService } from '../../../file-resource/file-resource.service';
-import { UserProfileRepository } from '../../repositories/user-profile.repository';
-import { ProfileImageQueryRepository } from '../../repositories/query/profile-image-query.repository';
-import { ProfileImageRepository } from '../../repositories/profile-image.repository';
+import { UserProfileRepository } from '@libs/repositories/repos/userProfile.repository';
+import { PrismaService } from '@libs/repositories/prisma.service';
+import { ProfileImageQueryRepository } from '@libs/repositories/query-repos/profileImage.queryRepository';
+import { ProfileImageRepository } from '@libs/repositories/repos/profileImage.repository';
 
 export class UpdateUserProfileCommand {
   constructor(

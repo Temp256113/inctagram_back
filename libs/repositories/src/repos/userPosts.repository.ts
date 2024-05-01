@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@libs/orm-prisma';
 import { Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { websocketsMainPageStateEvents } from '../../websocket/main-page/websocketsMainPage.service';
+import { PrismaService } from '@libs/repositories/prisma.service';
+import { websocketsMainPageStateEvents } from '../../../../apps/first-app/src/websocket/main-page/websocketsMainPage.service';
 
 @Injectable()
 export class UserPostsRepository {

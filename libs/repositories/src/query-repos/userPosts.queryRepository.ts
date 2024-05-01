@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@libs/orm-prisma';
-import { UserPostReturnType } from '../dto/userPostReturnTypes';
+import { UserPostReturnType } from '../../../../apps/first-app/src/user-posts/dto/userPostReturnTypes';
+import { PrismaService } from '@libs/repositories/prisma.service';
 
 @Injectable()
 export class UserPostsQueryRepository {

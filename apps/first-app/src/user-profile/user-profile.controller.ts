@@ -14,7 +14,6 @@ import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { AuthGuard } from '@libs/common-guards';
 import { User, UserDecoratorType } from '@libs/common-decorators';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { UserProfileQueryRepository } from './repositories/query/user-profile-query.repository';
 import { CreateUserProfileRouteSwaggerDescription } from './swagger/controller/createUserProfile.route.swagger';
 import { UpdateUserProfileRouteSwaggerDescription } from './swagger/controller/updateUserProfile.route.swagger';
 import { GetUserProfileRouteSwaggerDescription } from './swagger/controller/getUserProfile.route.swagger';
@@ -25,6 +24,7 @@ import { GetProfileByIdQuery } from './application/query-handlers/getProfileById
 import { CreateUserProfileCommand } from './application/command-handlers/createUserProfile.handler';
 import { UpdateUserProfileCommand } from './application/command-handlers/updateUserProfile.handler';
 import { GetUserProfileByIdRouteSwaggerDescription } from './swagger/controller/getUserProfileById.route.swagger';
+import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 
 @Controller('user-profile')
 @ApiTags('user profile controller')

@@ -28,7 +28,6 @@ import {
   UserPostReturnType,
 } from './dto/userPostReturnTypes';
 import { DeleteUserPostRouteSwaggerDescription } from './swagger/controller/deleteUserPost.route.swagger';
-import { UserPostsQueryRepository } from './repositories/userPosts.queryRepository';
 import { GetUserPostsRouteSwaggerDescription } from './swagger/controller/getUserPosts.route.swagger';
 import { AccessToken } from '@libs/common-decorators';
 import { GetPostByIdQuery } from './application/query-handlers/getPostById.handler';
@@ -36,6 +35,7 @@ import { CreateUserPostCommand } from './application/command-handlers/createUser
 import { UpdateUserPostCommand } from './application/command-handlers/updateUserPost.handler';
 import { DeleteUserPostCommand } from './application/command-handlers/deleteUserPost.handler';
 import { GetUserPostByIdRouteSwaggerDescription } from './swagger/controller/getUserPostById.route.swagger';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 
 const picsErrorMessage = `The photo(s) must be less than or equal 0,5 Mb and have JPEG or PNG format`;
 

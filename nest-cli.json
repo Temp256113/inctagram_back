@@ -37,15 +37,6 @@
         "tsConfigPath": "libs/config/tsconfig.lib.json"
       }
     },
-    "orm-prisma": {
-      "type": "library",
-      "root": "libs/orm-prisma",
-      "entryFile": "index",
-      "sourceRoot": "libs/orm-prisma/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/orm-prisma/tsconfig.lib.json"
-      }
-    },
     "common-decorators": {
       "type": "library",
       "root": "libs/common-decorators",
@@ -71,6 +62,15 @@
       "sourceRoot": "libs/common-guards/src",
       "compilerOptions": {
         "tsConfigPath": "libs/common-guards/tsconfig.lib.json"
+      }
+    },
+    "repositories": {
+      "type": "library",
+      "root": "libs/repositories",
+      "entryFile": "index",
+      "sourceRoot": "libs/repositories/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/repositories/tsconfig.lib.json"
       }
     }
   }
