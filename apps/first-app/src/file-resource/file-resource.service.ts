@@ -68,7 +68,9 @@ export class FileResourceService {
     const allEntitiesIsMine: boolean = await this.checkCountFileResource(data);
 
     if (data.fileId && !allEntitiesIsMine) {
-      throw new ForbiddenException('Access denied');
+      throw new ForbiddenException(
+        'You are trying to use an image that doesnt belong to you. Try another one (fileId)',
+      );
     }
 
     return true;
