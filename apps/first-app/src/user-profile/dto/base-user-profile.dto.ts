@@ -23,7 +23,11 @@ export class BaseUserProfileDto {
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty({ example: 1, required: false })
+  @ApiProperty({
+    example:
+      'НАДО НАПИСАТЬ ID ПИКЧИ КОТОРАЯ ПРИНАДЛЕЖИТ ТВОЕМУ ПРОФИЛЮ. ЭТО НЕ ОБЯЗАТЕЛЬНОЕ ПОЛЕ',
+    required: false,
+  })
   fileId?: number;
 
   @IsString()
