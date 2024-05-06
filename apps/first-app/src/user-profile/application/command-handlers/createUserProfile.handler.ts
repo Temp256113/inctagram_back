@@ -12,7 +12,9 @@ import { UserProfileRepository } from '@libs/repositories/repos/userProfile.repo
 import { ProfileImageRepository } from '@libs/repositories/repos/profileImage.repository';
 
 export class CreateUserProfileCommand {
-  constructor(public readonly data: CreateUserProfileDto) {}
+  constructor(
+    public readonly data: CreateUserProfileDto & { userId: number },
+  ) {}
 }
 
 @CommandHandler(CreateUserProfileCommand)
