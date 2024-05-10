@@ -5,6 +5,8 @@ import { GatewayExceptionsFilter } from './gatewayExceptionsFilter';
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
 
+  app.setGlobalPrefix('api/v1');
+
   const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.useGlobalFilters(new GatewayExceptionsFilter(httpAdapter));

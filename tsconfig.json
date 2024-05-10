@@ -48,6 +48,18 @@
       ],
       "@libs/repositories/*": [
         "libs/repositories/src/*"
+      ],
+      "@libs/common-exceptions": [
+        "libs/common-exceptions/src"
+      ],
+      "@libs/common-exceptions/*": [
+        "libs/common-exceptions/src/*"
+      ],
+      "@libs/common-types": [
+        "libs/common-types/src"
+      ],
+      "@libs/common-types/*": [
+        "libs/common-types/src/*"
       ]
     }
   }

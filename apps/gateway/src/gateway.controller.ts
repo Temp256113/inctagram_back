@@ -1,12 +1,25 @@
-import { Controller, Get } from '@nestjs/common';
-import { GatewayService } from './gateway.service';
+import {
+  Controller,
+  Get,
+  HttpException,
+  Inject,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 
 @Controller()
 export class GatewayController {
-  constructor(private readonly gatewayService: GatewayService) {}
+  constructor(@Inject('AUTH_SERVICE') private authService: ClientProxy) {}
 
   @Get()
-  getHello(): string {
-    return this.gatewayService.getHello();
+  async getHello() {
+    const res = await lastValueFrom(
+      this.authService.send('test_pattern', {
+        hello: 'hello from',
+      }),
+    );
+
+    console.log(res);
   }
 }

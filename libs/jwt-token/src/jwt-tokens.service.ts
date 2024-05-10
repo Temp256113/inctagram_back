@@ -19,12 +19,17 @@ export type RefreshTokenPayloadType = {
   exp?: number;
 };
 
+export type RefreshTokenCreateType = {
+  token: string;
+  payload: RefreshTokenPayloadType;
+};
+
 export enum TokensVariables {
   REFRESH_TOKEN_COOKIE_TITLE = 'refreshToken',
 }
 
 @Injectable()
-export class TokensService {
+export class JwtTokensService {
   private readonly accessTokenSecret: string;
   private readonly refreshTokenSecret: string;
 
@@ -65,7 +70,7 @@ export class TokensService {
   async createRefreshToken(data: {
     userId: number;
     uuid: string;
-  }): Promise<string> {
+  }): Promise<RefreshTokenCreateType> {
     const { userId, uuid } = data;
 
     const currentDate: Date = new Date();
@@ -77,9 +82,14 @@ export class TokensService {
       exp: this.getRefreshTokenExpiredTime(currentDate),
     };
 
-    return this.jwtService.signAsync(payload, {
+    const refreshToken: string = await this.jwtService.signAsync(payload, {
       secret: this.refreshTokenSecret,
     });
+
+    return {
+      payload: payload,
+      token: refreshToken,
+    };
   }
 
   setRefreshTokenInCookie(data: { refreshToken: string; res: Response }): void {
@@ -112,14 +122,15 @@ export class TokensService {
   }): Promise<{ accessToken: string; refreshToken: string }> {
     const { userId, uuid = crypto.randomUUID() } = data;
 
-    const [accessToken, refreshToken]: string[] = await Promise.all([
-      this.createAccessToken(userId),
-      this.createRefreshToken({ userId, uuid }),
-    ]);
+    const [accessToken, refreshToken]: [string, RefreshTokenCreateType] =
+      await Promise.all([
+        this.createAccessToken(userId),
+        this.createRefreshToken({ userId, uuid }),
+      ]);
 
     return {
       accessToken,
-      refreshToken,
+      refreshToken: refreshToken.token,
     };
   }
 

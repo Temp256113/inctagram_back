@@ -7,7 +7,7 @@ import { GetPostByIdHandler } from './application/query-handlers/getPostById.han
 import { CreateUserPostHandler } from './application/command-handlers/createUserPost.handler';
 import { UpdateUserPostHandler } from './application/command-handlers/updateUserPost.handler';
 import { DeleteUserPostHandler } from './application/command-handlers/deleteUserPost.handler';
-import { JwtTokenModule } from '@libs/jwt-token';
+import { JwtTokensModule } from '@libs/jwt-token';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 const commandHandlers = [
@@ -24,7 +24,7 @@ const queryHandlers = [GetPostByIdHandler];
     FileResourceModule,
     CommonGuardsModule,
     RepositoriesModule,
-    JwtTokenModule,
+    JwtTokensModule,
   ],
   controllers: [UserPostsController],
   providers: [...commandHandlers, ...queryHandlers],

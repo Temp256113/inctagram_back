@@ -19,7 +19,7 @@ import { PasswordRecoveryHandler } from './application/command-handlers/password
 import { RegisterController } from './controllers/register.controller';
 import { PasswordRecoveryController } from './controllers/passwordRecovery.controller';
 import { SideAuthController } from './controllers/sideAuth.controller';
-import { JwtTokenModule } from '@libs/jwt-token';
+import { JwtTokensModule } from '@libs/jwt-token';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 const commandHandlers = [
@@ -37,7 +37,7 @@ const commandHandlers = [
 ];
 
 @Module({
-  imports: [CqrsModule, JwtModule, RepositoriesModule, JwtTokenModule],
+  imports: [CqrsModule, RepositoriesModule, JwtTokensModule],
   controllers: [
     AuthController,
     RegisterController,

@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { UserProfileByIdReturnType } from '../../dto/userProfileReturnTypes';
 import { NotFoundException } from '@nestjs/common';
-import { AccessTokenPayloadType, TokensService } from '@libs/jwt-token';
+import { AccessTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 
@@ -19,7 +19,7 @@ export class GetProfileByIdHandler
   implements IQueryHandler<GetProfileByIdQuery, UserProfileByIdReturnType>
 {
   constructor(
-    private readonly tokensService: TokensService,
+    private readonly tokensService: JwtTokensService,
     private readonly userQueryRepository: UserQueryRepository,
     private readonly profileQueryRepository: UserProfileQueryRepository,
   ) {}

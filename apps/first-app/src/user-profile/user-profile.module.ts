@@ -6,7 +6,7 @@ import { FileResourceModule } from '../file-resource/file-resource.module';
 import { CreateUserProfileHandler } from './application/command-handlers/createUserProfile.handler';
 import { UpdateUserProfileHandler } from './application/command-handlers/updateUserProfile.handler';
 import { GetProfileByIdHandler } from './application/query-handlers/getProfileById.handler';
-import { JwtTokenModule } from '@libs/jwt-token';
+import { JwtTokensModule } from '@libs/jwt-token';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 const commandHandlers = [CreateUserProfileHandler, UpdateUserProfileHandler];
@@ -19,7 +19,7 @@ const queryHandlers = [GetProfileByIdHandler];
     CqrsModule,
     FileResourceModule,
     RepositoriesModule,
-    JwtTokenModule,
+    JwtTokensModule,
   ],
   controllers: [UserProfileController],
   providers: [...commandHandlers, ...queryHandlers],

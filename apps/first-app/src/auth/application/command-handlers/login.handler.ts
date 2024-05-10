@@ -4,7 +4,7 @@ import { HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { BcryptService } from '../../utils/bcrypt.service';
 import { Response } from 'express';
 import * as crypto from 'crypto';
-import { RefreshTokenPayloadType, TokensService } from '@libs/jwt-token';
+import { RefreshTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 
@@ -21,7 +21,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand, void> {
     private readonly userRepository: UserRepository,
     private readonly userQueryRepository: UserQueryRepository,
     private readonly bcryptService: BcryptService,
-    private readonly tokensService: TokensService,
+    private readonly tokensService: JwtTokensService,
   ) {}
 
   async execute(command: LoginCommand): Promise<void> {

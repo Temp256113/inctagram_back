@@ -81,6 +81,33 @@
       "compilerOptions": {
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
+    },
+    "common-exceptions": {
+      "type": "library",
+      "root": "libs/common-exceptions",
+      "entryFile": "index",
+      "sourceRoot": "libs/common-exceptions/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common-exceptions/tsconfig.lib.json"
+      }
+    },
+    "auth": {
+      "type": "application",
+      "root": "apps/auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      }
+    },
+    "common-types": {
+      "type": "library",
+      "root": "libs/common-types",
+      "entryFile": "index",
+      "sourceRoot": "libs/common-types/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common-types/tsconfig.lib.json"
+      }
     }
   }
 }
