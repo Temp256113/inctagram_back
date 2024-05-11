@@ -6,8 +6,9 @@ import { RepositoriesModule } from '@libs/repositories/repositories.module';
 import { BcryptService } from './utils/bcrypt.service';
 import { LoginHandler } from './application/command-handlers/login.handler';
 import { JwtTokensModule } from '@libs/jwt-token';
+import { UpdateTokensPairHandler } from './application/command-handlers/updateTokensPair.handler';
 
-const commandHandlers = [LoginHandler];
+const commandHandlers = [LoginHandler, UpdateTokensPairHandler];
 
 @Module({
   imports: [EnvModule, CqrsModule, RepositoriesModule, JwtTokensModule],

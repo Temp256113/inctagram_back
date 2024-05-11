@@ -1,61 +1,78 @@
-import { Response } from 'express';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { RefreshTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
+import { CustomRpcException } from '@libs/common-exceptions';
+import { LoginResponseServiceDTO } from '@libs/common-types/auth/controller';
+import { RefreshTokenUserType } from '@libs/common-guards';
 
 export class UpdateTokensPairCommand {
-  constructor(public readonly data: { refreshToken: string; res: Response }) {}
+  constructor(public readonly data: RefreshTokenUserType) {}
 }
 
 @CommandHandler(UpdateTokensPairCommand)
 export class UpdateTokensPairHandler
-  implements ICommandHandler<UpdateTokensPairCommand, void>
+  implements ICommandHandler<UpdateTokensPairCommand, LoginResponseServiceDTO>
 {
   constructor(
     private readonly tokensService: JwtTokensService,
     private readonly userRepository: UserRepository,
   ) {}
 
-  async execute(command: UpdateTokensPairCommand): Promise<void> {
+  async execute(
+    command: UpdateTokensPairCommand,
+  ): Promise<LoginResponseServiceDTO> {
     const {
-      data: { refreshToken, res },
+      data: { userId, username, refreshTokenUuid: uuid },
     } = command;
 
-    const refreshTokenPayload: RefreshTokenPayloadType | null =
-      await this.tokensService.verifyRefreshToken(refreshToken);
+    const newTokensPair: { accessToken: string; refreshToken: string } =
+      await this.tokensService.createTokensPair({
+        userId,
+        username,
+        uuid,
+      });
 
-    if (!refreshTokenPayload) {
-      throw new UnauthorizedException('Refresh token is invalid');
-    }
-
-    const newTokensPair = await this.tokensService.createTokensPair({
-      userId: refreshTokenPayload.userId,
-      uuid: refreshTokenPayload.uuid,
+    await this.updateSession({
+      newRefreshToken: newTokensPair.refreshToken,
+      userId,
+      currentRefreshTokenUuid: uuid,
     });
 
+    return {
+      userId,
+      username,
+      accessToken: newTokensPair.accessToken,
+      refreshToken: newTokensPair.refreshToken,
+    };
+  }
+
+  async updateSession(data: {
+    newRefreshToken: string;
+    userId: number;
+    currentRefreshTokenUuid: string;
+  }) {
+    const { newRefreshToken, currentRefreshTokenUuid, userId } = data;
+
     const newRefreshTokenPayload: RefreshTokenPayloadType =
-      this.tokensService.getTokenPayload(newTokensPair.refreshToken);
+      this.tokensService.getTokenPayload(newRefreshToken);
 
     const newRefreshTokenExpiresAtDate: Date = new Date(
       newRefreshTokenPayload.exp * 1000,
     );
 
     const updatedSessionsAmount = await this.userRepository.updateSession({
-      userId: newRefreshTokenPayload.userId,
-      currentRefreshTokenUuid: refreshTokenPayload.uuid,
+      userId,
+      currentRefreshTokenUuid,
       refreshTokenExpiresAt: newRefreshTokenExpiresAtDate,
     });
 
     // если не обновилась ни одна сессия значит она не найдена. если не найдена значит рефреш токен не действительный
     if (updatedSessionsAmount.count < 1) {
-      throw new UnauthorizedException('Refresh token is invalid');
+      throw new CustomRpcException({
+        message: `Refresh token is invalid. Not found active session with provided refresh token`,
+        status: HttpStatus.UNAUTHORIZED,
+      });
     }
-
-    await this.tokensService.setRefreshTokenInCookie({ refreshToken, res });
-
-    const newAccessToken = newTokensPair.accessToken;
-
-    res.status(HttpStatus.CREATED).send({ accessToken: newAccessToken });
   }
 }

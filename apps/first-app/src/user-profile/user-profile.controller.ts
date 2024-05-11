@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
-import { AuthGuard } from '@libs/common-guards';
+import { AccessTokenGuard } from '@libs/common-guards';
 import { User, UserDecoratorType } from '@libs/common-decorators';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateUserProfileRouteSwaggerDescription } from './swagger/controller/createUserProfile.route.swagger';
@@ -36,7 +36,7 @@ export class UserProfileController {
   ) {}
 
   @Get('me')
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @GetUserProfileRouteSwaggerDescription()
   async findOne(@User() user: UserDecoratorType) {
     return this.userProfileQueryRepository.getProfileByUserId(user.userId, {
@@ -57,7 +57,7 @@ export class UserProfileController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @CreateUserProfileRouteSwaggerDescription()
   async create(
     @User() user: UserDecoratorType,
@@ -74,7 +74,7 @@ export class UserProfileController {
   }
 
   @Patch()
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @UpdateUserProfileRouteSwaggerDescription()
   async update(
     @User() user: UserDecoratorType,

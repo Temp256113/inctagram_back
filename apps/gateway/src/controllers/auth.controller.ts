@@ -3,13 +3,13 @@ import {
   Controller,
   Delete,
   HttpCode,
-  HttpException,
   HttpStatus,
   Inject,
   Post,
   Put,
   Response,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
@@ -17,12 +17,13 @@ import { LoginRouteSwaggerDescription } from '../../../first-app/src/auth/swagge
 import { Response as Res } from 'express';
 import { UpdateTokensPairRouteSwaggerDescription } from '../../../first-app/src/auth/swagger/controllers/auth/updateTokensPair.route.swagger';
 import { Cookies } from '../../../first-app/src/auth/decorators/cookies.decorator';
-import { JwtTokensService, TokensVariables } from '@libs/jwt-token';
-import { UpdateTokensPairCommand } from '../../../first-app/src/auth/application/command-handlers/updateTokensPair.handler';
+import { JwtTokensService } from '@libs/jwt-token';
 import { LogoutRouteSwaggerDescription } from '../../../first-app/src/auth/swagger/controllers/auth/logout.route.swagger';
 import { LogoutCommand } from '../../../first-app/src/auth/application/command-handlers/logout.handler';
 import { lastValueFrom } from 'rxjs';
 import * as AuthControllerTypes from '@libs/common-types/auth/controller';
+import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
+import { User } from '@libs/common-decorators';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -38,8 +39,8 @@ export class AuthController {
   async login(
     @Body() userLoginDTO: AuthControllerTypes.LoginDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthControllerTypes.LoginReturnGatewayDTO> {
-    const tokens: AuthControllerTypes.LoginReturnServiceDTO =
+  ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
+    const tokens: AuthControllerTypes.LoginResponseServiceDTO =
       await lastValueFrom(this.authClient.send('login', userLoginDTO));
 
     this.jwtTokensService.setRefreshTokenInCookie({
@@ -54,34 +55,42 @@ export class AuthController {
     };
   }
 
-  /*@Put('update-tokens-pair')
+  @Put('update-tokens-pair')
+  @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.CREATED)
   @UpdateTokensPairRouteSwaggerDescription()
   async updateTokensPair(
-    @Cookies(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE) refreshToken: string,
-    @Response() res: Res,
-  ): Promise<void> {
-    if (!refreshToken) {
-      throw new UnauthorizedException(
-        'Provide refresh token in cookies for update tokens pair',
+    @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
+    @User() refreshTokenData: RefreshTokenUserType,
+    @Response({ passthrough: true }) res: Res,
+  ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
+    const tokens: AuthControllerTypes.LoginResponseServiceDTO =
+      await lastValueFrom(
+        this.authClient.send('update-tokens-pair', refreshTokenData),
       );
-    }
 
-    await this.commandBus.execute(
-      new UpdateTokensPairCommand({ refreshToken, res }),
-    );
+    this.jwtTokensService.setRefreshTokenInCookie({
+      refreshToken: tokens.refreshToken,
+      res,
+    });
+
+    return {
+      accessToken: tokens.accessToken,
+      userId: tokens.userId,
+      username: tokens.username,
+    };
   }
 
   @Delete('logout')
   @HttpCode(HttpStatus.OK)
   @LogoutRouteSwaggerDescription()
   async logout(
-    @Cookies(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE) refreshToken: string,
+    @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
   ): Promise<void> {
     if (!refreshToken) {
       throw new UnauthorizedException('Provide refresh token for logout');
     }
 
     await this.commandBus.execute(new LogoutCommand({ refreshToken }));
-  }*/
+  }
 }

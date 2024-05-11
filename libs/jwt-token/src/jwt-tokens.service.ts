@@ -3,17 +3,18 @@ import appConfig from '@libs/config/app.config.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { add, getUnixTime } from 'date-fns';
 import { JwtService } from '@nestjs/jwt';
-import * as crypto from 'crypto';
 import { Response } from 'express';
 
 export type AccessTokenPayloadType = {
   userId: number;
+  username: string;
   iat?: number;
   exp?: number;
 };
 
 export type RefreshTokenPayloadType = {
   userId: number;
+  username: string;
   uuid: string;
   iat?: number;
   exp?: number;
@@ -24,17 +25,15 @@ export type RefreshTokenCreateType = {
   payload: RefreshTokenPayloadType;
 };
 
-export enum TokensVariables {
-  REFRESH_TOKEN_COOKIE_TITLE = 'refreshToken',
-}
-
 @Injectable()
 export class JwtTokensService {
+  public static readonly refreshTokenCookieTitle = 'refreshToken';
+
   private readonly accessTokenSecret: string;
   private readonly refreshTokenSecret: string;
 
-  readonly getAccessTokenExpiredTime: (currentDate: Date) => number;
-  readonly getRefreshTokenExpiredTime: (currentDate: Date) => number;
+  private readonly getAccessTokenExpiredTime: (currentDate: Date) => number;
+  private readonly getRefreshTokenExpiredTime: (currentDate: Date) => number;
 
   constructor(
     private readonly configService: ConfigService,
@@ -53,11 +52,17 @@ export class JwtTokensService {
     };
   }
 
-  async createAccessToken(userId: number): Promise<string> {
+  async createAccessToken(data: {
+    userId: number;
+    username: string;
+  }): Promise<string> {
+    const { userId, username } = data;
+
     const currentDate: Date = new Date();
 
     const payload: AccessTokenPayloadType = {
       userId,
+      username,
       iat: getUnixTime(currentDate),
       exp: this.getAccessTokenExpiredTime(currentDate),
     };
@@ -69,14 +74,16 @@ export class JwtTokensService {
 
   async createRefreshToken(data: {
     userId: number;
+    username: string;
     uuid: string;
   }): Promise<RefreshTokenCreateType> {
-    const { userId, uuid } = data;
+    const { userId, username, uuid } = data;
 
     const currentDate: Date = new Date();
 
     const payload: RefreshTokenPayloadType = {
       userId,
+      username,
       uuid,
       iat: getUnixTime(currentDate),
       exp: this.getRefreshTokenExpiredTime(currentDate),
@@ -100,7 +107,7 @@ export class JwtTokensService {
       this.getTokenPayload(refreshToken).exp * 1000,
     );
 
-    res.cookie(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE, refreshToken, {
+    res.cookie(JwtTokensService.refreshTokenCookieTitle, refreshToken, {
       httpOnly: true,
       secure: true,
       expires: expiresDate,
@@ -109,7 +116,7 @@ export class JwtTokensService {
   }
 
   removeRefreshTokenInCookie(res: Response) {
-    res.cookie(TokensVariables.REFRESH_TOKEN_COOKIE_TITLE, null, {
+    res.cookie(JwtTokensService.refreshTokenCookieTitle, null, {
       sameSite: 'none',
       secure: true,
       httpOnly: true,
@@ -118,14 +125,15 @@ export class JwtTokensService {
 
   async createTokensPair(data: {
     userId: number;
-    uuid?: string;
+    username: string;
+    uuid: string;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { userId, uuid = crypto.randomUUID() } = data;
+    const { userId, username, uuid } = data;
 
     const [accessToken, refreshToken]: [string, RefreshTokenCreateType] =
       await Promise.all([
-        this.createAccessToken(userId),
-        this.createRefreshToken({ userId, uuid }),
+        this.createAccessToken({ userId, username }),
+        this.createRefreshToken({ userId, username, uuid }),
       ]);
 
     return {
@@ -134,7 +142,9 @@ export class JwtTokensService {
     };
   }
 
-  getTokenPayload(token: string): RefreshTokenPayloadType {
+  getTokenPayload<T extends AccessTokenPayloadType | RefreshTokenPayloadType>(
+    token: string,
+  ): T {
     return this.jwtService.decode(token);
   }
 

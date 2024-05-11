@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { GatewayController } from './gateway.controller';
-import { GatewayService } from './gateway.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EnvModule } from '@libs/config';
 import { AuthController } from './controllers/auth.controller';
 import { JwtTokensModule } from '@libs/jwt-token';
+import { CommonGuardsModule } from '@libs/common-guards';
 
 @Module({
   imports: [
     EnvModule,
     JwtTokensModule,
+    CommonGuardsModule,
     ClientsModule.register([
       {
         name: 'AUTH_SERVICE',
@@ -21,7 +21,7 @@ import { JwtTokensModule } from '@libs/jwt-token';
       },
     ]),
   ],
-  controllers: [GatewayController, AuthController],
-  providers: [GatewayService],
+  controllers: [AuthController],
+  providers: [],
 })
 export class GatewayModule {}

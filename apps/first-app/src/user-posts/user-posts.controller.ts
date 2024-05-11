@@ -14,7 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@libs/common-guards';
+import { AccessTokenGuard } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateUserPostDto } from './dto/createUserPost.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -49,7 +49,7 @@ export class UserPostsController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(FilesInterceptor('files', 10))
   @CreateUserPostRouteSwaggerDescription()
@@ -82,7 +82,7 @@ export class UserPostsController {
   }
 
   @Patch()
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @UpdateUserPostRouteSwaggerDescription()
   async updatePost(
@@ -99,7 +99,7 @@ export class UserPostsController {
   }
 
   @Delete(':postId')
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @DeleteUserPostRouteSwaggerDescription()
   async deletePost(
@@ -112,7 +112,7 @@ export class UserPostsController {
   }
 
   @Get('my-posts/:page')
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @GetUserPostsRouteSwaggerDescription()
   async getMyPosts(

@@ -5,17 +5,18 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AccessTokenResponseDtoSwagger } from '../../dto/tokens.dto.swagger';
+import { AccessTokenResponseGatewayDTO } from '@libs/common-types/auth/controller';
 
 export const UpdateTokensPairRouteSwaggerDescription = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Update tokens pair' }),
     ApiCreatedResponse({
-      description: 'The tokens pair successfully created',
-      type: AccessTokenResponseDtoSwagger,
+      description: 'The tokens pair successfully updated',
+      type: AccessTokenResponseGatewayDTO,
     }),
     ApiUnauthorizedResponse({
-      description: 'Provide refresh token in cookies for update tokens pair',
+      description:
+        'Provide valid refresh token in cookies for update tokens pair',
     }),
     ApiCookieAuth(),
   );

@@ -19,7 +19,7 @@ export class LoginCommand {
 @CommandHandler(LoginCommand)
 export class LoginHandler
   implements
-    ICommandHandler<LoginCommand, AuthControllerTypes.LoginReturnServiceDTO>
+    ICommandHandler<LoginCommand, AuthControllerTypes.LoginResponseServiceDTO>
 {
   constructor(
     private readonly userRepository: UserRepository,
@@ -30,18 +30,22 @@ export class LoginHandler
 
   async execute(
     command: LoginCommand,
-  ): Promise<AuthControllerTypes.LoginReturnServiceDTO> {
+  ): Promise<AuthControllerTypes.LoginResponseServiceDTO> {
     const {
       data: { userLoginDTO },
     } = command;
 
     const user = await this.getUser(userLoginDTO);
 
-    const refreshToken: string = await this.createSession(user.id);
+    const refreshToken: string = await this.createSession({
+      userId: user.id,
+      username: user.username,
+    });
 
-    const accessToken: string = await this.tokensService.createAccessToken(
-      user.id,
-    );
+    const accessToken: string = await this.tokensService.createAccessToken({
+      userId: user.id,
+      username: user.username,
+    });
 
     return {
       accessToken,
@@ -78,10 +82,16 @@ export class LoginHandler
     return foundUser;
   }
 
-  async createSession(userId: number): Promise<string> {
+  async createSession(data: {
+    userId: number;
+    username: string;
+  }): Promise<string> {
+    const { userId, username } = data;
+
     const refreshToken: RefreshTokenCreateType =
       await this.tokensService.createRefreshToken({
         userId,
+        username,
         uuid: crypto.randomUUID(),
       });
 
