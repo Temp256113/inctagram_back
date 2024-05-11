@@ -1,33 +1,18 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UnauthorizedException } from '@nestjs/common';
-import { RefreshTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
+import { LogoutServiceDTO } from '@libs/common-types/auth/controller';
 
 export class LogoutCommand {
-  constructor(public readonly data: { refreshToken: string }) {}
+  constructor(public readonly data: LogoutServiceDTO) {}
 }
 
 @CommandHandler(LogoutCommand)
 export class LogoutHandler implements ICommandHandler<LogoutCommand, void> {
-  constructor(
-    private readonly tokensService: JwtTokensService,
-    private readonly userRepository: UserRepository,
-  ) {}
-  async execute(command: LogoutCommand): Promise<void> {
-    const {
-      data: { refreshToken },
-    } = command;
-
-    const refreshTokenPayload: RefreshTokenPayloadType | null =
-      await this.tokensService.verifyRefreshToken(refreshToken);
-
-    if (!refreshTokenPayload) {
-      throw new UnauthorizedException('Refresh token is invalid');
-    }
-
+  constructor(private readonly userRepository: UserRepository) {}
+  async execute({ data }: LogoutCommand): Promise<void> {
     await this.userRepository.deleteSession({
-      userId: refreshTokenPayload.userId,
-      refreshTokenUuid: refreshTokenPayload.uuid,
+      userId: data.userId,
+      refreshTokenUuid: data.refreshTokenUuid,
     });
   }
 }

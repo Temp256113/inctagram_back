@@ -75,4 +75,16 @@ export class UserQueryRepository {
   async getUsersAmount() {
     return this.prisma.user.count();
   }
+
+  async getUserSession(data: { userId: number; refreshTokenUuid: string }) {
+    return this.prisma.userSession.findUnique({
+      where: {
+        userId_refreshTokenUuid: {
+          userId: data.userId,
+          refreshTokenUuid: data.refreshTokenUuid,
+        },
+      },
+      include: { user: true },
+    });
+  }
 }

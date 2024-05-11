@@ -41,19 +41,23 @@ export class RefreshTokenGuard implements CanActivate {
     }
 
     const userId: number = Number(refreshTokenPayload.userId);
+    const uuid: string = refreshTokenPayload.uuid;
 
-    const foundUserFromDB = await this.userQueryRepository.getUserById(userId);
+    const foundSessionFromDB = await this.userQueryRepository.getUserSession({
+      userId,
+      refreshTokenUuid: uuid,
+    });
 
-    if (!foundUserFromDB) {
+    if (!foundSessionFromDB) {
       throw new UnauthorizedException(
-        'Not found user with provided refresh token',
+        'Not found user session with provided refresh token',
       );
     }
 
     req.user = {
       userId,
-      username: foundUserFromDB.username,
-      refreshTokenUuid: refreshTokenPayload.uuid,
+      username: foundSessionFromDB.user.username,
+      refreshTokenUuid: uuid,
     };
 
     return true;

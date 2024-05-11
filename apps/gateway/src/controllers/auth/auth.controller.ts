@@ -8,22 +8,20 @@ import {
   Post,
   Put,
   Response,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
-import { LoginRouteSwaggerDescription } from '../../../first-app/src/auth/swagger/controllers/auth/login.route.swagger';
 import { Response as Res } from 'express';
-import { UpdateTokensPairRouteSwaggerDescription } from '../../../first-app/src/auth/swagger/controllers/auth/updateTokensPair.route.swagger';
-import { Cookies } from '../../../first-app/src/auth/decorators/cookies.decorator';
 import { JwtTokensService } from '@libs/jwt-token';
-import { LogoutRouteSwaggerDescription } from '../../../first-app/src/auth/swagger/controllers/auth/logout.route.swagger';
-import { LogoutCommand } from '../../../first-app/src/auth/application/command-handlers/logout.handler';
 import { lastValueFrom } from 'rxjs';
 import * as AuthControllerTypes from '@libs/common-types/auth/controller';
 import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
 import { User } from '@libs/common-decorators';
+import { Cookies } from '../../decorators/cookies.decorator';
+import { LoginRouteSwaggerDescription } from './swagger/login.route.swagger';
+import { UpdateTokensPairRouteSwaggerDescription } from './swagger/updateTokensPair.route.swagger';
+import { LogoutRouteSwaggerDescription } from './swagger/logout.route.swagger';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -82,15 +80,15 @@ export class AuthController {
   }
 
   @Delete('logout')
-  @HttpCode(HttpStatus.OK)
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @LogoutRouteSwaggerDescription()
   async logout(
     @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
+    @User() refreshTokenData: RefreshTokenUserType,
   ): Promise<void> {
-    if (!refreshToken) {
-      throw new UnauthorizedException('Provide refresh token for logout');
-    }
-
-    await this.commandBus.execute(new LogoutCommand({ refreshToken }));
+    await lastValueFrom(this.authClient.send('logout', refreshTokenData), {
+      defaultValue: null,
+    });
   }
 }

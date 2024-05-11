@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EnvModule } from '@libs/config';
-import { AuthController } from './controllers/auth.controller';
 import { JwtTokensModule } from '@libs/jwt-token';
 import { CommonGuardsModule } from '@libs/common-guards';
+import { AuthController } from './controllers/auth/auth.controller';
 
 @Module({
   imports: [

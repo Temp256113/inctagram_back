@@ -172,8 +172,13 @@ export class UserRepository {
     userId: number;
     refreshTokenUuid: string;
   }): Promise<void> {
-    await this.prisma.userSession.deleteMany({
-      where: { userId: data.userId, refreshTokenUuid: data.refreshTokenUuid },
+    await this.prisma.userSession.delete({
+      where: {
+        userId_refreshTokenUuid: {
+          userId: data.userId,
+          refreshTokenUuid: data.refreshTokenUuid,
+        },
+      },
     });
   }
 

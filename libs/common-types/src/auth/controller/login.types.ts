@@ -47,3 +47,8 @@ export class LoginDTO {
   })
   password: string;
 }
+
+export type LogoutServiceDTO = {
+  userId: number;
+  refreshTokenUuid: string;
+};

@@ -6,6 +6,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { LoginCommand } from './application/command-handlers/login.handler';
 import { UpdateTokensPairCommand } from './application/command-handlers/updateTokensPair.handler';
 import { RefreshTokenUserType } from '@libs/common-guards';
+import { LogoutCommand } from './application/command-handlers/logout.handler';
 
 @Controller()
 export class AuthController {
@@ -33,5 +34,12 @@ export class AuthController {
     @Payload() payload: RefreshTokenUserType,
   ): Promise<AuthControllerTypes.LoginResponseServiceDTO> {
     return this.commandBus.execute(new UpdateTokensPairCommand(payload));
+  }
+
+  @MessagePattern('logout')
+  async logout(
+    @Payload() payload: AuthControllerTypes.LogoutServiceDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(new LogoutCommand(payload));
   }
 }
