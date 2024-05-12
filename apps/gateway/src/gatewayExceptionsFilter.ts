@@ -16,10 +16,9 @@ export class GatewayExceptionsFilter extends BaseExceptionFilter {
         return super.catch(exception, host);
       }
 
-      return res.status(exception.status).send({
-        message: exception.message,
-        status: exception.status,
-      });
+      const { isMyCustomRpcException, ...exceptionBody } = exception;
+
+      return res.status(exception.status).send(exceptionBody);
     }
 
     super.catch(exception, host);

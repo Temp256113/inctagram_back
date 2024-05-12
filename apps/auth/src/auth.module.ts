@@ -11,12 +11,14 @@ import { LogoutHandler } from './application/command-handlers/logout.handler';
 import { PasswordRecoveryRequestHandler } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
 import { NodemailerService } from './utils/nodemailer.service';
 import { RecaptchaService } from './utils/recaptcha.service';
+import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 
 const commandHandlers = [
   LoginHandler,
   UpdateTokensPairHandler,
   LogoutHandler,
   PasswordRecoveryRequestHandler,
+  PasswordRecoveryCodeCheckHandler,
 ];
 
 @Module({

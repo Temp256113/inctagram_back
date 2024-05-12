@@ -8,6 +8,7 @@ import { UpdateTokensPairCommand } from './application/command-handlers/updateTo
 import { RefreshTokenUserType } from '@libs/common-guards';
 import { LogoutCommand } from './application/command-handlers/logout.handler';
 import { PasswordRecoveryRequestCommand } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
+import { PasswordRecoveryCodeCheckCommand } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 
 @Controller()
 export class AuthController {
@@ -49,5 +50,14 @@ export class AuthController {
     @Payload() payload: AuthControllerTypes.PasswordRecoveryRequestDTO,
   ): Promise<void> {
     await this.commandBus.execute(new PasswordRecoveryRequestCommand(payload));
+  }
+
+  @MessagePattern('password-recovery-code-check')
+  async passwordRecoveryCodeCheck(
+    @Payload() payload: AuthControllerTypes.PasswordRecoveryCodeCheckDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new PasswordRecoveryCodeCheckCommand(payload),
+    );
   }
 }

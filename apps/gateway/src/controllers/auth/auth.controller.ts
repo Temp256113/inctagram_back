@@ -23,14 +23,10 @@ import { Cookies } from '../../decorators/cookies.decorator';
 import { LoginRouteSwaggerDescription } from './swagger/login.route.swagger';
 import { UpdateTokensPairRouteSwaggerDescription } from './swagger/updateTokensPair.route.swagger';
 import { LogoutRouteSwaggerDescription } from './swagger/logout.route.swagger';
-import { PasswordRecoveryRequestRouteSwaggerDescription } from '../../../../first-app/src/auth/swagger/controllers/passwordRecovery/passwordRecoveryRequest.route.swagger';
-import {
-  PasswordRecoveryCodeCheckDTO,
-  PasswordRecoveryDto,
-} from '../../../../first-app/src/auth/dto/passwordRecovery.dto';
-import { PasswordRecoveryCodeCheckRouteSwaggerDescription } from '../../../../first-app/src/auth/swagger/controllers/passwordRecovery/passwordRecoveryCodeCheck.route.swagger';
-import { PasswordRecoveryCodeCheckCommand } from '../../../../first-app/src/auth/application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
-import { PasswordRecoveryRouteSwaggerDescription } from '../../../../first-app/src/auth/swagger/controllers/passwordRecovery/passwordRecovery.route.swagger';
+import { PasswordRecoveryRequestRouteSwaggerDescription } from './swagger/passwordRecoveryRequest.route.swagger';
+import { PasswordRecoveryCodeCheckRouteSwaggerDescription } from './swagger/passwordRecoveryCodeCheck.route.swagger';
+import { PasswordRecoveryRouteSwaggerDescription } from './swagger/passwordRecovery.route.swagger';
+import { PasswordRecoveryDto } from '../../../../first-app/src/auth/dto/passwordRecovery.dto';
 import { PasswordRecoveryCommand } from '../../../../first-app/src/auth/application/command-handlers/password-recovery/passwordRecovery.handler';
 
 @Controller('auth')
@@ -122,10 +118,15 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @PasswordRecoveryCodeCheckRouteSwaggerDescription()
   async passwordRecoveryCodeCheck(
-    @Body() passwordRecoveryCodeCheckDTO: PasswordRecoveryCodeCheckDTO,
+    @Body()
+    passwordRecoveryCodeCheckDTO: AuthControllerTypes.PasswordRecoveryCodeCheckDTO,
   ): Promise<void> {
-    await this.commandBus.execute(
-      new PasswordRecoveryCodeCheckCommand(passwordRecoveryCodeCheckDTO),
+    await lastValueFrom(
+      this.authClient.send(
+        'password-recovery-code-check',
+        passwordRecoveryCodeCheckDTO,
+      ),
+      { defaultValue: null },
     );
   }
 

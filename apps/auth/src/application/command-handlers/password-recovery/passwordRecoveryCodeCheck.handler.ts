@@ -1,13 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordRecoveryCodeCheckDTO } from '../../../dto/passwordRecovery.dto';
 import { PasswordRecoveryCodeCheckFunction } from '../common/passwordRecoveryCodeCheckFunction';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
+import { PasswordRecoveryCodeCheckDTO } from '@libs/common-types/auth/controller';
 
 export class PasswordRecoveryCodeCheckCommand {
-  constructor(
-    public readonly passwordRecoveryDTO: PasswordRecoveryCodeCheckDTO,
-  ) {}
+  constructor(public readonly data: PasswordRecoveryCodeCheckDTO) {}
 }
 
 @CommandHandler(PasswordRecoveryCodeCheckCommand)
@@ -25,11 +23,7 @@ export class PasswordRecoveryCodeCheckHandler
     });
   }
 
-  async execute({
-    passwordRecoveryDTO,
-  }: PasswordRecoveryCodeCheckCommand): Promise<void> {
-    await this.checkPasswordRecoveryCode(
-      passwordRecoveryDTO.passwordRecoveryCode,
-    );
+  async execute({ data }: PasswordRecoveryCodeCheckCommand): Promise<void> {
+    await this.checkPasswordRecoveryCode(data.passwordRecoveryCode);
   }
 }

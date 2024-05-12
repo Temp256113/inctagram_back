@@ -1,9 +1,29 @@
 import { UserChangePasswordRequestStates } from '@prisma/client';
-import { GoneException, NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { isBefore } from 'date-fns';
-import { PasswordRecoveryCodeCheckResponseTypeSwagger } from '../../../dto/passwordRecovery.dto';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
+import {
+  CustomRpcException,
+  CustomRpcExceptionDTO,
+} from '@libs/common-exceptions';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class PasswordRecoveryCodeCheckErrorType
+  implements CustomRpcExceptionDTO
+{
+  @ApiProperty({
+    description: 'User email of provided code',
+    example: 'temp.256113@gmail.com',
+  })
+  userEmail: string;
+
+  @ApiProperty({ description: 'Just message', type: 'string' })
+  message: string;
+
+  @ApiProperty({ type: 'number', example: 410 })
+  status: HttpStatus.GONE;
+}
 
 export class PasswordRecoveryCodeCheckFunction {
   constructor(
@@ -24,7 +44,10 @@ export class PasswordRecoveryCodeCheckFunction {
       );
 
     if (!foundChangePasswordRequest) {
-      throw new NotFoundException('Change password request not found');
+      throw new CustomRpcException({
+        message: 'Change password request is not found',
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     const passwordRecoveryCodeIsExpired = isBefore(
@@ -32,17 +55,21 @@ export class PasswordRecoveryCodeCheckFunction {
       new Date(),
     );
 
-    if (passwordRecoveryCodeIsExpired) {
-      await this.dependencies.userRepository.softDeleteChangePasswordRequest(
-        foundChangePasswordRequest.id,
-      );
-
-      throw new GoneException({
-        message: 'Password token expired',
-        userEmail: foundChangePasswordRequest.user.email,
-      } as PasswordRecoveryCodeCheckResponseTypeSwagger);
+    if (!passwordRecoveryCodeIsExpired) {
+      return foundChangePasswordRequest;
     }
 
-    return foundChangePasswordRequest;
+    await this.dependencies.userRepository.softDeleteChangePasswordRequest(
+      foundChangePasswordRequest.id,
+    );
+
+    const passwordRecoveryCodeIsExpiredErr: PasswordRecoveryCodeCheckErrorType =
+      {
+        message: 'Provided password recovery code is expired',
+        status: HttpStatus.GONE,
+        userEmail: foundChangePasswordRequest.user.email,
+      };
+
+    throw new CustomRpcException(passwordRecoveryCodeIsExpiredErr);
   }
 }
