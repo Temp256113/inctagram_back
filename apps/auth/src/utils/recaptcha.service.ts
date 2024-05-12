@@ -1,8 +1,19 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { RecaptchaResponseType } from '../types/recapcha.types';
 import appConfig from '@libs/config/app.config.service';
 import { ConfigType } from '@nestjs/config';
+import { CustomRpcException } from '@libs/common-exceptions';
+
+type RecaptchaResponseType =
+  | {
+      success: true;
+      challenge_ts: Date | string;
+      hostname: string;
+    }
+  | {
+      success: false;
+      'error-codes': string[];
+    };
 
 @Injectable()
 export class RecaptchaService {
@@ -26,7 +37,10 @@ export class RecaptchaService {
     );
 
     if (!data.success) {
-      throw new BadRequestException('reCAPTCHA token is missing or invalid');
+      throw new CustomRpcException({
+        message: 'reCAPTCHA token is missing or invalid',
+        status: HttpStatus.BAD_REQUEST,
+      });
     }
 
     return data.success;

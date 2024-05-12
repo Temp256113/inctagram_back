@@ -1,14 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   Providers,
-  User,
   UserChangePasswordRequest,
+  UserChangePasswordRequestStates,
   UserEmailInfo,
   UserSession,
 } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { websocketsMainPageStateEvents } from '../../../../apps/first-app/src/websocket/main-page/websocketsMainPage.service';
-import { PrismaService } from '@libs/repositories/prisma.service';
+import {
+  PrismaClientTransactionType,
+  PrismaService,
+} from '@libs/repositories/prisma.service';
 
 @Injectable()
 export class UserRepository {
@@ -69,8 +72,16 @@ export class UserRepository {
 
   async updateUserById(
     userId: number,
-    data: Partial<Omit<User, 'createdAt' | 'updatedAt' | 'id'>>,
+    data: Partial<{ email: string; username: string; password: string }>,
+    prismaTransactionClient?: PrismaClientTransactionType,
   ) {
+    if (prismaTransactionClient) {
+      return prismaTransactionClient.user.update({
+        where: { id: userId },
+        data,
+      });
+    }
+
     return this.prisma.user.update({ where: { id: userId }, data });
   }
 
@@ -94,12 +105,11 @@ export class UserRepository {
 
   async updateUserChangePasswordRequest(
     passwordRecoveryRequestId: number,
-    data: Partial<
-      Omit<
-        UserChangePasswordRequest,
-        'createdAt' | 'updatedAt' | 'userId' | 'id'
-      >
-    >,
+    data: Partial<{
+      expiresAt: Date;
+      passwordRecoveryCode: string;
+      state: UserChangePasswordRequestStates;
+    }>,
   ) {
     return this.prisma.userChangePasswordRequest.update({
       where: { id: passwordRecoveryRequestId },
@@ -107,7 +117,19 @@ export class UserRepository {
     });
   }
 
-  async softDeleteChangePasswordRequest(requestId: number): Promise<void> {
+  async softDeleteChangePasswordRequest(
+    requestId: number,
+    prismaTransactionClient?: PrismaClientTransactionType,
+  ): Promise<void> {
+    if (prismaTransactionClient) {
+      await prismaTransactionClient.userChangePasswordRequest.update({
+        where: { id: requestId },
+        data: {
+          deletedAt: new Date(),
+        },
+      });
+    }
+
     await this.prisma.userChangePasswordRequest.update({
       where: { id: requestId },
       data: {
@@ -116,7 +138,17 @@ export class UserRepository {
     });
   }
 
-  async changePassword(data: { userId: number; password: string }) {
+  async changePassword(
+    data: { userId: number; password: string },
+    prismaTransactionClient?: PrismaClientTransactionType,
+  ) {
+    if (prismaTransactionClient) {
+      return prismaTransactionClient.user.update({
+        where: { id: data.userId },
+        data: { password: data.password },
+      });
+    }
+
     return this.prisma.user.update({
       where: { id: data.userId },
       data: { password: data.password },
@@ -127,13 +159,19 @@ export class UserRepository {
     changePasswordRequestId: number;
     changePasswordData: { userId: number; password: string };
   }) {
-    await this.prisma.$transaction(async (prisma) => {
+    await this.prisma.$transaction(async (transactionClient) => {
       await Promise.all([
-        this.softDeleteChangePasswordRequest(data.changePasswordRequestId),
-        this.changePassword({
-          userId: data.changePasswordData.userId,
-          password: data.changePasswordData.password,
-        }),
+        this.softDeleteChangePasswordRequest(
+          data.changePasswordRequestId,
+          transactionClient,
+        ),
+        this.changePassword(
+          {
+            userId: data.changePasswordData.userId,
+            password: data.changePasswordData.password,
+          },
+          transactionClient,
+        ),
       ]);
     });
   }
@@ -182,15 +220,24 @@ export class UserRepository {
     });
   }
 
-  async deleteAllSessions(userId: number) {
+  async deleteAllSessions(
+    userId: number,
+    prismaTransactionClient?: PrismaClientTransactionType,
+  ) {
+    if (prismaTransactionClient) {
+      return prismaTransactionClient.userSession.deleteMany({
+        where: { userId },
+      });
+    }
+
     return this.prisma.userSession.deleteMany({ where: { userId } });
   }
 
   async deleteUserPasswordAndDeleteAllSessionsTransaction(userId: number) {
-    await this.prisma.$transaction(async (prisma) => {
+    await this.prisma.$transaction(async (transactionClient) => {
       await Promise.all([
-        this.updateUserById(userId, { password: null }),
-        this.deleteAllSessions(userId),
+        this.updateUserById(userId, { password: null }, transactionClient),
+        this.deleteAllSessions(userId, transactionClient),
       ]);
     });
   }

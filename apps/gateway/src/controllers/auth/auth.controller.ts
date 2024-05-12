@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Patch,
   Post,
   Put,
   Response,
@@ -22,6 +23,15 @@ import { Cookies } from '../../decorators/cookies.decorator';
 import { LoginRouteSwaggerDescription } from './swagger/login.route.swagger';
 import { UpdateTokensPairRouteSwaggerDescription } from './swagger/updateTokensPair.route.swagger';
 import { LogoutRouteSwaggerDescription } from './swagger/logout.route.swagger';
+import { PasswordRecoveryRequestRouteSwaggerDescription } from '../../../../first-app/src/auth/swagger/controllers/passwordRecovery/passwordRecoveryRequest.route.swagger';
+import {
+  PasswordRecoveryCodeCheckDTO,
+  PasswordRecoveryDto,
+} from '../../../../first-app/src/auth/dto/passwordRecovery.dto';
+import { PasswordRecoveryCodeCheckRouteSwaggerDescription } from '../../../../first-app/src/auth/swagger/controllers/passwordRecovery/passwordRecoveryCodeCheck.route.swagger';
+import { PasswordRecoveryCodeCheckCommand } from '../../../../first-app/src/auth/application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
+import { PasswordRecoveryRouteSwaggerDescription } from '../../../../first-app/src/auth/swagger/controllers/passwordRecovery/passwordRecovery.route.swagger';
+import { PasswordRecoveryCommand } from '../../../../first-app/src/auth/application/command-handlers/password-recovery/passwordRecovery.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -90,5 +100,46 @@ export class AuthController {
     await lastValueFrom(this.authClient.send('logout', refreshTokenData), {
       defaultValue: null,
     });
+  }
+
+  @Post('password-recovery-request')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @PasswordRecoveryRequestRouteSwaggerDescription()
+  async passwordRecoveryRequest(
+    @Body()
+    passwordRecoveryRequestDTO: AuthControllerTypes.PasswordRecoveryRequestDTO,
+  ): Promise<void> {
+    await lastValueFrom(
+      this.authClient.send(
+        'password-recovery-request',
+        passwordRecoveryRequestDTO,
+      ),
+      { defaultValue: null },
+    );
+  }
+
+  @Post('password-recovery-code-check')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @PasswordRecoveryCodeCheckRouteSwaggerDescription()
+  async passwordRecoveryCodeCheck(
+    @Body() passwordRecoveryCodeCheckDTO: PasswordRecoveryCodeCheckDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new PasswordRecoveryCodeCheckCommand(passwordRecoveryCodeCheckDTO),
+    );
+  }
+
+  @Patch('password-recovery')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @PasswordRecoveryRouteSwaggerDescription()
+  async passwordRecovery(
+    @Body() passwordRecoveryDTO: PasswordRecoveryDto,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new PasswordRecoveryCommand({
+        newPassword: passwordRecoveryDTO.password,
+        passwordRecoveryCode: passwordRecoveryDTO.passwordRecoveryCode,
+      }),
+    );
   }
 }

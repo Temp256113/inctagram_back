@@ -3,11 +3,12 @@ import * as crypto from 'crypto';
 import { add } from 'date-fns';
 import { NodemailerService } from '../../../utils/nodemailer.service';
 import { UserChangePasswordRequestStates } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { RecaptchaService } from '../../../utils/recaptcha.service';
-import { PasswordRecoveryRequestDTO } from '../../../dto/passwordRecovery.dto';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
+import { CustomRpcException } from '@libs/common-exceptions';
+import { PasswordRecoveryRequestDTO } from '@libs/common-types/auth/controller';
 
 export class PasswordRecoveryRequestCommand {
   constructor(public readonly data: PasswordRecoveryRequestDTO) {}
@@ -34,7 +35,10 @@ export class PasswordRecoveryRequestHandler
     const foundUser = await this.userQueryRepository.getUserByEmail(email);
 
     if (!foundUser) {
-      throw new NotFoundException('User not found');
+      throw new CustomRpcException({
+        message: 'User not found',
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     // при сбросе пароля надо сбросить пароль и сбросить активные сессии

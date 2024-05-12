@@ -8,12 +8,25 @@ import { LoginHandler } from './application/command-handlers/login.handler';
 import { JwtTokensModule } from '@libs/jwt-token';
 import { UpdateTokensPairHandler } from './application/command-handlers/updateTokensPair.handler';
 import { LogoutHandler } from './application/command-handlers/logout.handler';
+import { PasswordRecoveryRequestHandler } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
+import { NodemailerService } from './utils/nodemailer.service';
+import { RecaptchaService } from './utils/recaptcha.service';
 
-const commandHandlers = [LoginHandler, UpdateTokensPairHandler, LogoutHandler];
+const commandHandlers = [
+  LoginHandler,
+  UpdateTokensPairHandler,
+  LogoutHandler,
+  PasswordRecoveryRequestHandler,
+];
 
 @Module({
   imports: [EnvModule, CqrsModule, RepositoriesModule, JwtTokensModule],
   controllers: [AuthController],
-  providers: [BcryptService, ...commandHandlers],
+  providers: [
+    BcryptService,
+    NodemailerService,
+    RecaptchaService,
+    ...commandHandlers,
+  ],
 })
 export class AuthModule {}
