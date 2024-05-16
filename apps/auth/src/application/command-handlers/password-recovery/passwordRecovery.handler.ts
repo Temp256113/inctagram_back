@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordRecoveryCodeCheckFunction } from '../common/passwordRecoveryCodeCheckFunction';
+import { PasswordRecoveryCodeCheckUtils } from '../common/passwordRecoveryCodeCheckUtils';
 import { BcryptService } from '../../../utils/bcrypt.service';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
@@ -15,24 +15,30 @@ export class PasswordRecoveryCommand {
 
 @CommandHandler(PasswordRecoveryCommand)
 export class PasswordRecoveryHandler
-  extends PasswordRecoveryCodeCheckFunction
   implements ICommandHandler<PasswordRecoveryCommand, void>
 {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userQueryRepository: UserQueryRepository,
     private readonly bcryptService: BcryptService,
-  ) {
-    super({ userQueryRepository, userRepository });
-  }
+  ) {}
 
   async execute(command: PasswordRecoveryCommand): Promise<void> {
     const {
       data: { newPassword, passwordRecoveryCode },
     } = command;
 
+    const passwordRecoveryCodeCheckUtils: PasswordRecoveryCodeCheckUtils =
+      await PasswordRecoveryCodeCheckUtils.create({
+        userQueryRepository: this.userQueryRepository,
+        userRepository: this.userRepository,
+        passwordRecoveryCode,
+      });
+
+    await passwordRecoveryCodeCheckUtils.checkPasswordRecoveryCode();
+
     const foundChangePasswordRequest =
-      await this.checkPasswordRecoveryCode(passwordRecoveryCode);
+      passwordRecoveryCodeCheckUtils.getChangePasswordRequest();
 
     const passwordHash: string =
       await this.bcryptService.encryptPassword(newPassword);

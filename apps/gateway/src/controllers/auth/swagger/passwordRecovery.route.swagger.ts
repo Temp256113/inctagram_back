@@ -5,7 +5,7 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { PasswordRecoveryCodeCheckResponseTypeSwagger } from '../../../../../first-app/src/auth/dto/passwordRecovery.dto';
+import { PasswordRecoveryCodeCheckErrorType } from '../../../../../auth/src/application/command-handlers/common/passwordRecoveryCodeCheckUtils';
 
 export const PasswordRecoveryRouteSwaggerDescription = () => {
   return applyDecorators(
@@ -16,7 +16,7 @@ export const PasswordRecoveryRouteSwaggerDescription = () => {
     }),
     ApiGoneResponse({
       description: 'Provided password recovery code is expired',
-      type: PasswordRecoveryCodeCheckResponseTypeSwagger,
+      type: PasswordRecoveryCodeCheckErrorType,
     }),
   );
 };

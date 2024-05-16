@@ -120,9 +120,9 @@ export class UserRepository {
   async softDeleteChangePasswordRequest(
     requestId: number,
     prismaTransactionClient?: PrismaClientTransactionType,
-  ): Promise<void> {
+  ) {
     if (prismaTransactionClient) {
-      await prismaTransactionClient.userChangePasswordRequest.update({
+      return prismaTransactionClient.userChangePasswordRequest.update({
         where: { id: requestId },
         data: {
           deletedAt: new Date(),
@@ -159,21 +159,24 @@ export class UserRepository {
     changePasswordRequestId: number;
     changePasswordData: { userId: number; password: string };
   }) {
-    await this.prisma.$transaction(async (transactionClient) => {
-      await Promise.all([
-        this.softDeleteChangePasswordRequest(
-          data.changePasswordRequestId,
-          transactionClient,
-        ),
-        this.changePassword(
-          {
-            userId: data.changePasswordData.userId,
-            password: data.changePasswordData.password,
-          },
-          transactionClient,
-        ),
-      ]);
-    });
+    await this.prisma.$transaction(
+      async (transactionClient) => {
+        return Promise.all([
+          this.softDeleteChangePasswordRequest(
+            data.changePasswordRequestId,
+            transactionClient,
+          ),
+          this.changePassword(
+            {
+              userId: data.changePasswordData.userId,
+              password: data.changePasswordData.password,
+            },
+            transactionClient,
+          ),
+        ]);
+      },
+      { timeout: 10000 },
+    );
   }
 
   async createSession(data: {

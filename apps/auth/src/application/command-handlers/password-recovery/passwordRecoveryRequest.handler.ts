@@ -36,7 +36,7 @@ export class PasswordRecoveryRequestHandler
 
     if (!foundUser) {
       throw new CustomRpcException({
-        message: 'User not found',
+        message: 'User is not found',
         status: HttpStatus.NOT_FOUND,
       });
     }

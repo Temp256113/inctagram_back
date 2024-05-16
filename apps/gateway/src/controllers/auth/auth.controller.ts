@@ -26,8 +26,6 @@ import { LogoutRouteSwaggerDescription } from './swagger/logout.route.swagger';
 import { PasswordRecoveryRequestRouteSwaggerDescription } from './swagger/passwordRecoveryRequest.route.swagger';
 import { PasswordRecoveryCodeCheckRouteSwaggerDescription } from './swagger/passwordRecoveryCodeCheck.route.swagger';
 import { PasswordRecoveryRouteSwaggerDescription } from './swagger/passwordRecovery.route.swagger';
-import { PasswordRecoveryDto } from '../../../../first-app/src/auth/dto/passwordRecovery.dto';
-import { PasswordRecoveryCommand } from '../../../../first-app/src/auth/application/command-handlers/password-recovery/passwordRecovery.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -134,13 +132,11 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @PasswordRecoveryRouteSwaggerDescription()
   async passwordRecovery(
-    @Body() passwordRecoveryDTO: PasswordRecoveryDto,
+    @Body() passwordRecoveryDTO: AuthControllerTypes.PasswordRecoveryDTO,
   ): Promise<void> {
-    await this.commandBus.execute(
-      new PasswordRecoveryCommand({
-        newPassword: passwordRecoveryDTO.password,
-        passwordRecoveryCode: passwordRecoveryDTO.passwordRecoveryCode,
-      }),
+    await lastValueFrom(
+      this.authClient.send('password-recovery', passwordRecoveryDTO),
+      { defaultValue: null },
     );
   }
 }

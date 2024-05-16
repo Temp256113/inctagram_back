@@ -1,4 +1,4 @@
-import { UserChangePasswordRequestStates } from '@prisma/client';
+import { Prisma, UserChangePasswordRequestStates } from '@prisma/client';
 import { HttpStatus } from '@nestjs/common';
 import { isBefore } from 'date-fns';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
@@ -25,23 +25,43 @@ export class PasswordRecoveryCodeCheckErrorType
   status: HttpStatus.GONE;
 }
 
-export class PasswordRecoveryCodeCheckFunction {
-  constructor(
-    protected readonly dependencies: {
+export class PasswordRecoveryCodeCheckUtils {
+  private readonly changePasswordRequest: Prisma.UserChangePasswordRequestGetPayload<{
+    include: { user: true };
+  }>;
+
+  private constructor(
+    private readonly dependencies: {
       userQueryRepository: UserQueryRepository;
       userRepository: UserRepository;
+      changePasswordRequest: Prisma.UserChangePasswordRequestGetPayload<{
+        include: { user: true };
+      }>;
     },
-  ) {}
+  ) {
+    this.changePasswordRequest = dependencies.changePasswordRequest;
+  }
 
-  async checkPasswordRecoveryCode(passwordRecoveryCode: string) {
+  public static async create(data: {
+    userQueryRepository: UserQueryRepository;
+    userRepository: UserRepository;
+    passwordRecoveryCode: string;
+  }): Promise<PasswordRecoveryCodeCheckUtils> {
     const foundChangePasswordRequest =
-      await this.dependencies.userQueryRepository.getPasswordRecoveryRequestByCode(
-        {
-          recoveryCode: passwordRecoveryCode,
-          state: UserChangePasswordRequestStates.pending,
-          deleted: false,
-        },
-      );
+      await data.userQueryRepository.getPasswordRecoveryRequestByCode({
+        recoveryCode: data.passwordRecoveryCode,
+        state: UserChangePasswordRequestStates.pending,
+        deleted: false,
+      });
+
+    return new PasswordRecoveryCodeCheckUtils({
+      ...data,
+      changePasswordRequest: foundChangePasswordRequest,
+    });
+  }
+
+  public async checkPasswordRecoveryCode(): Promise<void> {
+    const foundChangePasswordRequest = this.changePasswordRequest;
 
     if (!foundChangePasswordRequest) {
       throw new CustomRpcException({
@@ -56,7 +76,7 @@ export class PasswordRecoveryCodeCheckFunction {
     );
 
     if (!passwordRecoveryCodeIsExpired) {
-      return foundChangePasswordRequest;
+      return;
     }
 
     await this.dependencies.userRepository.softDeleteChangePasswordRequest(
@@ -71,5 +91,11 @@ export class PasswordRecoveryCodeCheckFunction {
       };
 
     throw new CustomRpcException(passwordRecoveryCodeIsExpiredErr);
+  }
+
+  public getChangePasswordRequest(): Prisma.UserChangePasswordRequestGetPayload<{
+    include: { user: true };
+  }> {
+    return this.changePasswordRequest;
   }
 }
