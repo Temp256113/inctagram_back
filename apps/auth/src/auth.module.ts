@@ -13,6 +13,7 @@ import { NodemailerService } from './utils/nodemailer.service';
 import { RecaptchaService } from './utils/recaptcha.service';
 import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 import { PasswordRecoveryHandler } from './application/command-handlers/password-recovery/passwordRecovery.handler';
+import { RegisterHandler } from './application/command-handlers/register.handler';
 
 const commandHandlers = [
   LoginHandler,
@@ -21,6 +22,7 @@ const commandHandlers = [
   PasswordRecoveryRequestHandler,
   PasswordRecoveryCodeCheckHandler,
   PasswordRecoveryHandler,
+  RegisterHandler,
 ];
 
 @Module({

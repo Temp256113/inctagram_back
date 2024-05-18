@@ -9,11 +9,7 @@ import * as AuthControllerTypes from '@libs/common-types/auth/controller';
 import { CustomRpcException } from '@libs/common-exceptions';
 
 export class LoginCommand {
-  constructor(
-    public readonly data: {
-      userLoginDTO: AuthControllerTypes.LoginDTO;
-    },
-  ) {}
+  constructor(public readonly data: AuthControllerTypes.LoginDTO) {}
 }
 
 @CommandHandler(LoginCommand)
@@ -31,11 +27,12 @@ export class LoginHandler
   async execute(
     command: LoginCommand,
   ): Promise<AuthControllerTypes.LoginResponseServiceDTO> {
-    const {
-      data: { userLoginDTO },
-    } = command;
+    const { data } = command;
 
-    const user = await this.getUser(userLoginDTO);
+    const user = await this.getUser({
+      email: data.email,
+      password: data.password,
+    });
 
     const refreshToken: string = await this.createSession({
       userId: user.id,
@@ -55,13 +52,13 @@ export class LoginHandler
     };
   }
 
-  async getUser(userLoginDTO: AuthControllerTypes.LoginDTO) {
+  async getUser(userLoginDTO: { email: string; password: string }) {
     const foundUser = await this.userQueryRepository.getUserByEmail(
       userLoginDTO.email,
     );
 
     const unauthorizedErr = {
-      message: 'The email or password are incorrect. Try again please',
+      message: 'The email or password are incorrect. Try again',
       status: HttpStatus.UNAUTHORIZED,
     };
 

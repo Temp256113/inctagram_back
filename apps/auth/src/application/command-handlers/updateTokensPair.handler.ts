@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { RefreshTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { CustomRpcException } from '@libs/common-exceptions';
-import { LoginResponseServiceDTO } from '@libs/common-types/auth/controller';
+import { UpdateTokensPairResponseServiceDTO } from '@libs/common-types/auth/controller';
 import { RefreshTokenUserType } from '@libs/common-guards';
 
 export class UpdateTokensPairCommand {
@@ -12,7 +12,11 @@ export class UpdateTokensPairCommand {
 
 @CommandHandler(UpdateTokensPairCommand)
 export class UpdateTokensPairHandler
-  implements ICommandHandler<UpdateTokensPairCommand, LoginResponseServiceDTO>
+  implements
+    ICommandHandler<
+      UpdateTokensPairCommand,
+      UpdateTokensPairResponseServiceDTO
+    >
 {
   constructor(
     private readonly tokensService: JwtTokensService,
@@ -21,7 +25,7 @@ export class UpdateTokensPairHandler
 
   async execute(
     command: UpdateTokensPairCommand,
-  ): Promise<LoginResponseServiceDTO> {
+  ): Promise<UpdateTokensPairResponseServiceDTO> {
     const {
       data: { userId, username, refreshTokenUuid: uuid },
     } = command;

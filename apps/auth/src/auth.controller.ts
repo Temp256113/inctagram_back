@@ -10,6 +10,7 @@ import { LogoutCommand } from './application/command-handlers/logout.handler';
 import { PasswordRecoveryRequestCommand } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
 import { PasswordRecoveryCodeCheckCommand } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 import { PasswordRecoveryCommand } from './application/command-handlers/password-recovery/passwordRecovery.handler';
+import { RegisterCommand } from './application/command-handlers/register.handler';
 
 @Controller()
 export class AuthController {
@@ -25,32 +26,63 @@ export class AuthController {
     return `${payload.hello} rabbitmq`;
   }
 
+  @MessagePattern('register')
+  async register(
+    @Payload() payload: AuthControllerTypes.RegisterDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new RegisterCommand({
+        email: payload.email,
+        password: payload.password,
+        username: payload.username,
+      }),
+    );
+  }
+
   @MessagePattern('login')
   async login(
     @Payload() payload: AuthControllerTypes.LoginDTO,
   ): Promise<AuthControllerTypes.LoginResponseServiceDTO> {
-    return this.commandBus.execute(new LoginCommand({ userLoginDTO: payload }));
+    return this.commandBus.execute(
+      new LoginCommand({ email: payload.email, password: payload.password }),
+    );
   }
 
   @MessagePattern('update-tokens-pair')
   async updateTokensPair(
     @Payload() payload: RefreshTokenUserType,
-  ): Promise<AuthControllerTypes.LoginResponseServiceDTO> {
-    return this.commandBus.execute(new UpdateTokensPairCommand(payload));
+  ): Promise<AuthControllerTypes.UpdateTokensPairResponseServiceDTO> {
+    return this.commandBus.execute(
+      new UpdateTokensPairCommand({
+        userId: payload.userId,
+        username: payload.username,
+        refreshTokenUuid: payload.refreshTokenUuid,
+      }),
+    );
   }
 
   @MessagePattern('logout')
   async logout(
     @Payload() payload: AuthControllerTypes.LogoutServiceDTO,
   ): Promise<void> {
-    await this.commandBus.execute(new LogoutCommand(payload));
+    await this.commandBus.execute(
+      new LogoutCommand({
+        userId: payload.userId,
+        refreshTokenUuid: payload.refreshTokenUuid,
+      }),
+    );
   }
 
   @MessagePattern('password-recovery-request')
   async passwordRecoveryRequest(
     @Payload() payload: AuthControllerTypes.PasswordRecoveryRequestDTO,
   ): Promise<void> {
-    await this.commandBus.execute(new PasswordRecoveryRequestCommand(payload));
+    await this.commandBus.execute(
+      new PasswordRecoveryRequestCommand({
+        email: payload.email,
+        recaptchaToken: payload.recaptchaToken,
+      }),
+    );
   }
 
   @MessagePattern('password-recovery-code-check')
@@ -58,7 +90,9 @@ export class AuthController {
     @Payload() payload: AuthControllerTypes.PasswordRecoveryCodeCheckDTO,
   ): Promise<void> {
     await this.commandBus.execute(
-      new PasswordRecoveryCodeCheckCommand(payload),
+      new PasswordRecoveryCodeCheckCommand({
+        passwordRecoveryCode: payload.passwordRecoveryCode,
+      }),
     );
   }
 

@@ -26,6 +26,11 @@ import { LogoutRouteSwaggerDescription } from './swagger/logout.route.swagger';
 import { PasswordRecoveryRequestRouteSwaggerDescription } from './swagger/passwordRecoveryRequest.route.swagger';
 import { PasswordRecoveryCodeCheckRouteSwaggerDescription } from './swagger/passwordRecoveryCodeCheck.route.swagger';
 import { PasswordRecoveryRouteSwaggerDescription } from './swagger/passwordRecovery.route.swagger';
+import { RegisterRouteSwaggerDescription } from './swagger/register.route.swagger';
+import { RegisterCodeCheckRouteSwaggerDescription } from './swagger/registerCodeCheck.route.swagger';
+import { ResendRegisterEmailRouteSwaggerDescription } from './swagger/resendRegisterEmail.route.swagger';
+import { CheckRegisterCodeCommand } from '../../../../first-app/src/auth/application/checkRegisterCode.handler';
+import { ResendRegisterEmailCommand } from '../../../../first-app/src/auth/application/command-handlers/resendRegisterEmail.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -34,6 +39,39 @@ export class AuthController {
     @Inject('AUTH_SERVICE') private authClient: ClientProxy,
     private readonly jwtTokensService: JwtTokensService,
   ) {}
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @RegisterRouteSwaggerDescription()
+  async register(
+    @Body() userRegisterDTO: AuthControllerTypes.RegisterDTO,
+  ): Promise<void> {
+    await lastValueFrom(this.authClient.send('register', userRegisterDTO), {
+      defaultValue: null,
+    });
+  }
+
+  @Post('register-code-check')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RegisterCodeCheckRouteSwaggerDescription()
+  async checkRegisterCode(
+    @Body() registerCode: AuthControllerTypes.RegisterCodeCheckDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new CheckRegisterCodeCommand(registerCode.code),
+    );
+  }
+
+  @Patch('resend-register-email')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ResendRegisterEmailRouteSwaggerDescription()
+  async sendEmail(
+    @Body() sendEmailInfo: AuthControllerTypes.ResendRegisterEmailDto,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new ResendRegisterEmailCommand(sendEmailInfo),
+    );
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -66,7 +104,7 @@ export class AuthController {
     @User() refreshTokenData: RefreshTokenUserType,
     @Response({ passthrough: true }) res: Res,
   ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
-    const tokens: AuthControllerTypes.LoginResponseServiceDTO =
+    const tokens: AuthControllerTypes.UpdateTokensPairResponseServiceDTO =
       await lastValueFrom(
         this.authClient.send('update-tokens-pair', refreshTokenData),
       );

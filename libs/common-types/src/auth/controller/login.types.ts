@@ -20,6 +20,11 @@ export type LoginResponseServiceDTO = AccessTokenResponseGatewayDTO & {
   refreshToken: string;
 };
 
+export type UpdateTokensPairResponseServiceDTO =
+  AccessTokenResponseGatewayDTO & {
+    refreshToken: string;
+  };
+
 export class LoginDTO {
   @IsEmail(
     {},
