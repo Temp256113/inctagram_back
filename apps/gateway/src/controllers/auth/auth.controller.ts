@@ -16,7 +16,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Response as Res } from 'express';
 import { JwtTokensService } from '@libs/jwt-token';
 import { lastValueFrom } from 'rxjs';
-import * as AuthControllerTypes from '@libs/common-types/auth/controller';
+import * as ControllerTypes from '@libs/common-types/auth/controller';
 import * as SwaggerRouteDecorators from './swagger';
 import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
 import { User } from '@libs/common-decorators';
@@ -36,10 +36,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.SideAuth()
   async authViaGoogle(
-    @Body() googleAuthCode: AuthControllerTypes.SideAuthDTO,
+    @Body() googleAuthCode: ControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
-    const tokensAndUserData: AuthControllerTypes.SideAuthResponseServiceDTO =
+  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+    const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
       await lastValueFrom(this.authClient.send('google-auth', googleAuthCode));
 
     this.jwtTokensService.setRefreshTokenInCookie({
@@ -60,9 +60,9 @@ export class AuthController {
   async authViaGithub(
     @Cookies(JwtTokensService.refreshTokenCookieTitle)
     refreshToken: string | undefined,
-    @Body() githubAuthCode: AuthControllerTypes.SideAuthDTO,
+    @Body() githubAuthCode: ControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
+  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
     const userInfo: SideAuthResponseType = await this.commandBus.execute(
       new GithubAuthCommand({
         githubCode: githubAuthCode.code,
@@ -78,7 +78,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @SwaggerRouteDecorators.Register()
   async register(
-    @Body() userRegisterDTO: AuthControllerTypes.RegisterDTO,
+    @Body() userRegisterDTO: ControllerTypes.RegisterDTO,
   ): Promise<void> {
     await lastValueFrom(this.authClient.send('register', userRegisterDTO), {
       defaultValue: null,
@@ -89,7 +89,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.RegisterCodeCheck()
   async checkRegisterCode(
-    @Body() registerCode: AuthControllerTypes.RegisterCodeCheckDTO,
+    @Body() registerCode: ControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send('register-code-check', registerCode),
@@ -103,7 +103,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.ResendRegisterEmail()
   async sendEmail(
-    @Body() resendEmailInfo: AuthControllerTypes.ResendRegisterEmailDTO,
+    @Body() resendEmailInfo: ControllerTypes.ResendRegisterEmailDTO,
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send('resend-register-email', resendEmailInfo),
@@ -117,10 +117,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.Login()
   async login(
-    @Body() userLoginDTO: AuthControllerTypes.LoginDTO,
+    @Body() userLoginDTO: ControllerTypes.LoginDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
-    const tokensAndUserData: AuthControllerTypes.LoginResponseServiceDTO =
+  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+    const tokensAndUserData: ControllerTypes.LoginResponseServiceDTO =
       await lastValueFrom(this.authClient.send('login', userLoginDTO));
 
     this.jwtTokensService.setRefreshTokenInCookie({
@@ -143,8 +143,8 @@ export class AuthController {
     @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
     @User() refreshTokenData: RefreshTokenUserType,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthControllerTypes.AccessTokenResponseGatewayDTO> {
-    const tokensAndUserData: AuthControllerTypes.UpdateTokensPairResponseServiceDTO =
+  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+    const tokensAndUserData: ControllerTypes.UpdateTokensPairResponseServiceDTO =
       await lastValueFrom(
         this.authClient.send('update-tokens-pair', refreshTokenData),
       );
@@ -179,7 +179,7 @@ export class AuthController {
   @SwaggerRouteDecorators.PasswordRecoveryRequest()
   async passwordRecoveryRequest(
     @Body()
-    passwordRecoveryRequestDTO: AuthControllerTypes.PasswordRecoveryRequestDTO,
+    passwordRecoveryRequestDTO: ControllerTypes.PasswordRecoveryRequestDTO,
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send(
@@ -195,7 +195,7 @@ export class AuthController {
   @SwaggerRouteDecorators.PasswordRecoveryCodeCheck()
   async passwordRecoveryCodeCheck(
     @Body()
-    passwordRecoveryCodeCheckDTO: AuthControllerTypes.PasswordRecoveryCodeCheckDTO,
+    passwordRecoveryCodeCheckDTO: ControllerTypes.PasswordRecoveryCodeCheckDTO,
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send(
@@ -210,7 +210,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.PasswordRecovery()
   async passwordRecovery(
-    @Body() passwordRecoveryDTO: AuthControllerTypes.PasswordRecoveryDTO,
+    @Body() passwordRecoveryDTO: ControllerTypes.PasswordRecoveryDTO,
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send('password-recovery', passwordRecoveryDTO),

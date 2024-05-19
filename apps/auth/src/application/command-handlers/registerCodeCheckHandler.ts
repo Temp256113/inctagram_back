@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus } from '@nestjs/common';
 import { isBefore } from 'date-fns';
-import { NodemailerService } from '../utils/nodemailer.service';
+import { NodemailerService } from '../../utils/nodemailer.service';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import {
