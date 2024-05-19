@@ -5,7 +5,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 
-export const RegisterRouteSwaggerDescription = () => {
+export const Register = () => {
   return applyDecorators(
     ApiOperation({ summary: 'New user register' }),
     ApiCreatedResponse({

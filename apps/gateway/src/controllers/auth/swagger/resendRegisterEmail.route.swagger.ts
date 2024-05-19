@@ -6,7 +6,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 
-export const ResendRegisterEmailRouteSwaggerDescription = () => {
+export const ResendRegisterEmail = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Resend register email for registration confirm' }),
     ApiNoContentResponse({

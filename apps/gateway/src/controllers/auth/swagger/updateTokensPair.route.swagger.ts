@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { AccessTokenResponseGatewayDTO } from '@libs/common-types/auth/controller';
 
-export const UpdateTokensPairRouteSwaggerDescription = () => {
+export const UpdateTokensPair = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Update tokens pair' }),
     ApiCreatedResponse({

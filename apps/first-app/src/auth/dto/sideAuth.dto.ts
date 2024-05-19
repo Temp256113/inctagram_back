@@ -6,7 +6,6 @@ export class SideAuthDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Code from api',
-    example: 'temp256113',
   })
   code: string;
 }

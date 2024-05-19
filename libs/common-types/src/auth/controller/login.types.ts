@@ -1,5 +1,20 @@
-import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
+export class SideAuthDTO {
+  @IsString({ message: 'Provide auth code' })
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Code from api',
+  })
+  code: string;
+}
 
 export class AccessTokenResponseGatewayDTO {
   @ApiProperty({
@@ -15,6 +30,10 @@ export class AccessTokenResponseGatewayDTO {
   @ApiProperty({ example: 'temp256113', type: 'string' })
   username: string;
 }
+
+export type SideAuthResponseServiceDTO = AccessTokenResponseGatewayDTO & {
+  refreshToken: string;
+};
 
 export type LoginResponseServiceDTO = AccessTokenResponseGatewayDTO & {
   refreshToken: string;

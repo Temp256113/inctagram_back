@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { PasswordRecoveryCodeCheckErrorType } from '../../../../../auth/src/application/command-handlers/common/passwordRecoveryCodeCheckUtils';
 
-export const PasswordRecoveryCodeCheckRouteSwaggerDescription = () => {
+export const PasswordRecoveryCodeCheck = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Password recovery code check' }),
     ApiNoContentResponse({ description: 'Code is valid' }),

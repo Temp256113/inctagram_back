@@ -6,7 +6,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export const LogoutRouteSwaggerDescription = () => {
+export const Logout = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Logout' }),
     ApiNoContentResponse({ description: 'Logout success' }),

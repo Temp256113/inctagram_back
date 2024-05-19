@@ -13,6 +13,7 @@ import { PasswordRecoveryCommand } from './application/command-handlers/password
 import { RegisterCommand } from './application/command-handlers/register.handler';
 import { RegisterCodeCheckCommand } from './application/registerCodeCheckHandler';
 import { ResendRegisterEmailCommand } from './application/command-handlers/resendRegisterEmail.handler';
+import { GoogleAuthCommand } from './application/command-handlers/googleAuth.handler';
 
 @Controller()
 export class AuthController {
@@ -26,6 +27,15 @@ export class AuthController {
       status: 404,
     });
     return `${payload.hello} rabbitmq`;
+  }
+
+  @MessagePattern('google-auth')
+  async authViaGoogle(
+    @Payload() payload: AuthControllerTypes.SideAuthDTO,
+  ): Promise<AuthControllerTypes.SideAuthResponseServiceDTO> {
+    return this.commandBus.execute(
+      new GoogleAuthCommand({ googleCode: payload.code }),
+    );
   }
 
   @MessagePattern('register')

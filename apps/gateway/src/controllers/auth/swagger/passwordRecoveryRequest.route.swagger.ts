@@ -5,7 +5,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 
-export const PasswordRecoveryRequestRouteSwaggerDescription = () => {
+export const PasswordRecoveryRequest = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Password recovery request' }),
     ApiNoContentResponse({

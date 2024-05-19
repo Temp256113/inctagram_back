@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { RegisterCodeCheckResponseErrorType } from '../../../../../auth/src/application/registerCodeCheckHandler';
 
-export const RegisterCodeCheckRouteSwaggerDescription = () => {
+export const RegisterCodeCheck = () => {
   return applyDecorators(
     ApiOperation({
       summary: 'Check register code from email link',
