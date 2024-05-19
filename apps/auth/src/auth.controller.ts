@@ -11,6 +11,7 @@ import { PasswordRecoveryRequestCommand } from './application/command-handlers/p
 import { PasswordRecoveryCodeCheckCommand } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 import { PasswordRecoveryCommand } from './application/command-handlers/password-recovery/passwordRecovery.handler';
 import { RegisterCommand } from './application/command-handlers/register.handler';
+import { RegisterCodeCheckCommand } from './application/registerCodeCheckHandler';
 
 @Controller()
 export class AuthController {
@@ -37,6 +38,13 @@ export class AuthController {
         username: payload.username,
       }),
     );
+  }
+
+  @MessagePattern('register-code-check')
+  async checkRegisterCode(
+    @Payload() payload: AuthControllerTypes.RegisterCodeCheckDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(new RegisterCodeCheckCommand(payload.code));
   }
 
   @MessagePattern('login')

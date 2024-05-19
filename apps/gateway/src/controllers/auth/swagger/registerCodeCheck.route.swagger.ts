@@ -5,7 +5,7 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { RegisterCodeCheckResponseTypeSwagger } from '../../../dto/register.dto';
+import { RegisterCodeCheckResponseErrorType } from '../../../../../auth/src/application/registerCodeCheckHandler';
 
 export const RegisterCodeCheckRouteSwaggerDescription = () => {
   return applyDecorators(
@@ -19,7 +19,7 @@ export const RegisterCodeCheckRouteSwaggerDescription = () => {
     }),
     ApiGoneResponse({
       description: 'Provided code is expired',
-      type: RegisterCodeCheckResponseTypeSwagger,
+      type: RegisterCodeCheckResponseErrorType,
     }),
   );
 };

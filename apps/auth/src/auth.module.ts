@@ -14,6 +14,7 @@ import { RecaptchaService } from './utils/recaptcha.service';
 import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
 import { PasswordRecoveryHandler } from './application/command-handlers/password-recovery/passwordRecovery.handler';
 import { RegisterHandler } from './application/command-handlers/register.handler';
+import { RegisterCodeCheckHandler } from './application/registerCodeCheckHandler';
 
 const commandHandlers = [
   LoginHandler,
@@ -23,6 +24,7 @@ const commandHandlers = [
   PasswordRecoveryCodeCheckHandler,
   PasswordRecoveryHandler,
   RegisterHandler,
+  RegisterCodeCheckHandler,
 ];
 
 @Module({

@@ -57,8 +57,11 @@ export class AuthController {
   async checkRegisterCode(
     @Body() registerCode: AuthControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
-    await this.commandBus.execute(
-      new CheckRegisterCodeCommand(registerCode.code),
+    await lastValueFrom(
+      this.authClient.send('register-code-check', registerCode),
+      {
+        defaultValue: null,
+      },
     );
   }
 
