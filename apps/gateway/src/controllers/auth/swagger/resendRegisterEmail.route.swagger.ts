@@ -9,12 +9,14 @@ import {
 export const ResendRegisterEmailRouteSwaggerDescription = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Resend register email for registration confirm' }),
-    ApiNoContentResponse({ description: 'The email has been sent' }),
+    ApiNoContentResponse({
+      description: 'The email with code for confirm registration has been sent',
+    }),
     ApiNotFoundResponse({
       description: 'User with provided email is not found',
     }),
     ApiGoneResponse({
-      description: 'User email is already confirmed',
+      description: 'User registration is already confirmed',
     }),
   );
 };

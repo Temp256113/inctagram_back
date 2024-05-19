@@ -69,10 +69,13 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ResendRegisterEmailRouteSwaggerDescription()
   async sendEmail(
-    @Body() sendEmailInfo: AuthControllerTypes.ResendRegisterEmailDto,
+    @Body() resendEmailInfo: AuthControllerTypes.ResendRegisterEmailDTO,
   ): Promise<void> {
-    await this.commandBus.execute(
-      new ResendRegisterEmailCommand(sendEmailInfo),
+    await lastValueFrom(
+      this.authClient.send('resend-register-email', resendEmailInfo),
+      {
+        defaultValue: null,
+      },
     );
   }
 

@@ -12,6 +12,7 @@ import { PasswordRecoveryCodeCheckCommand } from './application/command-handlers
 import { PasswordRecoveryCommand } from './application/command-handlers/password-recovery/passwordRecovery.handler';
 import { RegisterCommand } from './application/command-handlers/register.handler';
 import { RegisterCodeCheckCommand } from './application/registerCodeCheckHandler';
+import { ResendRegisterEmailCommand } from './application/command-handlers/resendRegisterEmail.handler';
 
 @Controller()
 export class AuthController {
@@ -45,6 +46,15 @@ export class AuthController {
     @Payload() payload: AuthControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
     await this.commandBus.execute(new RegisterCodeCheckCommand(payload.code));
+  }
+
+  @MessagePattern('resend-register-email')
+  async resendRegisterConfirmEmail(
+    @Payload() payload: AuthControllerTypes.ResendRegisterEmailDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new ResendRegisterEmailCommand({ userEmail: payload.userEmail }),
+    );
   }
 
   @MessagePattern('login')

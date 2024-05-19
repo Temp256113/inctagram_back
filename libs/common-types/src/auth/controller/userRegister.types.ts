@@ -54,7 +54,7 @@ export class RegisterCodeCheckDTO {
   code: string;
 }
 
-export class ResendRegisterEmailDto {
+export class ResendRegisterEmailDTO {
   @IsEmail()
   @ApiProperty({
     description: 'The user email',

@@ -15,6 +15,7 @@ import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers
 import { PasswordRecoveryHandler } from './application/command-handlers/password-recovery/passwordRecovery.handler';
 import { RegisterHandler } from './application/command-handlers/register.handler';
 import { RegisterCodeCheckHandler } from './application/registerCodeCheckHandler';
+import { ResendRegisterEmailHandler } from './application/command-handlers/resendRegisterEmail.handler';
 
 const commandHandlers = [
   LoginHandler,
@@ -25,6 +26,7 @@ const commandHandlers = [
   PasswordRecoveryHandler,
   RegisterHandler,
   RegisterCodeCheckHandler,
+  ResendRegisterEmailHandler,
 ];
 
 @Module({
