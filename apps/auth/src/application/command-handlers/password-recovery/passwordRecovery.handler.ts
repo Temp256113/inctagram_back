@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordRecoveryCodeCheckUtils } from '../common/passwordRecoveryCodeCheckUtils';
 import { BcryptService } from '../../../utils/bcrypt.service';
+import { PasswordRecoveryUtils } from './passwordRecoveryUtils';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 
@@ -28,17 +28,17 @@ export class PasswordRecoveryHandler
       data: { newPassword, passwordRecoveryCode },
     } = command;
 
-    const passwordRecoveryCodeCheckUtils: PasswordRecoveryCodeCheckUtils =
-      await PasswordRecoveryCodeCheckUtils.create({
+    const passwordRecoveryUtils: PasswordRecoveryUtils =
+      await PasswordRecoveryUtils.create({
         userQueryRepository: this.userQueryRepository,
         userRepository: this.userRepository,
         passwordRecoveryCode,
       });
 
-    await passwordRecoveryCodeCheckUtils.checkPasswordRecoveryCode();
+    await passwordRecoveryUtils.checkPasswordRecoveryCode();
 
     const foundChangePasswordRequest =
-      passwordRecoveryCodeCheckUtils.getChangePasswordRequest();
+      passwordRecoveryUtils.getChangePasswordRequest();
 
     const passwordHash: string =
       await this.bcryptService.encryptPassword(newPassword);

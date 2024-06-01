@@ -25,7 +25,7 @@ export class PasswordRecoveryCodeCheckErrorType
   status: HttpStatus.GONE;
 }
 
-export class PasswordRecoveryCodeCheckUtils {
+export class PasswordRecoveryUtils {
   private readonly changePasswordRequest: Prisma.UserChangePasswordRequestGetPayload<{
     include: { user: true };
   }>;
@@ -46,7 +46,7 @@ export class PasswordRecoveryCodeCheckUtils {
     userQueryRepository: UserQueryRepository;
     userRepository: UserRepository;
     passwordRecoveryCode: string;
-  }): Promise<PasswordRecoveryCodeCheckUtils> {
+  }): Promise<PasswordRecoveryUtils> {
     const foundChangePasswordRequest =
       await data.userQueryRepository.getPasswordRecoveryRequestByCode({
         recoveryCode: data.passwordRecoveryCode,
@@ -54,7 +54,7 @@ export class PasswordRecoveryCodeCheckUtils {
         deleted: false,
       });
 
-    return new PasswordRecoveryCodeCheckUtils({
+    return new PasswordRecoveryUtils({
       ...data,
       changePasswordRequest: foundChangePasswordRequest,
     });

@@ -5,7 +5,7 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { PasswordRecoveryCodeCheckErrorType } from '../../../../../auth/src/application/command-handlers/common/passwordRecoveryCodeCheckUtils';
+import { PasswordRecoveryCodeCheckErrorType } from '../../../../../auth/src/application/command-handlers/password-recovery/passwordRecoveryUtils';
 
 export const PasswordRecovery = () => {
   return applyDecorators(

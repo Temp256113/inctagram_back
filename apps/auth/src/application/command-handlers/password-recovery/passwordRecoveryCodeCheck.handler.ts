@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordRecoveryCodeCheckUtils } from '../common/passwordRecoveryCodeCheckUtils';
+import { PasswordRecoveryUtils } from './passwordRecoveryUtils';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { PasswordRecoveryCodeCheckDTO } from '@libs/common-types/auth/controller';
@@ -18,13 +18,13 @@ export class PasswordRecoveryCodeCheckHandler
   ) {}
 
   async execute({ data }: PasswordRecoveryCodeCheckCommand): Promise<void> {
-    const passwordRecoveryCodeCheckUtils: PasswordRecoveryCodeCheckUtils =
-      await PasswordRecoveryCodeCheckUtils.create({
+    const passwordRecoveryUtils: PasswordRecoveryUtils =
+      await PasswordRecoveryUtils.create({
         passwordRecoveryCode: data.passwordRecoveryCode,
         userQueryRepository: this.userQueryRepository,
         userRepository: this.userRepository,
       });
 
-    await passwordRecoveryCodeCheckUtils.checkPasswordRecoveryCode();
+    await passwordRecoveryUtils.checkPasswordRecoveryCode();
   }
 }

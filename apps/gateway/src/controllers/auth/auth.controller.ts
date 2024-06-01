@@ -21,8 +21,6 @@ import * as SwaggerRouteDecorators from './swagger';
 import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
 import { User } from '@libs/common-decorators';
 import { Cookies } from '../../decorators/cookies.decorator';
-import { SideAuthResponseType } from '../../../../first-app/src/auth/dto/response/sideAuth.responseType';
-import { GithubAuthCommand } from '../../../../first-app/src/auth/application/command-handlers/githubAuth.handler';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -58,20 +56,22 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.SideAuth()
   async authViaGithub(
-    @Cookies(JwtTokensService.refreshTokenCookieTitle)
-    refreshToken: string | undefined,
     @Body() githubAuthCode: ControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
   ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
-    const userInfo: SideAuthResponseType = await this.commandBus.execute(
-      new GithubAuthCommand({
-        githubCode: githubAuthCode.code,
-        res,
-        refreshToken,
-      }),
-    );
+    const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
+      await lastValueFrom(this.authClient.send('github-auth', githubAuthCode));
 
-    return userInfo;
+    this.jwtTokensService.setRefreshTokenInCookie({
+      refreshToken: tokensAndUserData.refreshToken,
+      res,
+    });
+
+    return {
+      accessToken: tokensAndUserData.accessToken,
+      userId: tokensAndUserData.userId,
+      username: tokensAndUserData.username,
+    };
   }
 
   @Post('register')

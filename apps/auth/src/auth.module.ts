@@ -4,29 +4,23 @@ import { EnvModule } from '@libs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
 import { BcryptService } from './utils/bcrypt.service';
-import { LoginHandler } from './application/command-handlers/login.handler';
 import { JwtTokensModule } from '@libs/jwt-token';
-import { UpdateTokensPairHandler } from './application/command-handlers/updateTokensPair.handler';
-import { LogoutHandler } from './application/command-handlers/logout.handler';
-import { PasswordRecoveryRequestHandler } from './application/command-handlers/password-recovery/passwordRecoveryRequest.handler';
 import { NodemailerService } from './utils/nodemailer.service';
 import { RecaptchaService } from './utils/recaptcha.service';
-import { PasswordRecoveryCodeCheckHandler } from './application/command-handlers/password-recovery/passwordRecoveryCodeCheck.handler';
-import { PasswordRecoveryHandler } from './application/command-handlers/password-recovery/passwordRecovery.handler';
-import { RegisterHandler } from './application/command-handlers/register.handler';
-import { RegisterCodeCheckHandler } from './application/registerCodeCheckHandler';
-import { ResendRegisterEmailHandler } from './application/command-handlers/resendRegisterEmail.handler';
+import * as Commands from './application/command-handlers/index';
 
 const commandHandlers = [
-  LoginHandler,
-  UpdateTokensPairHandler,
-  LogoutHandler,
-  PasswordRecoveryRequestHandler,
-  PasswordRecoveryCodeCheckHandler,
-  PasswordRecoveryHandler,
-  RegisterHandler,
-  RegisterCodeCheckHandler,
-  ResendRegisterEmailHandler,
+  Commands.LoginHandler,
+  Commands.UpdateTokensPairHandler,
+  Commands.LogoutHandler,
+  Commands.PasswordRecoveryRequestHandler,
+  Commands.PasswordRecoveryCodeCheckHandler,
+  Commands.PasswordRecoveryHandler,
+  Commands.RegisterHandler,
+  Commands.RegisterCodeCheckHandler,
+  Commands.ResendRegisterEmailHandler,
+  Commands.GoogleAuthHandler,
+  Commands.GithubAuthHandler,
 ];
 
 @Module({

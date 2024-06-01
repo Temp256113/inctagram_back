@@ -5,7 +5,7 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { RegisterCodeCheckResponseErrorType } from '../../../../../auth/src/application/registerCodeCheckHandler';
+import { RegisterCodeCheckResponseErrorType } from '../../../../../auth/src/application/command-handlers';
 
 export const RegisterCodeCheck = () => {
   return applyDecorators(

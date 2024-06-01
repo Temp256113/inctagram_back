@@ -2,16 +2,15 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus, Inject } from '@nestjs/common';
 import authConfig from '@libs/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
-import { NodemailerService } from '../../utils/nodemailer.service';
+import { NodemailerService } from '../../../utils/nodemailer.service';
 import axios from 'axios';
-import { Prisma, Providers } from '@prisma/client';
-import { JwtTokensService, RefreshTokenCreateType } from '@libs/jwt-token';
+import { Prisma } from '@prisma/client';
+import { JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { SideAuthResponseServiceDTO } from '@libs/common-types/auth/controller';
 import { CustomRpcException } from '@libs/common-exceptions';
-import * as crypto from 'node:crypto';
-import { secondsToMilliseconds } from 'date-fns';
+import { SideAuthUtils } from './sideAuthUtils';
 
 export class GoogleAuthCommand {
   constructor(
@@ -23,16 +22,24 @@ export class GoogleAuthCommand {
 
 @CommandHandler(GoogleAuthCommand)
 export class GoogleAuthHandler
+  extends SideAuthUtils
   implements ICommandHandler<GoogleAuthCommand, SideAuthResponseServiceDTO>
 {
   constructor(
     @Inject(authConfig.KEY)
     private readonly config: ConfigType<typeof authConfig>,
-    private readonly userQueryRepository: UserQueryRepository,
-    private readonly userRepository: UserRepository,
-    private readonly jwtTokensService: JwtTokensService,
-    private readonly nodemailerService: NodemailerService,
-  ) {}
+    protected readonly userQueryRepository: UserQueryRepository,
+    protected readonly userRepository: UserRepository,
+    protected readonly jwtTokensService: JwtTokensService,
+    protected readonly nodemailerService: NodemailerService,
+  ) {
+    super({
+      userQueryRepository,
+      userRepository,
+      nodemailerService,
+      jwtTokensService,
+    });
+  }
 
   async execute(
     command: GoogleAuthCommand,
@@ -76,8 +83,7 @@ export class GoogleAuthHandler
     const clientSecret: string = this.config.GOOGLE_CLIENT_SECRET;
     const frontendUrl: string = this.config.FRONTEND_URL;
 
-    const getAccessTokenUrl = new URL('https://oauth2.googleapis.com');
-    getAccessTokenUrl.pathname = 'token';
+    const getAccessTokenUrl = new URL('https://oauth2.googleapis.com/token');
     getAccessTokenUrl.searchParams.append('grant_type', 'authorization_code');
     getAccessTokenUrl.searchParams.append('code', googleCode);
     getAccessTokenUrl.searchParams.append(
@@ -103,7 +109,7 @@ export class GoogleAuthHandler
         throw new CustomRpcException({
           message: 'Google error response',
           status: HttpStatus.UNAUTHORIZED,
-          ...err.response.data,
+          ...err.response?.data,
         });
       });
 
@@ -126,7 +132,7 @@ export class GoogleAuthHandler
         throw new CustomRpcException({
           message: 'Google error response',
           status: HttpStatus.UNAUTHORIZED,
-          ...err.response.data,
+          ...err.response?.data,
         });
       });
 
@@ -134,65 +140,5 @@ export class GoogleAuthHandler
       userEmail: userInfo.email,
       username: userInfo.name ?? userInfo.given_name,
     };
-  }
-
-  async getOrCreateUser(data: {
-    username: string;
-    userEmail: string;
-  }): Promise<Prisma.UserGetPayload<{ include: { userEmailInfo: true } }>> {
-    const { username, userEmail } = data;
-
-    const userFromDB: Prisma.UserGetPayload<{
-      include: { userEmailInfo: true };
-    }> | null = await this.userQueryRepository.getUserByEmail(userEmail);
-
-    let user: Prisma.UserGetPayload<{ include: { userEmailInfo: true } }>;
-
-    if (userFromDB) {
-      user = userFromDB;
-    } else {
-      user = await this.userRepository.createUser({
-        user: {
-          email: userEmail,
-          username,
-        },
-        emailInfo: {
-          provider: Providers.Google,
-          emailIsConfirmed: true,
-          registrationConfirmCode: null,
-          registrationCodeEndDate: null,
-        },
-      });
-
-      await this.nodemailerService.sendRegistrationSuccessfulMessage(
-        user.email,
-      );
-    }
-
-    return user;
-  }
-
-  async createNewSession(data: {
-    userId: number;
-    username: string;
-  }): Promise<string> {
-    const { userId, username } = data;
-
-    const newRefreshTokenUuid = crypto.randomUUID();
-
-    const newRefreshToken: RefreshTokenCreateType =
-      await this.jwtTokensService.createRefreshToken({
-        userId,
-        username,
-        uuid: newRefreshTokenUuid,
-      });
-
-    await this.userRepository.createSession({
-      userId,
-      refreshTokenUuid: newRefreshTokenUuid,
-      expiresAt: new Date(secondsToMilliseconds(newRefreshToken.payload.exp)),
-    });
-
-    return newRefreshToken.token;
   }
 }

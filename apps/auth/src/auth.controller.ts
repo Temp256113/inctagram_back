@@ -29,6 +29,15 @@ export class AuthController {
     );
   }
 
+  @MessagePattern('github-auth')
+  async authViaGithub(
+    @Payload() payload: ControllerTypes.SideAuthDTO,
+  ): Promise<ControllerTypes.SideAuthResponseServiceDTO> {
+    return this.commandBus.execute(
+      new Commands.GithubAuthCommand({ githubCode: payload.code }),
+    );
+  }
+
   @MessagePattern('register')
   async register(
     @Payload() payload: ControllerTypes.RegisterDTO,
