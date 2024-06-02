@@ -37,7 +37,7 @@ export class AuthController {
   async authViaGoogle(
     @Body() googleAuthCode: ControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
       await lastValueFrom(
         this.authClient.send(
@@ -53,8 +53,7 @@ export class AuthController {
 
     return {
       accessToken: tokensAndUserData.accessToken,
-      userId: tokensAndUserData.userId,
-      username: tokensAndUserData.username,
+      userProfile: tokensAndUserData.userProfile,
     };
   }
 
@@ -64,7 +63,7 @@ export class AuthController {
   async authViaGithub(
     @Body() githubAuthCode: ControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
       await lastValueFrom(
         this.authClient.send(
@@ -80,8 +79,7 @@ export class AuthController {
 
     return {
       accessToken: tokensAndUserData.accessToken,
-      userId: tokensAndUserData.userId,
-      username: tokensAndUserData.username,
+      userProfile: tokensAndUserData.userProfile,
     };
   }
 
@@ -142,7 +140,7 @@ export class AuthController {
   async login(
     @Body() userLoginDTO: ControllerTypes.LoginDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.LoginResponseServiceDTO =
       await lastValueFrom(
         this.authClient.send(AuthMicroservicePatterns.USER_LOGIN, userLoginDTO),
@@ -155,8 +153,7 @@ export class AuthController {
 
     return {
       accessToken: tokensAndUserData.accessToken,
-      userId: tokensAndUserData.userId,
-      username: tokensAndUserData.username,
+      userProfile: tokensAndUserData.userProfile,
     };
   }
 
@@ -168,7 +165,7 @@ export class AuthController {
     @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
     @User() refreshTokenData: RefreshTokenUserType,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
+  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.UpdateTokensPairResponseServiceDTO =
       await lastValueFrom(
         this.authClient.send(
@@ -184,8 +181,7 @@ export class AuthController {
 
     return {
       accessToken: tokensAndUserData.accessToken,
-      userId: tokensAndUserData.userId,
-      username: tokensAndUserData.username,
+      userProfile: tokensAndUserData.userProfile,
     };
   }
 

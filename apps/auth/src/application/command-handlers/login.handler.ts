@@ -34,21 +34,39 @@ export class LoginHandler
       password: data.password,
     });
 
-    const refreshToken: string = await this.createSession({
+    const refreshTokenPromise: Promise<string> = this.createSession({
       userId: user.id,
       username: user.username,
     });
 
-    const accessToken: string = await this.tokensService.createAccessToken({
-      userId: user.id,
-      username: user.username,
-    });
+    const accessTokenPromise: Promise<string> =
+      this.tokensService.createAccessToken({
+        userId: user.id,
+        username: user.username,
+      });
+
+    const [accessToken, refreshToken] = await Promise.all([
+      accessTokenPromise,
+      refreshTokenPromise,
+    ]);
 
     return {
       accessToken,
       refreshToken,
-      userId: user.id,
-      username: user.username,
+      userProfile: {
+        userId: user.profile.userId,
+        username: user.profile.username,
+        firstName: user.profile.firstName,
+        lastName: user.profile.lastName,
+        dateOfBirth: user.profile.dateOfBirth,
+        country: user.profile.country,
+        city: user.profile.city,
+        aboutMe: user.profile.aboutMe,
+        createdAt: user.profile.createdAt,
+        updatedAt: user.profile.updatedAt,
+        deletedAt: user.profile.deletedAt,
+        canModify: true,
+      },
     };
   }
 

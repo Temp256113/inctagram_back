@@ -6,6 +6,7 @@ import {
   Matches,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserProfileResponseGatewayDTO } from '@libs/common-types/user-content/controller';
 
 export class SideAuthDTO {
   @IsString({ message: 'Provide auth code' })
@@ -16,7 +17,7 @@ export class SideAuthDTO {
   code: string;
 }
 
-export class AccessTokenResponseGatewayDTO {
+export class LoginResponseGatewayDTO {
   @ApiProperty({
     description: 'Access token. Save it',
     example: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`,
@@ -24,25 +25,24 @@ export class AccessTokenResponseGatewayDTO {
   })
   accessToken: string;
 
-  @ApiProperty({ example: 33, type: 'number' })
-  userId: number;
-
-  @ApiProperty({ example: 'temp256113', type: 'string' })
-  username: string;
+  @ApiProperty({
+    description: 'User profile',
+    type: UserProfileResponseGatewayDTO,
+  })
+  userProfile: UserProfileResponseGatewayDTO;
 }
 
-export type SideAuthResponseServiceDTO = AccessTokenResponseGatewayDTO & {
+export type SideAuthResponseServiceDTO = LoginResponseGatewayDTO & {
   refreshToken: string;
 };
 
-export type LoginResponseServiceDTO = AccessTokenResponseGatewayDTO & {
+export type LoginResponseServiceDTO = LoginResponseGatewayDTO & {
   refreshToken: string;
 };
 
-export type UpdateTokensPairResponseServiceDTO =
-  AccessTokenResponseGatewayDTO & {
-    refreshToken: string;
-  };
+export type UpdateTokensPairResponseServiceDTO = LoginResponseGatewayDTO & {
+  refreshToken: string;
+};
 
 export class LoginDTO {
   @IsEmail(

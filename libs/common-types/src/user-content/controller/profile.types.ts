@@ -8,10 +8,10 @@ export class UserProfileResponseGatewayDTO {
   username: string;
 
   @ApiProperty({ example: 'Jhon' })
-  firstName: string;
+  firstName?: string;
 
   @ApiProperty({ example: 'Snow' })
-  lastName: string;
+  lastName?: string;
 
   @ApiProperty({ example: '11.01.2001' })
   dateOfBirth?: Date;

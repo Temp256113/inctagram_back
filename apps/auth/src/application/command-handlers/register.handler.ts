@@ -54,9 +54,9 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
       });
 
     const canSendConfirmationEmail: boolean =
-      foundUser.username === username &&
+      foundUser.profile?.username === username &&
       foundUser.email === email &&
-      !foundUser.userEmailInfo.emailIsConfirmed &&
+      !foundUser.emailInfo?.emailIsConfirmed &&
       userPasswordIsCorrect;
 
     if (canSendConfirmationEmail) {
@@ -81,12 +81,12 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
       return false;
     }
 
-    if (foundUser?.email === email) {
+    if (foundUser.email === email) {
       throw new CustomRpcException({
         message: 'User with this email is already registered',
         status: HttpStatus.CONFLICT,
       });
-    } else if (foundUser?.username === username) {
+    } else if (foundUser.profile?.username === username) {
       throw new CustomRpcException({
         message: 'User with this username is already registered',
         status: HttpStatus.CONFLICT,

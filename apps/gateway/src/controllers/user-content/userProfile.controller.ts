@@ -27,13 +27,13 @@ export class UserProfileController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.GetUserProfile()
   async getMyProfile(
-    @User() userInfo: AccessTokenUserType,
+    @User() user: AccessTokenUserType,
   ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
     const userProfile: ControllerTypes.UserProfileResponseGatewayDTO =
       await lastValueFrom(
         this.userContentClient.send(
           UserContentMicroservicePatterns.GET_MY_USER_PROFILE,
-          userInfo,
+          user,
         ),
       );
 

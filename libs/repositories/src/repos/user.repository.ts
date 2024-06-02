@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   Providers,
   UserChangePasswordRequest,
@@ -12,6 +12,7 @@ import {
   PrismaClientTransactionType,
   PrismaService,
 } from '@libs/repositories/prisma.service';
+import { CustomRpcException } from '@libs/common-exceptions';
 
 @Injectable()
 export class UserRepository {
@@ -45,10 +46,9 @@ export class UserRepository {
     try {
       const newUser = await this.prisma.user.create({
         data: {
-          username,
           email,
           password,
-          userEmailInfo: {
+          emailInfo: {
             create: {
               provider,
               emailIsConfirmed,
@@ -56,16 +56,22 @@ export class UserRepository {
               emailConfirmCode: registrationConfirmCode,
             },
           },
+          profile: {
+            create: {
+              username,
+            },
+          },
         },
-        include: { userEmailInfo: true },
+        include: { emailInfo: true },
       });
 
       this.eventEmitter.emit(websocketsMainPageStateEvents.CREATE_USER);
 
       return newUser;
     } catch (err) {
-      throw new BadRequestException({
+      throw new CustomRpcException({
         message: 'I cant create new user. Check your provided data',
+        status: HttpStatus.BAD_REQUEST,
       });
     }
   }

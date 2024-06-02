@@ -5,14 +5,14 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AccessTokenResponseGatewayDTO } from '@libs/common-types/auth/controller';
+import { LoginResponseGatewayDTO } from '@libs/common-types/auth/controller';
 
 export const UpdateTokensPair = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Update tokens pair' }),
     ApiCreatedResponse({
       description: 'The tokens pair successfully updated',
-      type: AccessTokenResponseGatewayDTO,
+      type: LoginResponseGatewayDTO,
     }),
     ApiUnauthorizedResponse({
       description:
