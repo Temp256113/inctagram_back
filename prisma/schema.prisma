@@ -36,11 +36,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  userEmailInfo              UserEmailInfo?
-  userChangePasswordRequests UserChangePasswordRequest[]
-  userSessions               UserSession[]
-  UserProfile                UserProfile?
-  FileResource               FileResource[]
+  emailInfo              UserEmailInfo?
+  changePasswordRequests UserChangePasswordRequest[]
+  sessions               UserSession[]
+  profile                UserProfile?
+  fileResource               FileResource[]
   posts                      UserPost[]
 
   @@map("users")
@@ -104,8 +104,8 @@ model UserChangePasswordRequest {
 
 model UserProfile {
   username    String    @unique @db.Citext
-  firstName   String    @db.VarChar(255)
-  lastName    String    @db.VarChar(255)
+  firstName   String?    @db.VarChar(255)
+  lastName    String?    @db.VarChar(255)
   dateOfBirth DateTime? @db.Date()
   country     String?   @db.VarChar(255)
   city        String?   @db.VarChar(255)
