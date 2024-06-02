@@ -6,6 +6,6 @@ export * from './password-recovery/passwordRecovery.handler';
 export * from './password-recovery/passwordRecoveryCodeCheck.handler';
 export * from './password-recovery/passwordRecoveryRequest.handler';
 export * from './register.handler';
-export * from './registerCodeCheckHandler';
+export * from './registerCodeCheck.handler';
 export * from './resendRegisterEmail.handler';
 export * from './updateTokensPair.handler';

@@ -7,10 +7,11 @@ import {
 import { Request } from 'express';
 import { AccessTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
+import { Prisma } from '@prisma/client';
 
-export type AccessTokenUserType = {
-  userId: number;
-};
+export type AccessTokenUserType = Prisma.UserGetPayload<{
+  include: { userEmailInfo: true };
+}>;
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
@@ -47,7 +48,9 @@ export class AccessTokenGuard implements CanActivate {
 
     const userId: number = Number(accessTokenPayload.userId);
 
-    const foundUserFromDB = await this.userQueryRepository.getUserById(userId);
+    const foundUserFromDB: Prisma.UserGetPayload<{
+      include: { userEmailInfo: true };
+    }> = await this.userQueryRepository.getUserById(userId);
 
     if (!foundUserFromDB) {
       throw new UnauthorizedException(
@@ -55,7 +58,7 @@ export class AccessTokenGuard implements CanActivate {
       );
     }
 
-    req.user = { userId };
+    req.user = foundUserFromDB;
 
     return true;
   }

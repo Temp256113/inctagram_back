@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { UserContentController } from './user-content.controller';
-import { UserContentService } from './user-content.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { RepositoriesModule } from '@libs/repositories/repositories.module';
 
 @Module({
-  imports: [],
+  imports: [CqrsModule, RepositoriesModule],
   controllers: [UserContentController],
-  providers: [UserContentService],
+  providers: [],
 })
 export class UserContentModule {}
