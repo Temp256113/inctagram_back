@@ -19,6 +19,14 @@ import { AuthController } from './controllers/auth/auth.controller';
           queue: 'auth_queue',
         },
       },
+      {
+        name: 'USER_CONTENT_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RABBITMQ_URL],
+          queue: 'user_content_queue',
+        },
+      },
     ]),
   ],
   controllers: [AuthController],

@@ -108,6 +108,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common-types/tsconfig.lib.json"
       }
+    },
+    "user-content": {
+      "type": "application",
+      "root": "apps/user-content",
+      "entryFile": "main",
+      "sourceRoot": "apps/user-content/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/user-content/tsconfig.app.json"
+      }
     }
   }
 }
