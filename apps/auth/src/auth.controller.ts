@@ -5,6 +5,7 @@ import * as ControllerTypes from '@libs/common-types/auth/controller';
 import * as Commands from './application/command-handlers/index';
 import { CommandBus } from '@nestjs/cqrs';
 import { RefreshTokenUserType } from '@libs/common-guards';
+import { AuthMicroservicePatterns } from '../../gateway/src/controllers/auth/authMicroservice.patterns';
 
 @Controller()
 export class AuthController {
@@ -20,7 +21,7 @@ export class AuthController {
     return `${payload.hello} rabbitmq`;
   }
 
-  @MessagePattern('google-auth')
+  @MessagePattern(AuthMicroservicePatterns.GOOGLE_AUTH)
   async authViaGoogle(
     @Payload() payload: ControllerTypes.SideAuthDTO,
   ): Promise<ControllerTypes.SideAuthResponseServiceDTO> {
@@ -29,7 +30,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('github-auth')
+  @MessagePattern(AuthMicroservicePatterns.GITHUB_AUTH)
   async authViaGithub(
     @Payload() payload: ControllerTypes.SideAuthDTO,
   ): Promise<ControllerTypes.SideAuthResponseServiceDTO> {
@@ -38,7 +39,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('register')
+  @MessagePattern(AuthMicroservicePatterns.USER_REGISTER)
   async register(
     @Payload() payload: ControllerTypes.RegisterDTO,
   ): Promise<void> {
@@ -51,7 +52,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('register-code-check')
+  @MessagePattern(AuthMicroservicePatterns.REGISTER_CODE_CHECK)
   async checkRegisterCode(
     @Payload() payload: ControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
@@ -60,7 +61,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('resend-register-email')
+  @MessagePattern(AuthMicroservicePatterns.RESEND_REGISTER_EMAIL)
   async resendRegisterConfirmEmail(
     @Payload() payload: ControllerTypes.ResendRegisterEmailDTO,
   ): Promise<void> {
@@ -69,7 +70,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('login')
+  @MessagePattern(AuthMicroservicePatterns.USER_LOGIN)
   async login(
     @Payload() payload: ControllerTypes.LoginDTO,
   ): Promise<ControllerTypes.LoginResponseServiceDTO> {
@@ -81,7 +82,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('update-tokens-pair')
+  @MessagePattern(AuthMicroservicePatterns.UPDATE_TOKENS_PAIR)
   async updateTokensPair(
     @Payload() payload: RefreshTokenUserType,
   ): Promise<ControllerTypes.UpdateTokensPairResponseServiceDTO> {
@@ -94,7 +95,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('logout')
+  @MessagePattern(AuthMicroservicePatterns.USER_LOGOUT)
   async logout(
     @Payload() payload: ControllerTypes.LogoutServiceDTO,
   ): Promise<void> {
@@ -106,7 +107,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('password-recovery-request')
+  @MessagePattern(AuthMicroservicePatterns.CREATE_PASSWORD_RECOVERY_REQUEST)
   async passwordRecoveryRequest(
     @Payload() payload: ControllerTypes.PasswordRecoveryRequestDTO,
   ): Promise<void> {
@@ -118,7 +119,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('password-recovery-code-check')
+  @MessagePattern(AuthMicroservicePatterns.PASSWORD_RECOVERY_CODE_CHECK)
   async passwordRecoveryCodeCheck(
     @Payload() payload: ControllerTypes.PasswordRecoveryCodeCheckDTO,
   ): Promise<void> {
@@ -129,7 +130,7 @@ export class AuthController {
     );
   }
 
-  @MessagePattern('password-recovery')
+  @MessagePattern(AuthMicroservicePatterns.PASSWORD_RECOVERY)
   async passwordRecovery(
     @Payload() payload: ControllerTypes.PasswordRecoveryDTO,
   ): Promise<void> {

@@ -21,6 +21,7 @@ import * as SwaggerRouteDecorators from './swagger';
 import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
 import { User } from '@libs/common-decorators';
 import { Cookies } from '../../decorators/cookies.decorator';
+import { AuthMicroservicePatterns } from './authMicroservice.patterns';
 
 @Controller('auth')
 @ApiTags('auth controller')
@@ -38,7 +39,12 @@ export class AuthController {
     @Response({ passthrough: true }) res: Res,
   ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
-      await lastValueFrom(this.authClient.send('google-auth', googleAuthCode));
+      await lastValueFrom(
+        this.authClient.send(
+          AuthMicroservicePatterns.GOOGLE_AUTH,
+          googleAuthCode,
+        ),
+      );
 
     this.jwtTokensService.setRefreshTokenInCookie({
       refreshToken: tokensAndUserData.refreshToken,
@@ -60,7 +66,12 @@ export class AuthController {
     @Response({ passthrough: true }) res: Res,
   ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
-      await lastValueFrom(this.authClient.send('github-auth', githubAuthCode));
+      await lastValueFrom(
+        this.authClient.send(
+          AuthMicroservicePatterns.GITHUB_AUTH,
+          githubAuthCode,
+        ),
+      );
 
     this.jwtTokensService.setRefreshTokenInCookie({
       refreshToken: tokensAndUserData.refreshToken,
@@ -80,9 +91,15 @@ export class AuthController {
   async register(
     @Body() userRegisterDTO: ControllerTypes.RegisterDTO,
   ): Promise<void> {
-    await lastValueFrom(this.authClient.send('register', userRegisterDTO), {
-      defaultValue: null,
-    });
+    await lastValueFrom(
+      this.authClient.send(
+        AuthMicroservicePatterns.USER_REGISTER,
+        userRegisterDTO,
+      ),
+      {
+        defaultValue: null,
+      },
+    );
   }
 
   @Post('register-code-check')
@@ -92,7 +109,10 @@ export class AuthController {
     @Body() registerCode: ControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
     await lastValueFrom(
-      this.authClient.send('register-code-check', registerCode),
+      this.authClient.send(
+        AuthMicroservicePatterns.REGISTER_CODE_CHECK,
+        registerCode,
+      ),
       {
         defaultValue: null,
       },
@@ -106,7 +126,10 @@ export class AuthController {
     @Body() resendEmailInfo: ControllerTypes.ResendRegisterEmailDTO,
   ): Promise<void> {
     await lastValueFrom(
-      this.authClient.send('resend-register-email', resendEmailInfo),
+      this.authClient.send(
+        AuthMicroservicePatterns.RESEND_REGISTER_EMAIL,
+        resendEmailInfo,
+      ),
       {
         defaultValue: null,
       },
@@ -121,7 +144,9 @@ export class AuthController {
     @Response({ passthrough: true }) res: Res,
   ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.LoginResponseServiceDTO =
-      await lastValueFrom(this.authClient.send('login', userLoginDTO));
+      await lastValueFrom(
+        this.authClient.send(AuthMicroservicePatterns.USER_LOGIN, userLoginDTO),
+      );
 
     this.jwtTokensService.setRefreshTokenInCookie({
       refreshToken: tokensAndUserData.refreshToken,
@@ -146,7 +171,10 @@ export class AuthController {
   ): Promise<ControllerTypes.AccessTokenResponseGatewayDTO> {
     const tokensAndUserData: ControllerTypes.UpdateTokensPairResponseServiceDTO =
       await lastValueFrom(
-        this.authClient.send('update-tokens-pair', refreshTokenData),
+        this.authClient.send(
+          AuthMicroservicePatterns.UPDATE_TOKENS_PAIR,
+          refreshTokenData,
+        ),
       );
 
     this.jwtTokensService.setRefreshTokenInCookie({
@@ -169,9 +197,15 @@ export class AuthController {
     @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
     @User() refreshTokenData: RefreshTokenUserType,
   ): Promise<void> {
-    await lastValueFrom(this.authClient.send('logout', refreshTokenData), {
-      defaultValue: null,
-    });
+    await lastValueFrom(
+      this.authClient.send(
+        AuthMicroservicePatterns.USER_LOGOUT,
+        refreshTokenData,
+      ),
+      {
+        defaultValue: null,
+      },
+    );
   }
 
   @Post('password-recovery-request')
@@ -183,7 +217,7 @@ export class AuthController {
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send(
-        'password-recovery-request',
+        AuthMicroservicePatterns.CREATE_PASSWORD_RECOVERY_REQUEST,
         passwordRecoveryRequestDTO,
       ),
       { defaultValue: null },
@@ -199,7 +233,7 @@ export class AuthController {
   ): Promise<void> {
     await lastValueFrom(
       this.authClient.send(
-        'password-recovery-code-check',
+        AuthMicroservicePatterns.PASSWORD_RECOVERY_CODE_CHECK,
         passwordRecoveryCodeCheckDTO,
       ),
       { defaultValue: null },
@@ -213,7 +247,10 @@ export class AuthController {
     @Body() passwordRecoveryDTO: ControllerTypes.PasswordRecoveryDTO,
   ): Promise<void> {
     await lastValueFrom(
-      this.authClient.send('password-recovery', passwordRecoveryDTO),
+      this.authClient.send(
+        AuthMicroservicePatterns.PASSWORD_RECOVERY,
+        passwordRecoveryDTO,
+      ),
       { defaultValue: null },
     );
   }

@@ -4,6 +4,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AccessTokenUserType } from '@libs/common-guards';
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 import * as ControllerTypes from '@libs/common-types/user-content/controller';
+import { UserContentMicroservicePatterns } from '../../gateway/src/controllers/user-content/userContentMicroservice.patterns';
 
 @Controller()
 export class UserContentController {
@@ -12,7 +13,10 @@ export class UserContentController {
     private readonly userQueryRepository: UserProfileQueryRepository,
   ) {}
 
-  @MessagePattern('get-my-profile')
+  @MessagePattern('create-new-user-profile')
+  async createNewUserProfile() {}
+
+  @MessagePattern(UserContentMicroservicePatterns.GET_MY_USER_PROFILE)
   async getMyProfile(
     @Payload() user: AccessTokenUserType,
   ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
