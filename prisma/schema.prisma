@@ -91,7 +91,6 @@ enum UserChangePasswordRequestStates {
 
 model UserChangePasswordRequest {
   id                   Int                             @id @default(autoincrement())
-  userId               Int
   state                UserChangePasswordRequestStates @default(pending)
   passwordRecoveryCode String?
   expiresAt            DateTime?
@@ -100,13 +99,13 @@ model UserChangePasswordRequest {
   updatedAt DateTime? @default(now()) @updatedAt
   deletedAt DateTime?
 
+  userId               Int
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_change_password_requests")
 }
 
 model UserProfile {
-  userId      Int       @id @unique
   username    String    @unique @db.Citext
   firstName   String    @db.VarChar(255)
   lastName    String    @db.VarChar(255)
@@ -118,9 +117,10 @@ model UserProfile {
   updatedAt   DateTime  @default(now()) @updatedAt
   deletedAt   DateTime?
 
+  userId      Int       @id @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  profileImage ProfileImage[]
+  profileImage   FileResource?
 
   @@map("user_profiles")
 }
@@ -151,38 +151,21 @@ model FileResource {
   size        Int?
   path        String            @db.Text
   url         String            @db.Text
-  metadata    Json?
+  metadata    Json?             @db.JsonB
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @default(now()) @updatedAt
   deletedAt   DateTime?
-  createdById Int
 
-  profileImage ProfileImage[]
-  postId       Int?
-  userPost     UserPost?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   Int?
+  userPost UserPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  createdBy User @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  profileId Int? @unique
+  userProfile UserProfile? @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+
+  creatorId Int
+  creator   User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   @@map("file_resources")
-}
-
-enum ProfileImagesKind {
-  avatar
-}
-
-model ProfileImage {
-  id        Int               @id @default(autoincrement())
-  kind      ProfileImagesKind
-  imageId   Int
-  profileId Int
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @default(now()) @updatedAt
-  deletedAt DateTime?
-
-  image   FileResource @relation(fields: [imageId], references: [id])
-  profile UserProfile  @relation(fields: [profileId], references: [userId])
-
-  @@map("profile_images")
 }
 
 model playing_with_neon {
