@@ -13,6 +13,7 @@ import {
 import { CustomRpcException } from '@libs/common-exceptions';
 import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
 import _ from 'lodash';
+import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 
 export type UpdateUserProfileServiceDTO = UpdateUserProfileDTO & {
   newProfileImage?: Express.Multer.File & { buffer: any };
@@ -32,6 +33,7 @@ export class UpdateUserProfileHandler
 {
   constructor(
     private readonly userProfileRepository: UserProfileRepository,
+    private readonly userProfileQueryRepository: UserProfileQueryRepository,
     private readonly s3StorageService: S3StorageService,
   ) {}
 
@@ -41,14 +43,19 @@ export class UpdateUserProfileHandler
     const dateOfBirth = command.data.dateOfBirth;
     const newProfileImage = command.data.newProfileImage;
     const userId = command.data.userId;
+    const username = command.data.username;
 
     if (dateOfBirth) {
       this.checkAge(dateOfBirth);
     }
 
+    if (username) {
+      await this.checkUsernameIsAvailable(username);
+    }
+
     const profileUpdateDTO: UserProfileUpdateDbDTO = _.omitBy(
       {
-        username: command.data.username,
+        username,
         firstName: command.data.firstName,
         lastName: command.data.lastName,
         dateOfBirth: command.data.dateOfBirth,
@@ -167,7 +174,19 @@ export class UpdateUserProfileHandler
     if (age < 13) {
       throw new CustomRpcException({
         message: 'A user under 13 cannot create a profile',
-        status: HttpStatus.BAD_REQUEST,
+        status: HttpStatus.FORBIDDEN,
+      });
+    }
+  }
+
+  async checkUsernameIsAvailable(username: string): Promise<void> {
+    const foundUser =
+      await this.userProfileQueryRepository.getProfileByUsername(username);
+
+    if (foundUser) {
+      throw new CustomRpcException({
+        message: `Username ${username} is already exists`,
+        status: HttpStatus.FORBIDDEN,
       });
     }
   }

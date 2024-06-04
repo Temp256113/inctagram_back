@@ -6,11 +6,12 @@ import { UpdateUserProfileHandler } from './application/command-handlers';
 import { S3StorageService } from './infrastructure/s3-storage/s3Storage.service';
 import { S3StorageAdapter } from './infrastructure/s3-storage/s3Storage.adapter';
 import { EnvModule } from '@libs/config';
+import { JwtTokensModule } from '@libs/jwt-token';
 
 const userProfileHandlers = [UpdateUserProfileHandler];
 
 @Module({
-  imports: [CqrsModule, RepositoriesModule, EnvModule],
+  imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],
   controllers: [UserContentController],
   providers: [S3StorageService, S3StorageAdapter, ...userProfileHandlers],
 })

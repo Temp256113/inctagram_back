@@ -19,6 +19,25 @@ export type UserProfileUpdateDbDTO = Partial<{
 export class UserProfileRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async createProfileImage(data: {
+    userId: number;
+    image: Express.Multer.File;
+    path: string;
+    url: string;
+  }) {
+    return this.prismaService.fileResource.create({
+      data: {
+        type: FileResourceTypes.profilePhoto,
+        contentType: data.image.mimetype,
+        size: data.image.size,
+        path: data.path,
+        url: data.url,
+        creatorId: data.userId,
+        profileId: data.userId,
+      },
+    });
+  }
+
   async updateProfile(userId: number, data: UserProfileUpdateDbDTO) {
     return this.prismaService.userProfile
       .update({
@@ -42,25 +61,6 @@ export class UserProfileRepository {
 
         throw err;
       });
-  }
-
-  async createProfileImage(data: {
-    userId: number;
-    image: Express.Multer.File;
-    path: string;
-    url: string;
-  }) {
-    return this.prismaService.fileResource.create({
-      data: {
-        type: FileResourceTypes.profilePhoto,
-        contentType: data.image.mimetype,
-        size: data.image.size,
-        path: data.path,
-        url: data.url,
-        creatorId: data.userId,
-        profileId: data.userId,
-      },
-    });
   }
 
   async updateProfileImage(

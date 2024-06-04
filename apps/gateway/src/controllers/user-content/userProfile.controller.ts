@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Param,
   ParseFilePipeBuilder,
   Patch,
   UnprocessableEntityException,
@@ -17,7 +18,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
 import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
 import * as SwaggerRouteDecorators from './swagger/index';
-import { User } from '@libs/common-decorators';
+import { AccessToken, User } from '@libs/common-decorators';
 import * as ControllerTypes from '@libs/common-types/user-content/controller';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from './userContentMicroservice.patterns';
@@ -52,10 +53,29 @@ export class UserProfileController {
     return userProfile;
   }
 
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerRouteDecorators.GetUserProfileById()
+  async getProfileById(
+    @Param('id') profileId: number,
+    @AccessToken() accessToken: string | null,
+  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
+    const userProfile: ControllerTypes.UserProfileResponseGatewayDTO =
+      await lastValueFrom(
+        this.userContentClient.send(
+          UserContentMicroservicePatterns.GET_USER_PROFILE_BY_ID,
+          { accessToken, profileId },
+        ),
+      );
+
+    return userProfile;
+  }
+
   @Patch()
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FilesInterceptor('profileImage'))
+  @SwaggerRouteDecorators.UpdateUserProfile()
   async updateProfile(
     @UploadedFiles(
       new ParseFilePipeBuilder()

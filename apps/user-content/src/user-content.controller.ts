@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, HttpStatus } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AccessTokenUserType } from '@libs/common-guards';
@@ -9,12 +9,16 @@ import {
   UpdateUserProfileCommand,
   UpdateUserProfileServiceDTO,
 } from './application/command-handlers';
+import { AccessTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
+import { CustomRpcException } from '@libs/common-exceptions';
 
 @Controller()
 export class UserContentController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly userQueryRepository: UserProfileQueryRepository,
+    private readonly userProfileQueryRepository: UserProfileQueryRepository,
+    private readonly jwtTokensService: JwtTokensService,
   ) {}
 
   @MessagePattern('create-new-user-profile')
@@ -42,6 +46,46 @@ export class UserContentController {
       deletedAt: foundUserProfile.deletedAt,
       profileImageURL: foundUserProfile?.profileImage?.url ?? null,
       canModify: true,
+    };
+  }
+
+  @MessagePattern(UserContentMicroservicePatterns.GET_USER_PROFILE_BY_ID)
+  async getUserProfileById(
+    @Payload() payload: { accessToken: string | null; profileId: number },
+  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
+    const accessTokenPayload: AccessTokenPayloadType | null =
+      await this.jwtTokensService.verifyAccessToken(payload.accessToken);
+
+    let userIdFromToken: number | null;
+
+    if (accessTokenPayload) {
+      userIdFromToken = accessTokenPayload.userId;
+    }
+
+    const foundUserProfile =
+      await this.userProfileQueryRepository.getProfileById(payload.profileId);
+
+    if (!foundUserProfile) {
+      throw new CustomRpcException({
+        message: 'User profile with provided id is not found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    return {
+      userId: foundUserProfile.userId,
+      username: foundUserProfile.username,
+      firstName: foundUserProfile.firstName,
+      lastName: foundUserProfile.lastName,
+      dateOfBirth: foundUserProfile.dateOfBirth,
+      country: foundUserProfile.country,
+      city: foundUserProfile.city,
+      aboutMe: foundUserProfile.aboutMe,
+      createdAt: foundUserProfile.createdAt,
+      updatedAt: foundUserProfile.updatedAt,
+      deletedAt: foundUserProfile.deletedAt,
+      profileImageURL: foundUserProfile?.profileImage?.url ?? null,
+      canModify: userIdFromToken == payload.profileId,
     };
   }
 

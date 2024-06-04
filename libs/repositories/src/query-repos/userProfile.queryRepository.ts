@@ -12,4 +12,18 @@ export class UserProfileQueryRepository {
       include: { user: true, profileImage: true },
     });
   }
+
+  async getProfileByUsername(username: string) {
+    return this.prismaService.userProfile.findUnique({
+      where: { username },
+      include: { profileImage: true },
+    });
+  }
+
+  async getProfileById(profileId: number) {
+    return this.prismaService.userProfile.findUnique({
+      where: { userId: profileId },
+      include: { profileImage: true },
+    });
+  }
 }
