@@ -36,7 +36,7 @@ export class ResendRegisterEmailHandler
       });
     }
 
-    const emailIsConfirmed: boolean = foundUser.userEmailInfo.emailIsConfirmed;
+    const emailIsConfirmed: boolean = foundUser.emailInfo.emailIsConfirmed;
 
     if (emailIsConfirmed) {
       throw new CustomRpcException({

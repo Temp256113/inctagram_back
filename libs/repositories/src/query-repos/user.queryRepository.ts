@@ -9,14 +9,20 @@ export class UserQueryRepository {
   async getUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
-      include: { emailInfo: true, profile: true },
+      include: {
+        emailInfo: true,
+        profile: { include: { profileImage: true } },
+      },
     });
   }
 
   async getUserById(userId: number) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      include: { emailInfo: true },
+      include: {
+        emailInfo: true,
+        profile: { include: { profileImage: true } },
+      },
     });
   }
 
@@ -84,7 +90,7 @@ export class UserQueryRepository {
           refreshTokenUuid: data.refreshTokenUuid,
         },
       },
-      include: { user: true },
+      include: { user: { include: { profile: true } } },
     });
   }
 }

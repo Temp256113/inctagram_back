@@ -53,7 +53,7 @@ export class RegisterCodeCheckHandler
     }
 
     const codeIsExpired: boolean = isBefore(
-      foundUser.userEmailInfo.expiresAt,
+      foundUser.emailInfo.expiresAt,
       new Date(),
     );
 

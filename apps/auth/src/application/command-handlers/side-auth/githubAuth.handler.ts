@@ -53,26 +53,43 @@ export class GithubAuthHandler
       userEmail: string;
     } = await this.getUserInfoFromGithub(githubCode);
 
-    const user: Prisma.UserGetPayload<{ include: { userEmailInfo: true } }> =
-      await this.getOrCreateUser({
-        username: userInfoFromGithub.username,
-        userEmail: userInfoFromGithub.userEmail,
-      });
+    const user: Prisma.UserGetPayload<{
+      include: {
+        emailInfo: true;
+        profile: { include: { profileImage: true } };
+      };
+    }> = await this.getOrCreateUser({
+      username: userInfoFromGithub.username,
+      userEmail: userInfoFromGithub.userEmail,
+    });
 
     const newRefreshToken: string = await this.createNewSession({
       userId: user.id,
-      username: user.username,
+      username: user.profile.username,
     });
 
     const newAccessToken: string =
       await this.jwtTokensService.createAccessToken({
         userId: user.id,
-        username: user.username,
+        username: user.profile.username,
       });
 
     return {
-      userId: user.id,
-      username: user.username,
+      userProfile: {
+        userId: user.id,
+        username: user.profile.username,
+        firstName: user.profile.firstName,
+        lastName: user.profile.lastName,
+        dateOfBirth: user.profile.dateOfBirth,
+        country: user.profile.country,
+        city: user.profile.city,
+        aboutMe: user.profile.aboutMe,
+        profileImageURL: user?.profile?.profileImage?.url ?? null,
+        createdAt: user.profile.createdAt,
+        updatedAt: user.profile.updatedAt,
+        deletedAt: user.profile.deletedAt,
+        canModify: true,
+      },
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     };

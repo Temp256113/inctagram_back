@@ -1,10 +1,17 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Inject,
+  ParseFilePipeBuilder,
+  Patch,
+  UnprocessableEntityException,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
@@ -14,6 +21,11 @@ import { User } from '@libs/common-decorators';
 import * as ControllerTypes from '@libs/common-types/user-content/controller';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from './userContentMicroservice.patterns';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import _ from 'lodash';
+import { UpdateUserProfileServiceDTO } from '../../../../user-content/src/application/command-handlers';
+
+const imageErrorMessage = `The photo must be less than or equal 0,5 Mb and have JPEG or PNG format`;
 
 @Controller('user-profile')
 @ApiTags('user profile controller')
@@ -38,5 +50,65 @@ export class UserProfileController {
       );
 
     return userProfile;
+  }
+
+  @Patch()
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FilesInterceptor('profileImage'))
+  async updateProfile(
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({
+          maxSize: 500000,
+          message: imageErrorMessage,
+        })
+        .addFileTypeValidator({ fileType: '.(png|jpeg)' })
+        .build({
+          fileIsRequired: false,
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          exceptionFactory: () => {
+            throw new UnprocessableEntityException(imageErrorMessage);
+          },
+        }),
+    )
+    newProfileImage: Express.Multer.File | Express.Multer.File[],
+    @Body() updateProfileDTO: ControllerTypes.UpdateUserProfileDTO,
+    @User() user: AccessTokenUserType,
+  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
+    const newProfileImagesMoreThanOne =
+      Array.isArray(newProfileImage) && newProfileImage?.length > 1;
+
+    if (newProfileImagesMoreThanOne) {
+      throw new BadRequestException(
+        'You can set no more than 1 photo as a profile picture',
+      );
+    }
+
+    const noDataProvided = _.isEmpty(updateProfileDTO) && !newProfileImage;
+
+    if (noDataProvided) {
+      throw new BadRequestException(
+        'You need provide some profile properties or image for update',
+      );
+    }
+
+    const dataForProfileUpdate: UpdateUserProfileServiceDTO = {
+      userId: user.id,
+      newProfileImage: newProfileImage[0] as Express.Multer.File,
+      currentProfileImage: user?.profile?.profileImage,
+      currentProfileImageId: user?.profile?.profileImage?.id,
+      ...updateProfileDTO,
+    };
+
+    const updatedProfile: ControllerTypes.UserProfileResponseGatewayDTO =
+      await lastValueFrom(
+        this.userContentClient.send(
+          UserContentMicroservicePatterns.UPDATE_USER_PROFILE,
+          dataForProfileUpdate,
+        ),
+      );
+
+    return updatedProfile;
   }
 }

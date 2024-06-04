@@ -36,13 +36,13 @@ export class LoginHandler
 
     const refreshTokenPromise: Promise<string> = this.createSession({
       userId: user.id,
-      username: user.username,
+      username: user.profile.username,
     });
 
     const accessTokenPromise: Promise<string> =
       this.tokensService.createAccessToken({
         userId: user.id,
-        username: user.username,
+        username: user.profile.username,
       });
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -65,6 +65,7 @@ export class LoginHandler
         createdAt: user.profile.createdAt,
         updatedAt: user.profile.updatedAt,
         deletedAt: user.profile.deletedAt,
+        profileImageURL: user?.profile?.profileImage?.url ?? null,
         canModify: true,
       },
     };

@@ -5,6 +5,10 @@ import { AccessTokenUserType } from '@libs/common-guards';
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 import * as ControllerTypes from '@libs/common-types/user-content/controller';
 import { UserContentMicroservicePatterns } from '../../gateway/src/controllers/user-content/userContentMicroservice.patterns';
+import {
+  UpdateUserProfileCommand,
+  UpdateUserProfileServiceDTO,
+} from './application/command-handlers';
 
 @Controller()
 export class UserContentController {
@@ -36,7 +40,25 @@ export class UserContentController {
       createdAt: foundUserProfile.createdAt,
       updatedAt: foundUserProfile.updatedAt,
       deletedAt: foundUserProfile.deletedAt,
+      profileImageURL: foundUserProfile?.profileImage?.url ?? null,
       canModify: true,
     };
+  }
+
+  @MessagePattern(UserContentMicroservicePatterns.UPDATE_USER_PROFILE)
+  async updateProfile(
+    @Payload() updateProfileDTO: UpdateUserProfileServiceDTO,
+  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
+    if (updateProfileDTO.newProfileImage) {
+      // rabbitmq для того чтобы передавать данные по очередям сериализует тип данных buffer в json
+      // поэтому нужно получившийся в результате массив с числами десериализовать обратно в buffer
+      updateProfileDTO.newProfileImage.buffer = Buffer.from(
+        updateProfileDTO.newProfileImage.buffer.data,
+      );
+    }
+
+    return this.commandBus.execute(
+      new UpdateUserProfileCommand(updateProfileDTO),
+    );
   }
 }

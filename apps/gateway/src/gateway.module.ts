@@ -4,6 +4,9 @@ import { EnvModule } from '@libs/config';
 import { JwtTokensModule } from '@libs/jwt-token';
 import { CommonGuardsModule } from '@libs/common-guards';
 import { AuthController } from './controllers/auth/auth.controller';
+import { UserProfileController } from './controllers/user-content/userProfile.controller';
+
+const userContentControllers = [UserProfileController];
 
 @Module({
   imports: [
@@ -29,7 +32,7 @@ import { AuthController } from './controllers/auth/auth.controller';
       },
     ]),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, ...userContentControllers],
   providers: [],
 })
 export class GatewayModule {}

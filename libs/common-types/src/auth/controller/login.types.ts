@@ -32,6 +32,15 @@ export class LoginResponseGatewayDTO {
   userProfile: UserProfileResponseGatewayDTO;
 }
 
+export class UpdateTokensPairResponseGatewayDTO {
+  @ApiProperty({
+    description: 'Access token. Save it',
+    example: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`,
+    type: 'string',
+  })
+  accessToken: string;
+}
+
 export type SideAuthResponseServiceDTO = LoginResponseGatewayDTO & {
   refreshToken: string;
 };
@@ -40,7 +49,8 @@ export type LoginResponseServiceDTO = LoginResponseGatewayDTO & {
   refreshToken: string;
 };
 
-export type UpdateTokensPairResponseServiceDTO = LoginResponseGatewayDTO & {
+export type UpdateTokensPairResponseServiceDTO = {
+  accessToken: string;
   refreshToken: string;
 };
 

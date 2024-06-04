@@ -7,10 +7,15 @@ import {
 import { JwtTokensService, RefreshTokenPayloadType } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { Request } from 'express';
+import { Prisma } from '@prisma/client';
 
 export type RefreshTokenUserType = {
-  userId: number;
-  username: string;
+  user: Prisma.UserGetPayload<{
+    include: {
+      emailInfo: true;
+      profile: { include: { profileImage: true } };
+    };
+  }>;
   refreshTokenUuid: string;
 };
 
@@ -43,10 +48,17 @@ export class RefreshTokenGuard implements CanActivate {
     const userId: number = Number(refreshTokenPayload.userId);
     const uuid: string = refreshTokenPayload.uuid;
 
-    const foundSessionFromDB = await this.userQueryRepository.getUserSession({
+    const findSessionFromDB = this.userQueryRepository.getUserSession({
       userId,
       refreshTokenUuid: uuid,
     });
+
+    const findUserFromDB = this.userQueryRepository.getUserById(userId);
+
+    const [foundSessionFromDB, foundUserFromDB] = await Promise.all([
+      findSessionFromDB,
+      findUserFromDB,
+    ]);
 
     if (!foundSessionFromDB) {
       throw new UnauthorizedException(
@@ -54,9 +66,14 @@ export class RefreshTokenGuard implements CanActivate {
       );
     }
 
+    if (!foundUserFromDB) {
+      throw new UnauthorizedException(
+        'Not found user with provided refresh token',
+      );
+    }
+
     req.user = {
-      userId,
-      username: foundSessionFromDB.user.username,
+      user: foundUserFromDB,
       refreshTokenUuid: uuid,
     };
 

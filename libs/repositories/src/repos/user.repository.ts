@@ -62,7 +62,10 @@ export class UserRepository {
             },
           },
         },
-        include: { emailInfo: true },
+        include: {
+          emailInfo: true,
+          profile: { include: { profileImage: true } },
+        },
       });
 
       this.eventEmitter.emit(websocketsMainPageStateEvents.CREATE_USER);

@@ -163,25 +163,21 @@ export class AuthController {
   @SwaggerRouteDecorators.UpdateTokensPair()
   async updateTokensPair(
     @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
-    @User() refreshTokenData: RefreshTokenUserType,
+    @User() user: RefreshTokenUserType,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
-    const tokensAndUserData: ControllerTypes.UpdateTokensPairResponseServiceDTO =
+  ): Promise<ControllerTypes.UpdateTokensPairResponseGatewayDTO> {
+    const newTokensPair: ControllerTypes.UpdateTokensPairResponseServiceDTO =
       await lastValueFrom(
-        this.authClient.send(
-          AuthMicroservicePatterns.UPDATE_TOKENS_PAIR,
-          refreshTokenData,
-        ),
+        this.authClient.send(AuthMicroservicePatterns.UPDATE_TOKENS_PAIR, user),
       );
 
     this.jwtTokensService.setRefreshTokenInCookie({
-      refreshToken: tokensAndUserData.refreshToken,
+      refreshToken: newTokensPair.refreshToken,
       res,
     });
 
     return {
-      accessToken: tokensAndUserData.accessToken,
-      userProfile: tokensAndUserData.userProfile,
+      accessToken: newTokensPair.accessToken,
     };
   }
 

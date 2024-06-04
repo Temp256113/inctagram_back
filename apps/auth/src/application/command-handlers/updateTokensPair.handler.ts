@@ -27,25 +27,23 @@ export class UpdateTokensPairHandler
     command: UpdateTokensPairCommand,
   ): Promise<UpdateTokensPairResponseServiceDTO> {
     const {
-      data: { userId, username, refreshTokenUuid: uuid },
+      data: { user, refreshTokenUuid: uuid },
     } = command;
 
     const newTokensPair: { accessToken: string; refreshToken: string } =
       await this.tokensService.createTokensPair({
-        userId,
-        username,
+        userId: user.id,
+        username: user.profile.username,
         uuid,
       });
 
     await this.updateSession({
       newRefreshToken: newTokensPair.refreshToken,
-      userId,
+      userId: user.id,
       currentRefreshTokenUuid: uuid,
     });
 
     return {
-      userId,
-      username,
       accessToken: newTokensPair.accessToken,
       refreshToken: newTokensPair.refreshToken,
     };

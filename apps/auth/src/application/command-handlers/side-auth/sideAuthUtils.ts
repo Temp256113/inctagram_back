@@ -7,7 +7,7 @@ import { JwtTokensService, RefreshTokenCreateType } from '@libs/jwt-token';
 import { secondsToMilliseconds } from 'date-fns';
 
 type UserFromDBType = Prisma.UserGetPayload<{
-  include: { userEmailInfo: true };
+  include: { emailInfo: true; profile: { include: { profileImage: true } } };
 }>;
 
 export class SideAuthUtils {

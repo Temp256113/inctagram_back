@@ -10,7 +10,10 @@ import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRe
 import { Prisma } from '@prisma/client';
 
 export type AccessTokenUserType = Prisma.UserGetPayload<{
-  include: { emailInfo: true };
+  include: {
+    emailInfo: true;
+    profile: { include: { profileImage: true } };
+  };
 }>;
 
 @Injectable()
@@ -48,9 +51,8 @@ export class AccessTokenGuard implements CanActivate {
 
     const userId: number = Number(accessTokenPayload.userId);
 
-    const foundUserFromDB: Prisma.UserGetPayload<{
-      include: { emailInfo: true };
-    }> = await this.userQueryRepository.getUserById(userId);
+    const foundUserFromDB: AccessTokenUserType =
+      await this.userQueryRepository.getUserById(userId);
 
     if (!foundUserFromDB) {
       throw new UnauthorizedException(
