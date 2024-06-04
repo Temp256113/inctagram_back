@@ -4,7 +4,7 @@ import { EnvModule } from '@libs/config';
 import { JwtTokensModule } from '@libs/jwt-token';
 import { CommonGuardsModule } from '@libs/common-guards';
 import { AuthController } from './controllers/auth/auth.controller';
-import { UserProfileController } from './controllers/user-content/userProfile.controller';
+import { UserProfileController } from './controllers/user-content/user-profile/userProfile.controller';
 
 const userContentControllers = [UserProfileController];
 

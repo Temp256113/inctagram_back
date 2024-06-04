@@ -17,16 +17,14 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
 import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
-import * as SwaggerRouteDecorators from './swagger/index';
+import * as SwaggerRouteDecorators from './swagger';
 import { AccessToken, User } from '@libs/common-decorators';
 import * as ControllerTypes from '@libs/common-types/user-content/controller';
 import { lastValueFrom } from 'rxjs';
-import { UserContentMicroservicePatterns } from './userContentMicroservice.patterns';
+import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import _ from 'lodash';
-import { UpdateUserProfileServiceDTO } from '../../../../user-content/src/application/command-handlers';
-
-const imageErrorMessage = `The photo must be less than or equal 0,5 Mb and have JPEG or PNG format`;
+import { UpdateUserProfileServiceDTO } from '../../../../../user-content/src/user-profile/application/command-handlers';
 
 @Controller('user-profile')
 @ApiTags('user profile controller')
@@ -81,14 +79,16 @@ export class UserProfileController {
       new ParseFilePipeBuilder()
         .addMaxSizeValidator({
           maxSize: 500000,
-          message: imageErrorMessage,
+          message: `The photo must be less than or equal 0,5 Mb and have JPEG or PNG format`,
         })
         .addFileTypeValidator({ fileType: '.(png|jpeg)' })
         .build({
           fileIsRequired: false,
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           exceptionFactory: () => {
-            throw new UnprocessableEntityException(imageErrorMessage);
+            throw new UnprocessableEntityException(
+              `The photo must be less than or equal 0,5 Mb and have JPEG or PNG format`,
+            );
           },
         }),
     )
