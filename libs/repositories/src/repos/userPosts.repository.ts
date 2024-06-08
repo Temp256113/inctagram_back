@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { FileResourceTypes, Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@libs/repositories/prisma.service';
 import { websocketsMainPageStateEvents } from '../../../../apps/first-app/src/websocket/main-page/websocketsMainPage.service';
@@ -25,6 +25,26 @@ export class UserPostsRepository {
     } catch (err) {
       console.error('Cant create new post', err);
     }
+  }
+
+  async createPostImage(data: {
+    userId: number;
+    postId: number;
+    image: Express.Multer.File;
+    path: string;
+    url: string;
+  }) {
+    return this.prisma.fileResource.create({
+      data: {
+        type: FileResourceTypes.postPhoto,
+        contentType: data.image.mimetype,
+        size: data.image.size,
+        path: data.path,
+        url: data.url,
+        creatorId: data.userId,
+        postId: data.postId,
+      },
+    });
   }
 
   async updatePostDescriptionByPostId(data: {

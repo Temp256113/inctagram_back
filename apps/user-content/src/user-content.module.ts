@@ -11,6 +11,8 @@ import {
   GetMyUserProfileHandler,
   GetUserProfileByIdHandler,
 } from './user-profile/application/query-handlers';
+import { UserPostsController } from './user-posts/user-posts.controller';
+import { CreateUserPostHandler } from './user-posts/application/command-handlers/createUserPost.handler';
 
 const userProfileHandlers = [UpdateUserProfileHandler];
 
@@ -19,14 +21,17 @@ const userProfileQueryHandlers = [
   GetUserProfileByIdHandler,
 ];
 
+const userPostsHandlers = [CreateUserPostHandler];
+
 @Module({
   imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],
-  controllers: [UserProfileController],
+  controllers: [UserProfileController, UserPostsController],
   providers: [
     S3StorageService,
     S3StorageAdapter,
     ...userProfileHandlers,
     ...userProfileQueryHandlers,
+    ...userPostsHandlers,
   ],
 })
 export class UserContentModule {}

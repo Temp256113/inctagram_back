@@ -5,8 +5,9 @@ import { JwtTokensModule } from '@libs/jwt-token';
 import { CommonGuardsModule } from '@libs/common-guards';
 import { AuthController } from './controllers/auth/auth.controller';
 import { UserProfileController } from './controllers/user-content/user-profile/userProfile.controller';
+import { UserPostsController } from './controllers/user-content/user-posts/user-posts.controller';
 
-const userContentControllers = [UserProfileController];
+const userContentControllers = [UserProfileController, UserPostsController];
 
 @Module({
   imports: [

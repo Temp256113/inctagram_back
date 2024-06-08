@@ -113,7 +113,7 @@ export class UserProfileController {
 
     const dataForProfileUpdate: UpdateUserProfileServiceDTO = {
       userId: user.id,
-      newProfileImage: newProfileImage[0] as Express.Multer.File,
+      newProfileImage: newProfileImage[0],
       currentProfileImage: user?.profile?.profileImage,
       currentProfileImageId: user?.profile?.profileImage?.id,
       ...updateProfileDTO,
