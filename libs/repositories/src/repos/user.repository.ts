@@ -52,7 +52,7 @@ export class UserRepository {
             create: {
               provider,
               emailIsConfirmed,
-              expiresAt: registrationCodeEndDate,
+              emailConfirmCodeExpiresAt: registrationCodeEndDate,
               emailConfirmCode: registrationConfirmCode,
             },
           },

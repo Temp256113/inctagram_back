@@ -92,20 +92,18 @@ export class UserProfileController {
           },
         }),
     )
-    newProfileImage: Express.Multer.File | Express.Multer.File[],
+    newProfileImage: Express.Multer.File[],
     @Body() updateProfileDTO: ControllerTypes.UpdateUserProfileDTO,
     @User() user: AccessTokenUserType,
   ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
-    const newProfileImagesMoreThanOne =
-      Array.isArray(newProfileImage) && newProfileImage?.length > 1;
-
-    if (newProfileImagesMoreThanOne) {
+    if (newProfileImage?.length > 1) {
       throw new BadRequestException(
         'You can set no more than 1 photo as a profile picture',
       );
     }
 
-    const noDataProvided = _.isEmpty(updateProfileDTO) && !newProfileImage;
+    const noDataProvided =
+      _.isEmpty(updateProfileDTO) && newProfileImage.length < 1;
 
     if (noDataProvided) {
       throw new BadRequestException(

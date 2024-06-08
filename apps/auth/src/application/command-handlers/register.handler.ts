@@ -65,7 +65,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
       const updateUserEmailInfo = this.userRepository.updateEmailInfoByUserId(
         foundUser.id,
         {
-          expiresAt: add(new Date(), { days: 3 }),
+          emailConfirmCodeExpiresAt: add(new Date(), { days: 3 }),
           emailConfirmCode,
         },
       );

@@ -49,7 +49,7 @@ export class ResendRegisterEmailHandler
 
     const setNewConfirmRegistrationCode =
       this.userRepository.updateEmailInfoByUserId(foundUser.id, {
-        expiresAt: add(new Date(), { days: 3 }),
+        emailConfirmCodeExpiresAt: add(new Date(), { days: 3 }),
         emailConfirmCode: confirmRegistrationCode,
       });
 

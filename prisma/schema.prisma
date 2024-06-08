@@ -68,8 +68,7 @@ model UserEmailInfo {
   userId           Int        @id
   emailIsConfirmed Boolean    @default(false)
   emailConfirmCode String?
-  // expiresAt это дата после которой код для подтверждения регистрации будет уже не актуален
-  expiresAt        DateTime?
+  emailConfirmCodeExpiresAt        DateTime?
   provider         Providers?
 
   createdAt DateTime @default(now())

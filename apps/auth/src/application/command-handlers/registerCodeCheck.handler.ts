@@ -53,7 +53,7 @@ export class RegisterCodeCheckHandler
     }
 
     const codeIsExpired: boolean = isBefore(
-      foundUser.emailInfo.expiresAt,
+      foundUser.emailInfo.emailConfirmCodeExpiresAt,
       new Date(),
     );
 
@@ -70,7 +70,7 @@ export class RegisterCodeCheckHandler
     const updateUserEmailInfo = this.userRepository.updateEmailInfoByUserId(
       foundUser.id,
       {
-        expiresAt: null,
+        emailConfirmCodeExpiresAt: null,
         emailIsConfirmed: true,
         emailConfirmCode: null,
       },

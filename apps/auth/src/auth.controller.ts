@@ -87,11 +87,7 @@ export class AuthController {
     @Payload() payload: RefreshTokenUserType,
   ): Promise<ControllerTypes.UpdateTokensPairResponseServiceDTO> {
     return this.commandBus.execute(
-      new Commands.UpdateTokensPairCommand({
-        userId: payload.userId,
-        username: payload.username,
-        refreshTokenUuid: payload.refreshTokenUuid,
-      }),
+      new Commands.UpdateTokensPairCommand(payload),
     );
   }
 
