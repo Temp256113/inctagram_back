@@ -35,12 +35,13 @@ import { User } from '@libs/common-decorators';
 // import { UpdateUserPostCommand } from './application/command-handlers/updateUserPost.handler';
 // import { DeleteUserPostCommand } from './application/command-handlers/deleteUserPost.handler';
 // import { GetUserPostByIdRouteSwaggerDescription } from './swagger/controller/getUserPostById.route.swagger';
-import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
-import { CreateUserPostServiceDTO } from '../../../../../user-content/src/user-posts/application/command-handlers/createUserPost.handler';
-import { CreateUserPostDto } from '../../../../../first-app/src/user-posts/dto/createUserPost.dto';
+import {
+  CreateUserPostServiceDTO,
+  DeleteUserPostServiceDTO,
+} from '../../../../../user-content/src/user-posts/application/command-handlers';
 import * as GatewayControllerTypes from '@libs/common-types/user-content/controller';
 import * as SwaggerRouteDecorators from './swagger';
 import { UpdateUserPostServiceDTO } from '../../../../../user-content/src/user-posts/application/command-handlers';
@@ -115,19 +116,28 @@ export class UserPostsController {
     );
   }
 
-  // @Delete(':postId')
-  // @UseGuards(AccessTokenGuard)
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // @DeleteUserPostRouteSwaggerDescription()
-  // async deletePost(
-  //   @Param('postId') postId: number,
-  //   @User() user: UserDecoratorType,
-  // ): Promise<void> {
-  //   await this.commandBus.execute(
-  //     new DeleteUserPostCommand({ userPostId: postId, userId: user.userId }),
-  //   );
-  // }
-  //
+  @Delete(':postId')
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @SwaggerRouteDecorators.DeleteUserPost()
+  async deletePost(
+    @Param('postId') postId: number,
+    @User() user: AccessTokenUserType,
+  ) {
+    const deleteUserPostPayload: DeleteUserPostServiceDTO = {
+      userPostId: postId,
+      userId: user.id,
+    };
+
+    await lastValueFrom(
+      this.userContentClient.send(
+        UserContentMicroservicePatterns.DELETE_USER_POST,
+        deleteUserPostPayload,
+      ),
+      { defaultValue: null },
+    );
+  }
+
   // @Get('my-posts/:page')
   // @UseGuards(AccessTokenGuard)
   // @HttpCode(HttpStatus.OK)

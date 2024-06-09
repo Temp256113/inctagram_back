@@ -4,4 +4,5 @@ export enum UserContentMicroservicePatterns {
   UPDATE_USER_PROFILE = 'update-user-profile',
   CREATE_USER_POST = 'create-user-post',
   UPDATE_USER_POST = 'update-user-post',
+  DELETE_USER_POST = 'delete-user-post',
 }

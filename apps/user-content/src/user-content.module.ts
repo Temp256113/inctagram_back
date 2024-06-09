@@ -14,6 +14,7 @@ import {
 import { UserPostsController } from './user-posts/user-posts.controller';
 import {
   CreateUserPostHandler,
+  DeleteUserPostHandler,
   UpdateUserPostHandler,
 } from './user-posts/application/command-handlers';
 
@@ -24,7 +25,11 @@ const userProfileQueryHandlers = [
   GetUserProfileByIdHandler,
 ];
 
-const userPostsHandlers = [CreateUserPostHandler, UpdateUserPostHandler];
+const userPostsHandlers = [
+  CreateUserPostHandler,
+  UpdateUserPostHandler,
+  DeleteUserPostHandler,
+];
 
 @Module({
   imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],

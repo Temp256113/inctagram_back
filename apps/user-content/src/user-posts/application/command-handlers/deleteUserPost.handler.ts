@@ -1,11 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-// import { FileResourceService } from '../../../file-resource/file-resource.service';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
+import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
+
+export type DeleteUserPostServiceDTO = { userId: number; userPostId: number };
 
 export class DeleteUserPostCommand {
-  constructor(public readonly data: { userId: number; userPostId: number }) {}
+  constructor(public readonly data: DeleteUserPostServiceDTO) {}
 }
 
 @CommandHandler(DeleteUserPostCommand)
@@ -15,7 +17,7 @@ export class DeleteUserPostHandler
   constructor(
     private readonly postsRepository: UserPostsRepository,
     private readonly postsQueryRepository: UserPostsQueryRepository,
-    // private readonly imagesService: FileResourceService,
+    private readonly s3StorageService: S3StorageService,
   ) {}
 
   async execute({ data: command }: DeleteUserPostCommand): Promise<void> {
@@ -33,10 +35,14 @@ export class DeleteUserPostHandler
       );
     }
 
-    const deletedPost = await this.postsRepository.deletePostById(foundPost.id);
+    const deleteImagesFromS3Promises = foundPost.images.map((image) => {
+      return this.s3StorageService.deleteFile(image.path);
+    });
 
-    // await this.imagesService.deleteImagesFromBucket(
-    //   deletedPost.images.map((image) => image.path),
-    // );
+    const deletePostPromise = await this.postsRepository.deletePostById(
+      foundPost.id,
+    );
+
+    await Promise.all([...deleteImagesFromS3Promises, deletePostPromise]);
   }
 }

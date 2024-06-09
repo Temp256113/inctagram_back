@@ -6,6 +6,8 @@ import * as GatewayControllerTypes from '@libs/common-types/user-content/control
 import {
   CreateUserPostCommand,
   CreateUserPostServiceDTO,
+  DeleteUserPostCommand,
+  DeleteUserPostServiceDTO,
   UpdateUserPostCommand,
   UpdateUserPostServiceDTO,
 } from './application/command-handlers';
@@ -43,6 +45,18 @@ export class UserPostsController {
         userId: payload.userId,
         userPostId: payload.userPostId,
         description: payload.description,
+      }),
+    );
+  }
+
+  @MessagePattern(UserContentMicroservicePatterns.DELETE_USER_POST)
+  async deletePost(
+    @Payload() payload: DeleteUserPostServiceDTO,
+  ): Promise<void> {
+    await this.commandBus.execute(
+      new DeleteUserPostCommand({
+        userPostId: payload.userPostId,
+        userId: payload.userId,
       }),
     );
   }
