@@ -18,22 +18,7 @@ import {
 import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '@libs/common-decorators';
-// import { CreateUserPostRouteSwaggerDescription } from './swagger/controller/createUserPost.route.swagger';
-// import { UpdateUserPostDto } from './dto/updateUserPost.dto';
-// import { UpdateUserPostRouteSwaggerDescription } from './swagger/controller/updateUserPost.route.swagger';
-// import {
-//   UserPostByIdReturnType,
-//   UserPostReturnType,
-// } from './dto/userPostReturnTypes';
-// import { DeleteUserPostRouteSwaggerDescription } from './swagger/controller/deleteUserPost.route.swagger';
-// import { GetUserPostsRouteSwaggerDescription } from './swagger/controller/getUserPosts.route.swagger';
-// import { AccessToken } from '@libs/common-decorators';
-// import { GetPostByIdQuery } from './application/query-handlers/getPostById.handler';
-// import { CreateUserPostCommand } from './application/command-handlers/createUserPost.handler';
-// import { UpdateUserPostCommand } from './application/command-handlers/updateUserPost.handler';
-// import { DeleteUserPostCommand } from './application/command-handlers/deleteUserPost.handler';
-// import { GetUserPostByIdRouteSwaggerDescription } from './swagger/controller/getUserPostById.route.swagger';
+import { AccessToken, User } from '@libs/common-decorators';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
@@ -44,7 +29,10 @@ import {
 import * as GatewayControllerTypes from '@libs/common-types/user-content/controller';
 import * as SwaggerRouteDecorators from './swagger';
 import { UpdateUserPostServiceDTO } from '../../../../../user-content/src/user-posts/application/command-handlers';
-import { GetMyUserPostsServiceDTO } from '../../../../../user-content/src/user-posts/application/query-handlers/getMyPosts.handler';
+import {
+  GetMyUserPostsServiceDTO,
+  GetUserPostByIdServiceDTO,
+} from '../../../../../user-content/src/user-posts/application/query-handlers';
 
 @ApiTags('user-posts controller')
 @Controller('user-posts')
@@ -159,13 +147,23 @@ export class UserPostsController {
     );
   }
 
-  // @Get(':id')
-  // @HttpCode(HttpStatus.OK)
-  // @GetUserPostByIdRouteSwaggerDescription()
-  // async getPostById(
-  //   @Param('id') postId: number,
-  //   @AccessToken() accessToken: string | undefined,
-  // ): Promise<UserPostByIdReturnType> {
-  //   return this.queryBus.execute(new GetPostByIdQuery({ postId, accessToken }));
-  // }
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @SwaggerRouteDecorators.GetUserPostById()
+  async getPostById(
+    @Param('id') postId: number,
+    @AccessToken() accessToken: string | undefined,
+  ): Promise<GatewayControllerTypes.UserPostResponseDTO> {
+    const getUserPostByIdPayload: GetUserPostByIdServiceDTO = {
+      postId,
+      accessToken,
+    };
+
+    return lastValueFrom(
+      this.userContentClient.send(
+        UserContentMicroservicePatterns.GET_USER_POST_BY_ID,
+        getUserPostByIdPayload,
+      ),
+    );
+  }
 }

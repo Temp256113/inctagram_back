@@ -17,7 +17,10 @@ import {
   DeleteUserPostHandler,
   UpdateUserPostHandler,
 } from './user-posts/application/command-handlers';
-import { GetMyUserPostsHandler } from './user-posts/application/query-handlers';
+import {
+  GetMyUserPostsHandler,
+  GetUserPostByIdHandler,
+} from './user-posts/application/query-handlers';
 
 const userProfileHandlers = [UpdateUserProfileHandler];
 
@@ -32,7 +35,7 @@ const userPostsHandlers = [
   DeleteUserPostHandler,
 ];
 
-const userPostsQueryHandlers = [GetMyUserPostsHandler];
+const userPostsQueryHandlers = [GetMyUserPostsHandler, GetUserPostByIdHandler];
 
 @Module({
   imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],

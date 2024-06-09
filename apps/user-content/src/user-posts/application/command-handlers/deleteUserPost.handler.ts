@@ -1,8 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
+import { CustomRpcException } from '@libs/common-exceptions';
 
 export type DeleteUserPostServiceDTO = { userId: number; userPostId: number };
 
@@ -26,13 +27,17 @@ export class DeleteUserPostHandler
     );
 
     if (!foundPost) {
-      throw new NotFoundException('Not found user post with provided id');
+      throw new CustomRpcException({
+        message: 'Not found user post with provided id',
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     if (foundPost.userId !== command.userId) {
-      throw new ForbiddenException(
-        'The user post with the provided id does not belong to you',
-      );
+      throw new CustomRpcException({
+        message: 'The user post with the provided id does not belong to you',
+        status: HttpStatus.FORBIDDEN,
+      });
     }
 
     const deleteImagesFromS3Promises = foundPost.images.map((image) => {
