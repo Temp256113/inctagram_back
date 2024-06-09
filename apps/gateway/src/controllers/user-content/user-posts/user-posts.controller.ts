@@ -35,7 +35,7 @@ import { User } from '@libs/common-decorators';
 // import { UpdateUserPostCommand } from './application/command-handlers/updateUserPost.handler';
 // import { DeleteUserPostCommand } from './application/command-handlers/deleteUserPost.handler';
 // import { GetUserPostByIdRouteSwaggerDescription } from './swagger/controller/getUserPostById.route.swagger';
-// import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
+import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
@@ -43,6 +43,7 @@ import { CreateUserPostServiceDTO } from '../../../../../user-content/src/user-p
 import { CreateUserPostDto } from '../../../../../first-app/src/user-posts/dto/createUserPost.dto';
 import * as GatewayControllerTypes from '@libs/common-types/user-content/controller';
 import * as SwaggerRouteDecorators from './swagger';
+import { UpdateUserPostServiceDTO } from '../../../../../user-content/src/user-posts/application/command-handlers';
 
 @ApiTags('user-posts controller')
 @Controller('user-posts')
@@ -92,23 +93,28 @@ export class UserPostsController {
     );
   }
 
-  // @Patch()
-  // @UseGuards(AccessTokenGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @UpdateUserPostRouteSwaggerDescription()
-  // async updatePost(
-  //   @Body() updatePostDto: UpdateUserPostDto,
-  //   @User() user: UserDecoratorType,
-  // ): Promise<UserPostReturnType> {
-  //   return this.commandBus.execute(
-  //     new UpdateUserPostCommand({
-  //       userPostId: updatePostDto.userPostId,
-  //       userId: user.userId,
-  //       description: updatePostDto.description,
-  //     }),
-  //   );
-  // }
-  //
+  @Patch()
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @SwaggerRouteDecorators.UpdateUserPost()
+  async updatePost(
+    @Body() updatePostDto: GatewayControllerTypes.UpdateUserPostDTO,
+    @User() user: AccessTokenUserType,
+  ): Promise<GatewayControllerTypes.UserPostResponseDTO> {
+    const updateUserPostPayload: UpdateUserPostServiceDTO = {
+      userId: user.id,
+      userPostId: updatePostDto.userPostId,
+      description: updatePostDto.description,
+    };
+
+    return lastValueFrom(
+      this.userContentClient.send(
+        UserContentMicroservicePatterns.UPDATE_USER_POST,
+        updateUserPostPayload,
+      ),
+    );
+  }
+
   // @Delete(':postId')
   // @UseGuards(AccessTokenGuard)
   // @HttpCode(HttpStatus.NO_CONTENT)

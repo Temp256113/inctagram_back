@@ -1,40 +1,48 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
-// import { UserPostReturnType } from '../../dto/userPostReturnTypes';
+import { HttpStatus } from '@nestjs/common';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
+import { UserPostResponseDTO } from '@libs/common-types/user-content/controller';
+import { CustomRpcException } from '@libs/common-exceptions';
+
+export type UpdateUserPostServiceDTO = {
+  userId: number;
+  userPostId: number;
+  description: string;
+};
 
 export class UpdateUserPostCommand {
-  constructor(
-    public readonly data: {
-      userId: number;
-      userPostId: number;
-      description: string;
-    },
-  ) {}
+  constructor(public readonly data: UpdateUserPostServiceDTO) {}
 }
 
 @CommandHandler(UpdateUserPostCommand)
-// implements ICommandHandler<UpdateUserPostCommand, UserPostReturnType>
-export class UpdateUserPostHandler {
+export class UpdateUserPostHandler
+  implements ICommandHandler<UpdateUserPostCommand, UserPostResponseDTO>
+{
   constructor(
     private readonly postsRepository: UserPostsRepository,
     private readonly postsQueryRepository: UserPostsQueryRepository,
   ) {}
 
-  async execute({ data: command }: UpdateUserPostCommand) {
+  async execute({
+    data: command,
+  }: UpdateUserPostCommand): Promise<UserPostResponseDTO> {
     const foundPost = await this.postsQueryRepository.getPostById(
       command.userPostId,
     );
 
     if (!foundPost) {
-      throw new NotFoundException('Not found user post with provided id');
+      throw new CustomRpcException({
+        message: 'Not found user post with provided id',
+        status: HttpStatus.NOT_FOUND,
+      });
     }
 
     if (foundPost.userId !== command.userId) {
-      throw new ForbiddenException(
-        'The user post with the provided id does not belong to you',
-      );
+      throw new CustomRpcException({
+        message: 'The user post with the provided id does not belong to you',
+        status: HttpStatus.FORBIDDEN,
+      });
     }
 
     const updatedPost =
@@ -48,11 +56,9 @@ export class UpdateUserPostHandler {
       postDescription: updatedPost.description,
       createdAt: updatedPost.createdAt,
       updatedAt: updatedPost.updatedAt,
-      postImages: updatedPost.images
-        .sort((a, b) => a.id - b.id)
-        .map((image) => {
-          return { imageId: image.id, imageUrl: image.url };
-        }),
+      postImages: updatedPost.images.map((image) => {
+        return { imageUrl: image.url };
+      }),
     };
   }
 }

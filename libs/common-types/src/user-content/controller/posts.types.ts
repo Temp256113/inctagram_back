@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, Length } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Length } from 'class-validator';
 
 class UserPostImagesResponseGatewayDTO {
   @ApiProperty({ type: 'string' })
@@ -26,6 +26,21 @@ export class UserPostResponseDTO {
 export class UserPostByIdResponseDTO extends UserPostResponseDTO {
   @ApiProperty({ type: 'boolean', example: true })
   canModify: boolean;
+}
+
+export class UpdateUserPostDTO {
+  @IsString()
+  @Length(1, 500, { message: 'Description field may have only 500 length' })
+  @ApiProperty({
+    example: 'Some post description',
+    maxLength: 500,
+    minLength: 1,
+  })
+  description: string;
+
+  @IsNumber()
+  @ApiProperty({ example: 256113, description: 'Provide valid user post id' })
+  userPostId: number;
 }
 
 export class CreateUserPostDTO {

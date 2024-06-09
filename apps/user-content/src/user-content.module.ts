@@ -12,7 +12,10 @@ import {
   GetUserProfileByIdHandler,
 } from './user-profile/application/query-handlers';
 import { UserPostsController } from './user-posts/user-posts.controller';
-import { CreateUserPostHandler } from './user-posts/application/command-handlers/createUserPost.handler';
+import {
+  CreateUserPostHandler,
+  UpdateUserPostHandler,
+} from './user-posts/application/command-handlers';
 
 const userProfileHandlers = [UpdateUserProfileHandler];
 
@@ -21,7 +24,7 @@ const userProfileQueryHandlers = [
   GetUserProfileByIdHandler,
 ];
 
-const userPostsHandlers = [CreateUserPostHandler];
+const userPostsHandlers = [CreateUserPostHandler, UpdateUserPostHandler];
 
 @Module({
   imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],

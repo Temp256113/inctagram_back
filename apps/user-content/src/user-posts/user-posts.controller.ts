@@ -6,7 +6,9 @@ import * as GatewayControllerTypes from '@libs/common-types/user-content/control
 import {
   CreateUserPostCommand,
   CreateUserPostServiceDTO,
-} from './application/command-handlers/createUserPost.handler';
+  UpdateUserPostCommand,
+  UpdateUserPostServiceDTO,
+} from './application/command-handlers';
 
 @Controller()
 export class UserPostsController {
@@ -29,6 +31,17 @@ export class UserPostsController {
       new CreateUserPostCommand({
         userId: payload.userId,
         images: payload.images,
+        description: payload.description,
+      }),
+    );
+  }
+
+  @MessagePattern(UserContentMicroservicePatterns.UPDATE_USER_POST)
+  async updatePost(@Payload() payload: UpdateUserPostServiceDTO) {
+    return this.commandBus.execute(
+      new UpdateUserPostCommand({
+        userId: payload.userId,
+        userPostId: payload.userPostId,
         description: payload.description,
       }),
     );
