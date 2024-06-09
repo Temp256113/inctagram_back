@@ -59,6 +59,7 @@ export class UpdateUserPostHandler
       postImages: updatedPost.images.map((image) => {
         return { imageUrl: image.url };
       }),
+      canModify: true,
     };
   }
 }

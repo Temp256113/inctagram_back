@@ -21,9 +21,7 @@ export class UserPostResponseDTO {
 
   @ApiProperty({ type: [UserPostImagesResponseGatewayDTO] })
   postImages: UserPostImagesResponseGatewayDTO[];
-}
 
-export class UserPostByIdResponseDTO extends UserPostResponseDTO {
   @ApiProperty({ type: 'boolean', example: true })
   canModify: boolean;
 }

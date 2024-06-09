@@ -11,6 +11,10 @@ import {
   UpdateUserPostCommand,
   UpdateUserPostServiceDTO,
 } from './application/command-handlers';
+import {
+  GetMyUserPostsQuery,
+  GetMyUserPostsServiceDTO,
+} from './application/query-handlers/getMyPosts.handler';
 
 @Controller()
 export class UserPostsController {
@@ -58,6 +62,15 @@ export class UserPostsController {
         userPostId: payload.userPostId,
         userId: payload.userId,
       }),
+    );
+  }
+
+  @MessagePattern(UserContentMicroservicePatterns.GET_MY_USER_POSTS)
+  async getMyPosts(
+    @Payload() payload: GetMyUserPostsServiceDTO,
+  ): Promise<GatewayControllerTypes.UserPostResponseDTO[]> {
+    return this.queryBus.execute(
+      new GetMyUserPostsQuery({ userId: payload.userId, page: payload.page }),
     );
   }
 }

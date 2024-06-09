@@ -14,38 +14,17 @@ export class UserPostsQueryRepository {
   }
 
   async getPostsByUserId(data: {
-    page: number;
+    howMuchSkipPosts: number;
+    howManyPostsToTakePerRequest: number;
     userId: number;
-  }): Promise<UserPostReturnType[]> {
-    // 8 потому что за каждый запрос нужно возвращать по 8 постов
-    const howMuchSkip = (data.page - 1) * 8;
-
-    const foundPosts = await this.prisma.userPost.findMany({
+  }) {
+    return this.prisma.userPost.findMany({
       where: { userId: data.userId },
-      take: 8,
-      skip: howMuchSkip,
+      take: data.howManyPostsToTakePerRequest,
+      skip: data.howMuchSkipPosts,
       orderBy: { createdAt: 'desc' },
       include: { images: true },
     });
-
-    const result: UserPostReturnType[] = [];
-
-    foundPosts.forEach((post) => {
-      result.push({
-        postId: post.id,
-        postDescription: post.description ?? null,
-        createdAt: post.createdAt,
-        updatedAt: post.updatedAt,
-        postImages: post.images.map((image) => {
-          return {
-            imageId: image.id,
-            imageUrl: image.url,
-          };
-        }),
-      });
-    });
-
-    return result;
   }
 
   async getLastFourPosts(): Promise<UserPostReturnType[]> {

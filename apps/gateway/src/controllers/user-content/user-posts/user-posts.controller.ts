@@ -18,7 +18,6 @@ import {
 import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { User } from '@libs/common-decorators';
 // import { CreateUserPostRouteSwaggerDescription } from './swagger/controller/createUserPost.route.swagger';
 // import { UpdateUserPostDto } from './dto/updateUserPost.dto';
@@ -45,6 +44,7 @@ import {
 import * as GatewayControllerTypes from '@libs/common-types/user-content/controller';
 import * as SwaggerRouteDecorators from './swagger';
 import { UpdateUserPostServiceDTO } from '../../../../../user-content/src/user-posts/application/command-handlers';
+import { GetMyUserPostsServiceDTO } from '../../../../../user-content/src/user-posts/application/query-handlers/getMyPosts.handler';
 
 @ApiTags('user-posts controller')
 @Controller('user-posts')
@@ -123,7 +123,7 @@ export class UserPostsController {
   async deletePost(
     @Param('postId') postId: number,
     @User() user: AccessTokenUserType,
-  ) {
+  ): Promise<void> {
     const deleteUserPostPayload: DeleteUserPostServiceDTO = {
       userPostId: postId,
       userId: user.id,
@@ -138,20 +138,27 @@ export class UserPostsController {
     );
   }
 
-  // @Get('my-posts/:page')
-  // @UseGuards(AccessTokenGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @GetUserPostsRouteSwaggerDescription()
-  // async getMyPosts(
-  //   @Param('page') page: number,
-  //   @User() user: UserDecoratorType,
-  // ): Promise<UserPostReturnType[]> {
-  //   return this.userPostsQueryRepository.getPostsByUserId({
-  //     userId: user.userId,
-  //     page,
-  //   });
-  // }
-  //
+  @Get('my-posts/:page')
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  @SwaggerRouteDecorators.GetUserPosts()
+  async getMyPosts(
+    @Param('page') page: number,
+    @User() user: AccessTokenUserType,
+  ): Promise<GatewayControllerTypes.UserPostResponseDTO[]> {
+    const getMyUserPostsPayload: GetMyUserPostsServiceDTO = {
+      userId: user.id,
+      page,
+    };
+
+    return lastValueFrom(
+      this.userContentClient.send(
+        UserContentMicroservicePatterns.GET_MY_USER_POSTS,
+        getMyUserPostsPayload,
+      ),
+    );
+  }
+
   // @Get(':id')
   // @HttpCode(HttpStatus.OK)
   // @GetUserPostByIdRouteSwaggerDescription()

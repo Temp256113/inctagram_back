@@ -44,6 +44,7 @@ export class CreateUserPostHandler
       postImages: loadedImagesForPost.map((loadedImage) => {
         return { imageUrl: loadedImage.url };
       }),
+      canModify: true,
     };
   }
 
