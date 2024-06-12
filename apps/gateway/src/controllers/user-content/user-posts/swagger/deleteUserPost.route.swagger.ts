@@ -8,7 +8,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export const DeleteUserPost = () => {
+export const DeletePost = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Delete user post' }),
     ApiBearerAuth(),

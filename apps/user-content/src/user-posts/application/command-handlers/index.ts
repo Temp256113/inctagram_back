@@ -1,3 +1,3 @@
-export * from './createUserPost.handler';
-export * from './updateUserPost.handler';
-export * from './deleteUserPost.handler';
+export * from './createPostHandler';
+export * from './updatePostHandler';
+export * from './deletePostHandler';

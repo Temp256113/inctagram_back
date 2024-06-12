@@ -5,7 +5,7 @@ export type CustomRpcExceptionDTO = {
   status: number;
 } & Record<string, any>;
 
-export class CustomRpcException extends RpcException {
+export class RpcCustomException extends RpcException {
   constructor(error: CustomRpcExceptionDTO) {
     super({ ...error, isMyCustomRpcException: true });
   }

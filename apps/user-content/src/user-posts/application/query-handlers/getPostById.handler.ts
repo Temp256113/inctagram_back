@@ -3,21 +3,23 @@ import { HttpStatus } from '@nestjs/common';
 import { AccessTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
-import { UserPostResponseDTO } from '@libs/common-types/user-content/controller';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 
-export type GetUserPostByIdServiceDTO = {
-  postId: number;
-  accessToken: string | undefined;
-};
-
-export class GetUserPostByIdQuery {
-  constructor(public readonly data: GetUserPostByIdServiceDTO) {}
+export class GetPostByIdQuery {
+  constructor(
+    public readonly data: UserContentMicroserviceTypes.GetPostByIdDTO,
+  ) {}
 }
 
-@QueryHandler(GetUserPostByIdQuery)
+@QueryHandler(GetPostByIdQuery)
 export class GetUserPostByIdHandler
-  implements IQueryHandler<GetUserPostByIdQuery, UserPostResponseDTO>
+  implements
+    IQueryHandler<
+      GetPostByIdQuery,
+      UserContentGatewayControllerTypes.PostResponseDTO
+    >
 {
   constructor(
     private readonly jwtTokensService: JwtTokensService,
@@ -27,13 +29,13 @@ export class GetUserPostByIdHandler
 
   async execute({
     data: query,
-  }: GetUserPostByIdQuery): Promise<UserPostResponseDTO> {
+  }: GetPostByIdQuery): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
     const userId: number | undefined = await this.getUserId(query.accessToken);
 
     const foundPost = await this.postsQueryRepository.getPostById(query.postId);
 
     if (!foundPost) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'Post with provided id is not found',
         status: HttpStatus.NOT_FOUND,
       });

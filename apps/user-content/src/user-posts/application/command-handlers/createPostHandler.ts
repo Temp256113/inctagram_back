@@ -1,21 +1,22 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
-import { UserPostResponseDTO } from '@libs/common-types/user-content/controller';
 import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
+import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 
-export type CreateUserPostServiceDTO = {
-  userId: number;
-  images: Array<Express.Multer.File & { buffer: any }>;
-  description?: string;
-};
-
-export class CreateUserPostCommand {
-  constructor(public readonly data: CreateUserPostServiceDTO) {}
+export class CreatePostCommand {
+  constructor(
+    public readonly data: UserContentMicroserviceTypes.CreatePostDTO,
+  ) {}
 }
 
-@CommandHandler(CreateUserPostCommand)
-export class CreateUserPostHandler
-  implements ICommandHandler<CreateUserPostCommand, UserPostResponseDTO>
+@CommandHandler(CreatePostCommand)
+export class CreatePostHandler
+  implements
+    ICommandHandler<
+      CreatePostCommand,
+      UserContentGatewayControllerTypes.PostResponseDTO
+    >
 {
   constructor(
     private readonly s3StorageService: S3StorageService,
@@ -24,7 +25,7 @@ export class CreateUserPostHandler
 
   async execute({
     data: command,
-  }: CreateUserPostCommand): Promise<UserPostResponseDTO> {
+  }: CreatePostCommand): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
     const createdPost = await this.postsRepository.createPost({
       userId: command.userId,
       description: command.description,

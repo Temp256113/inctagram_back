@@ -12,7 +12,7 @@ import {
   PrismaClientTransactionType,
   PrismaService,
 } from '@libs/repositories/prisma.service';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
 
 @Injectable()
 export class UserRepository {
@@ -72,7 +72,7 @@ export class UserRepository {
 
       return newUser;
     } catch (err) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'I cant create new user. Check your provided data',
         status: HttpStatus.BAD_REQUEST,
       });

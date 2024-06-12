@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus } from '@nestjs/common';
 import { RefreshTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
-import { CustomRpcException } from '@libs/common-exceptions';
-import { UpdateTokensPairResponseServiceDTO } from '@libs/common-types/auth/controller';
+import { RpcCustomException } from '@libs/common-exceptions';
+import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 import { RefreshTokenUserType } from '@libs/common-guards';
 
 export class UpdateTokensPairCommand {
@@ -15,7 +15,7 @@ export class UpdateTokensPairHandler
   implements
     ICommandHandler<
       UpdateTokensPairCommand,
-      UpdateTokensPairResponseServiceDTO
+      AuthMicroserviceTypes.UpdateTokensPairResponseDTO
     >
 {
   constructor(
@@ -25,7 +25,7 @@ export class UpdateTokensPairHandler
 
   async execute(
     command: UpdateTokensPairCommand,
-  ): Promise<UpdateTokensPairResponseServiceDTO> {
+  ): Promise<AuthMicroserviceTypes.UpdateTokensPairResponseDTO> {
     const {
       data: { user, refreshTokenUuid: uuid },
     } = command;
@@ -53,7 +53,7 @@ export class UpdateTokensPairHandler
     newRefreshToken: string;
     userId: number;
     currentRefreshTokenUuid: string;
-  }) {
+  }): Promise<void> {
     const { newRefreshToken, currentRefreshTokenUuid, userId } = data;
 
     const newRefreshTokenPayload: RefreshTokenPayloadType =
@@ -71,7 +71,7 @@ export class UpdateTokensPairHandler
 
     // если не обновилась ни одна сессия значит она не найдена. если не найдена значит рефреш токен не действительный
     if (updatedSessionsAmount.count < 1) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: `Refresh token is invalid. Not found active session with provided refresh token`,
         status: HttpStatus.UNAUTHORIZED,
       });

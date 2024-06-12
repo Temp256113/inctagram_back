@@ -6,8 +6,8 @@ import * as crypto from 'crypto';
 import { HttpStatus } from '@nestjs/common';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
-import { RegisterDTO } from '@libs/common-types/auth/controller';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RegisterDTO } from 'libs/common-types/src/auth/gateway';
+import { RpcCustomException } from '@libs/common-exceptions';
 
 export class RegisterCommand {
   constructor(public readonly userRegisterDTO: RegisterDTO) {}
@@ -82,12 +82,12 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
     }
 
     if (foundUser.email === email) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'User with this email is already registered',
         status: HttpStatus.CONFLICT,
       });
     } else if (foundUser.profile?.username === username) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'User with this username is already registered',
         status: HttpStatus.CONFLICT,
       });

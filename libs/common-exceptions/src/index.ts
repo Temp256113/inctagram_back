@@ -1,1 +1,1 @@
-export * from './customRpcException';
+export * from './rpcCustomException';

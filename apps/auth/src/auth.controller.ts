@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CustomRpcException } from '@libs/common-exceptions';
-import * as ControllerTypes from '@libs/common-types/auth/controller';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
+import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 import * as Commands from './application/command-handlers/index';
 import { CommandBus } from '@nestjs/cqrs';
 import { RefreshTokenUserType } from '@libs/common-guards';
@@ -11,37 +11,27 @@ import { AuthMicroservicePatterns } from '../../gateway/src/controllers/auth/aut
 export class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @MessagePattern('test_pattern')
-  getHello(payload: any): string {
-    console.log('payload', payload);
-    throw new CustomRpcException({
-      message: 'я выкинул ошибку из auth service controller',
-      status: 404,
-    });
-    return `${payload.hello} rabbitmq`;
-  }
-
   @MessagePattern(AuthMicroservicePatterns.GOOGLE_AUTH)
   async authViaGoogle(
-    @Payload() payload: ControllerTypes.SideAuthDTO,
-  ): Promise<ControllerTypes.SideAuthResponseServiceDTO> {
+    @Payload() payload: AuthGatewayControllerTypes.SideAuthDTO,
+  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
     return this.commandBus.execute(
-      new Commands.GoogleAuthCommand({ googleCode: payload.code }),
+      new Commands.GoogleAuthCommand({ code: payload.code }),
     );
   }
 
   @MessagePattern(AuthMicroservicePatterns.GITHUB_AUTH)
   async authViaGithub(
-    @Payload() payload: ControllerTypes.SideAuthDTO,
-  ): Promise<ControllerTypes.SideAuthResponseServiceDTO> {
+    @Payload() payload: AuthGatewayControllerTypes.SideAuthDTO,
+  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
     return this.commandBus.execute(
-      new Commands.GithubAuthCommand({ githubCode: payload.code }),
+      new Commands.GithubAuthCommand({ code: payload.code }),
     );
   }
 
   @MessagePattern(AuthMicroservicePatterns.USER_REGISTER)
   async register(
-    @Payload() payload: ControllerTypes.RegisterDTO,
+    @Payload() payload: AuthGatewayControllerTypes.RegisterDTO,
   ): Promise<void> {
     await this.commandBus.execute(
       new Commands.RegisterCommand({
@@ -54,16 +44,16 @@ export class AuthController {
 
   @MessagePattern(AuthMicroservicePatterns.REGISTER_CODE_CHECK)
   async checkRegisterCode(
-    @Payload() payload: ControllerTypes.RegisterCodeCheckDTO,
+    @Payload() payload: AuthGatewayControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
     await this.commandBus.execute(
-      new Commands.RegisterCodeCheckCommand(payload.code),
+      new Commands.RegisterCodeCheckCommand({ code: payload.code }),
     );
   }
 
   @MessagePattern(AuthMicroservicePatterns.RESEND_REGISTER_EMAIL)
   async resendRegisterConfirmEmail(
-    @Payload() payload: ControllerTypes.ResendRegisterEmailDTO,
+    @Payload() payload: AuthGatewayControllerTypes.ResendRegisterEmailDTO,
   ): Promise<void> {
     await this.commandBus.execute(
       new Commands.ResendRegisterEmailCommand({ userEmail: payload.userEmail }),
@@ -72,8 +62,8 @@ export class AuthController {
 
   @MessagePattern(AuthMicroservicePatterns.USER_LOGIN)
   async login(
-    @Payload() payload: ControllerTypes.LoginDTO,
-  ): Promise<ControllerTypes.LoginResponseServiceDTO> {
+    @Payload() payload: AuthGatewayControllerTypes.LoginDTO,
+  ): Promise<AuthMicroserviceTypes.LoginResponseDTO> {
     return this.commandBus.execute(
       new Commands.LoginCommand({
         email: payload.email,
@@ -85,7 +75,7 @@ export class AuthController {
   @MessagePattern(AuthMicroservicePatterns.UPDATE_TOKENS_PAIR)
   async updateTokensPair(
     @Payload() payload: RefreshTokenUserType,
-  ): Promise<ControllerTypes.UpdateTokensPairResponseServiceDTO> {
+  ): Promise<AuthMicroserviceTypes.UpdateTokensPairResponseDTO> {
     return this.commandBus.execute(
       new Commands.UpdateTokensPairCommand(payload),
     );
@@ -93,7 +83,7 @@ export class AuthController {
 
   @MessagePattern(AuthMicroservicePatterns.USER_LOGOUT)
   async logout(
-    @Payload() payload: ControllerTypes.LogoutServiceDTO,
+    @Payload() payload: AuthMicroserviceTypes.LogoutDTO,
   ): Promise<void> {
     await this.commandBus.execute(
       new Commands.LogoutCommand({
@@ -105,7 +95,7 @@ export class AuthController {
 
   @MessagePattern(AuthMicroservicePatterns.CREATE_PASSWORD_RECOVERY_REQUEST)
   async passwordRecoveryRequest(
-    @Payload() payload: ControllerTypes.PasswordRecoveryRequestDTO,
+    @Payload() payload: AuthGatewayControllerTypes.PasswordRecoveryRequestDTO,
   ): Promise<void> {
     await this.commandBus.execute(
       new Commands.PasswordRecoveryRequestCommand({
@@ -117,7 +107,7 @@ export class AuthController {
 
   @MessagePattern(AuthMicroservicePatterns.PASSWORD_RECOVERY_CODE_CHECK)
   async passwordRecoveryCodeCheck(
-    @Payload() payload: ControllerTypes.PasswordRecoveryCodeCheckDTO,
+    @Payload() payload: AuthGatewayControllerTypes.PasswordRecoveryCodeCheckDTO,
   ): Promise<void> {
     await this.commandBus.execute(
       new Commands.PasswordRecoveryCodeCheckCommand({
@@ -128,12 +118,12 @@ export class AuthController {
 
   @MessagePattern(AuthMicroservicePatterns.PASSWORD_RECOVERY)
   async passwordRecovery(
-    @Payload() payload: ControllerTypes.PasswordRecoveryDTO,
+    @Payload() payload: AuthGatewayControllerTypes.PasswordRecoveryDTO,
   ): Promise<void> {
     await this.commandBus.execute(
       new Commands.PasswordRecoveryCommand({
         passwordRecoveryCode: payload.passwordRecoveryCode,
-        newPassword: payload.password,
+        password: payload.password,
       }),
     );
   }

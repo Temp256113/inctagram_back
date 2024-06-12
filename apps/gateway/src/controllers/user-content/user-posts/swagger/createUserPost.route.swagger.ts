@@ -7,7 +7,7 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UserPostResponseDTO } from '@libs/common-types/user-content/controller';
+import { PostResponseDTO } from 'libs/common-types/src/user-content/gateway';
 
 export const CreateUserPost = () => {
   return applyDecorators(
@@ -33,7 +33,7 @@ export const CreateUserPost = () => {
     }),
     ApiCreatedResponse({
       description: 'New post created',
-      type: UserPostResponseDTO,
+      type: PostResponseDTO,
     }),
     ApiUnauthorizedResponse({
       description: 'You must provide valid access token to access this route',

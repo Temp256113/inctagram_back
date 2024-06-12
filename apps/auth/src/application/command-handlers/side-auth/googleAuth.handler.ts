@@ -8,22 +8,23 @@ import { Prisma } from '@prisma/client';
 import { JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
-import { SideAuthResponseServiceDTO } from '@libs/common-types/auth/controller';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
 import { SideAuthUtils } from './sideAuthUtils';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
+import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 
 export class GoogleAuthCommand {
-  constructor(
-    public readonly data: {
-      googleCode: string;
-    },
-  ) {}
+  constructor(public readonly data: AuthGatewayControllerTypes.SideAuthDTO) {}
 }
 
 @CommandHandler(GoogleAuthCommand)
 export class GoogleAuthHandler
   extends SideAuthUtils
-  implements ICommandHandler<GoogleAuthCommand, SideAuthResponseServiceDTO>
+  implements
+    ICommandHandler<
+      GoogleAuthCommand,
+      AuthMicroserviceTypes.SideAuthResponseDTO
+    >
 {
   constructor(
     @Inject(authConfig.KEY)
@@ -43,9 +44,9 @@ export class GoogleAuthHandler
 
   async execute(
     command: GoogleAuthCommand,
-  ): Promise<SideAuthResponseServiceDTO> {
+  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
     const {
-      data: { googleCode },
+      data: { code: googleCode },
     } = command;
 
     const userInfoFromGoogle: { username: string; userEmail: string } =
@@ -123,7 +124,7 @@ export class GoogleAuthHandler
     })
       .then((res) => res.data)
       .catch((err) => {
-        throw new CustomRpcException({
+        throw new RpcCustomException({
           message: 'Google error response',
           status: HttpStatus.UNAUTHORIZED,
           ...err.response?.data,
@@ -146,7 +147,7 @@ export class GoogleAuthHandler
     })
       .then((res) => res.data)
       .catch((err) => {
-        throw new CustomRpcException({
+        throw new RpcCustomException({
           message: 'Google error response',
           status: HttpStatus.UNAUTHORIZED,
           ...err.response?.data,

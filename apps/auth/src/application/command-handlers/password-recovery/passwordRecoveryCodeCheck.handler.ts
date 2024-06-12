@@ -2,10 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PasswordRecoveryUtils } from './passwordRecoveryUtils';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
-import { PasswordRecoveryCodeCheckDTO } from '@libs/common-types/auth/controller';
+import * as AuthGatewayControllerTypes from 'libs/common-types/src/auth/gateway';
 
 export class PasswordRecoveryCodeCheckCommand {
-  constructor(public readonly data: PasswordRecoveryCodeCheckDTO) {}
+  constructor(
+    public readonly data: AuthGatewayControllerTypes.PasswordRecoveryCodeCheckDTO,
+  ) {}
 }
 
 @CommandHandler(PasswordRecoveryCodeCheckCommand)

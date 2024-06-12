@@ -7,11 +7,13 @@ import { NodemailerService } from '../../../utils/nodemailer.service';
 import { RecaptchaService } from '../../../utils/recaptcha.service';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
-import { CustomRpcException } from '@libs/common-exceptions';
-import { PasswordRecoveryRequestDTO } from '@libs/common-types/auth/controller';
+import { RpcCustomException } from '@libs/common-exceptions';
+import * as AuthGatewayControllerTypes from 'libs/common-types/src/auth/gateway';
 
 export class PasswordRecoveryRequestCommand {
-  constructor(public readonly data: PasswordRecoveryRequestDTO) {}
+  constructor(
+    public readonly data: AuthGatewayControllerTypes.PasswordRecoveryRequestDTO,
+  ) {}
 }
 
 @CommandHandler(PasswordRecoveryRequestCommand)
@@ -35,7 +37,7 @@ export class PasswordRecoveryRequestHandler
     const foundUser = await this.userQueryRepository.getUserByEmail(email);
 
     if (!foundUser) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'User is not found',
         status: HttpStatus.NOT_FOUND,
       });

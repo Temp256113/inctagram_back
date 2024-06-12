@@ -22,21 +22,13 @@ import { AccessToken, User } from '@libs/common-decorators';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
-import {
-  CreateUserPostServiceDTO,
-  DeleteUserPostServiceDTO,
-} from '../../../../../user-content/src/user-posts/application/command-handlers';
-import * as GatewayControllerTypes from '@libs/common-types/user-content/controller';
+import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
 import * as SwaggerRouteDecorators from './swagger';
-import { UpdateUserPostServiceDTO } from '../../../../../user-content/src/user-posts/application/command-handlers';
-import {
-  GetMyUserPostsServiceDTO,
-  GetUserPostByIdServiceDTO,
-} from '../../../../../user-content/src/user-posts/application/query-handlers';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 
 @ApiTags('user-posts controller')
 @Controller('user-posts')
-export class UserPostsController {
+export class PostsController {
   constructor(
     @Inject('USER_CONTENT_SERVICE') private userContentClient: ClientProxy,
   ) {}
@@ -65,21 +57,24 @@ export class UserPostsController {
         }),
     )
     postImages: Express.Multer.File[],
-    @Body() createPostDto: GatewayControllerTypes.CreateUserPostDTO,
+    @Body() createPostDto: UserContentGatewayControllerTypes.CreatePostDTO,
     @User() user: AccessTokenUserType,
-  ): Promise<GatewayControllerTypes.UserPostResponseDTO> {
-    const createUserPostPayload: CreateUserPostServiceDTO = {
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+    const createPostPayload: UserContentMicroserviceTypes.CreatePostDTO = {
       userId: user.id,
       images: postImages,
       description: createPostDto.description,
     };
 
-    return lastValueFrom(
-      this.userContentClient.send(
-        UserContentMicroservicePatterns.CREATE_USER_POST,
-        createUserPostPayload,
-      ),
-    );
+    const post: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
+      lastValueFrom(
+        this.userContentClient.send(
+          UserContentMicroservicePatterns.CREATE_POST,
+          createPostPayload,
+        ),
+      );
+
+    return post;
   }
 
   @Patch()
@@ -87,40 +82,43 @@ export class UserPostsController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.UpdateUserPost()
   async updatePost(
-    @Body() updatePostDto: GatewayControllerTypes.UpdateUserPostDTO,
+    @Body() updatePostDto: UserContentGatewayControllerTypes.UpdatePostDTO,
     @User() user: AccessTokenUserType,
-  ): Promise<GatewayControllerTypes.UserPostResponseDTO> {
-    const updateUserPostPayload: UpdateUserPostServiceDTO = {
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+    const updatePostPayload: UserContentMicroserviceTypes.UpdatePostDTO = {
       userId: user.id,
       userPostId: updatePostDto.userPostId,
       description: updatePostDto.description,
     };
 
-    return lastValueFrom(
-      this.userContentClient.send(
-        UserContentMicroservicePatterns.UPDATE_USER_POST,
-        updateUserPostPayload,
-      ),
-    );
+    const post: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
+      lastValueFrom(
+        this.userContentClient.send(
+          UserContentMicroservicePatterns.UPDATE_POST,
+          updatePostPayload,
+        ),
+      );
+
+    return post;
   }
 
   @Delete(':postId')
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @SwaggerRouteDecorators.DeleteUserPost()
+  @SwaggerRouteDecorators.DeletePost()
   async deletePost(
     @Param('postId') postId: number,
     @User() user: AccessTokenUserType,
   ): Promise<void> {
-    const deleteUserPostPayload: DeleteUserPostServiceDTO = {
+    const deletePostPayload: UserContentMicroserviceTypes.DeletePostDTO = {
       userPostId: postId,
       userId: user.id,
     };
 
     await lastValueFrom(
       this.userContentClient.send(
-        UserContentMicroservicePatterns.DELETE_USER_POST,
-        deleteUserPostPayload,
+        UserContentMicroservicePatterns.DELETE_POST,
+        deletePostPayload,
       ),
       { defaultValue: null },
     );
@@ -129,41 +127,48 @@ export class UserPostsController {
   @Get('my-posts/:page')
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  @SwaggerRouteDecorators.GetUserPosts()
+  @SwaggerRouteDecorators.GetMyPosts()
   async getMyPosts(
     @Param('page') page: number,
     @User() user: AccessTokenUserType,
-  ): Promise<GatewayControllerTypes.UserPostResponseDTO[]> {
-    const getMyUserPostsPayload: GetMyUserPostsServiceDTO = {
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO[]> {
+    const getMyPostsPayload: UserContentMicroserviceTypes.GetMyPostsDTO = {
       userId: user.id,
       page,
     };
 
-    return lastValueFrom(
+    const foundPosts: Promise<
+      UserContentGatewayControllerTypes.PostResponseDTO[]
+    > = lastValueFrom(
       this.userContentClient.send(
-        UserContentMicroservicePatterns.GET_MY_USER_POSTS,
-        getMyUserPostsPayload,
+        UserContentMicroservicePatterns.GET_MY_POSTS,
+        getMyPostsPayload,
       ),
     );
+
+    return foundPosts;
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @SwaggerRouteDecorators.GetUserPostById()
+  @SwaggerRouteDecorators.GetPostById()
   async getPostById(
     @Param('id') postId: number,
     @AccessToken() accessToken: string | undefined,
-  ): Promise<GatewayControllerTypes.UserPostResponseDTO> {
-    const getUserPostByIdPayload: GetUserPostByIdServiceDTO = {
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+    const getPostByIdPayload: UserContentMicroserviceTypes.GetPostByIdDTO = {
       postId,
       accessToken,
     };
 
-    return lastValueFrom(
-      this.userContentClient.send(
-        UserContentMicroservicePatterns.GET_USER_POST_BY_ID,
-        getUserPostByIdPayload,
-      ),
-    );
+    const foundPost: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
+      lastValueFrom(
+        this.userContentClient.send(
+          UserContentMicroservicePatterns.GET_POST_BY_ID,
+          getPostByIdPayload,
+        ),
+      );
+
+    return foundPost;
   }
 }

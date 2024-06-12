@@ -19,12 +19,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
 import * as SwaggerRouteDecorators from './swagger';
 import { AccessToken, User } from '@libs/common-decorators';
-import * as ControllerTypes from '@libs/common-types/user-content/controller';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import _ from 'lodash';
-import { UpdateUserProfileServiceDTO } from '../../../../../user-content/src/user-profile/application/command-handlers';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 
 @Controller('user-profile')
 @ApiTags('user profile controller')
@@ -39,12 +39,15 @@ export class UserProfileController {
   @SwaggerRouteDecorators.GetUserProfile()
   async getMyProfile(
     @User() user: AccessTokenUserType,
-  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
-    const userProfile: ControllerTypes.UserProfileResponseGatewayDTO =
-      await lastValueFrom(
+  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+    const getMyProfilePayload: UserContentMicroserviceTypes.GetMyProfileDTO =
+      user;
+
+    const userProfile: Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> =
+      lastValueFrom(
         this.userContentClient.send(
-          UserContentMicroservicePatterns.GET_MY_USER_PROFILE,
-          user,
+          UserContentMicroservicePatterns.GET_MY_PROFILE,
+          getMyProfilePayload,
         ),
       );
 
@@ -57,12 +60,18 @@ export class UserProfileController {
   async getProfileById(
     @Param('id') profileId: number,
     @AccessToken() accessToken: string | null,
-  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
-    const userProfile: ControllerTypes.UserProfileResponseGatewayDTO =
-      await lastValueFrom(
+  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+    const getProfileByIdPayload: UserContentMicroserviceTypes.GetProfileByIdDTO =
+      {
+        profileId,
+        accessToken,
+      };
+
+    const userProfile: Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> =
+      lastValueFrom(
         this.userContentClient.send(
-          UserContentMicroservicePatterns.GET_USER_PROFILE_BY_ID,
-          { accessToken, profileId },
+          UserContentMicroservicePatterns.GET_PROFILE_BY_ID,
+          getProfileByIdPayload,
         ),
       );
 
@@ -93,9 +102,10 @@ export class UserProfileController {
         }),
     )
     newProfileImage: Express.Multer.File[],
-    @Body() updateProfileDTO: ControllerTypes.UpdateUserProfileDTO,
+    @Body()
+    updateProfileDTO: UserContentGatewayControllerTypes.UpdateUserProfileDTO,
     @User() user: AccessTokenUserType,
-  ): Promise<ControllerTypes.UserProfileResponseGatewayDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
     if (newProfileImage?.length > 1) {
       throw new BadRequestException(
         'You can set no more than 1 photo as a profile picture',
@@ -111,19 +121,20 @@ export class UserProfileController {
       );
     }
 
-    const dataForProfileUpdate: UpdateUserProfileServiceDTO = {
-      userId: user.id,
-      newProfileImage: newProfileImage[0],
-      currentProfileImage: user?.profile?.profileImage,
-      currentProfileImageId: user?.profile?.profileImage?.id,
-      ...updateProfileDTO,
-    };
+    const updateProfilePayload: UserContentMicroserviceTypes.UpdateProfileDTO =
+      {
+        userId: user.id,
+        newProfileImage: newProfileImage[0],
+        currentProfileImage: user?.profile?.profileImage,
+        currentProfileImageId: user?.profile?.profileImage?.id,
+        ...updateProfileDTO,
+      };
 
-    const updatedProfile: ControllerTypes.UserProfileResponseGatewayDTO =
-      await lastValueFrom(
+    const updatedProfile: Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> =
+      lastValueFrom(
         this.userContentClient.send(
-          UserContentMicroservicePatterns.UPDATE_USER_PROFILE,
-          dataForProfileUpdate,
+          UserContentMicroservicePatterns.UPDATE_PROFILE,
+          updateProfilePayload,
         ),
       );
 

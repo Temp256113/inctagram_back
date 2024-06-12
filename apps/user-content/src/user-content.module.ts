@@ -8,34 +8,31 @@ import { S3StorageAdapter } from './infrastructure/s3-storage/s3Storage.adapter'
 import { EnvModule } from '@libs/config';
 import { JwtTokensModule } from '@libs/jwt-token';
 import {
-  GetMyUserProfileHandler,
-  GetUserProfileByIdHandler,
+  GetMyProfileHandler,
+  GetProfileByIdHandler,
 } from './user-profile/application/query-handlers';
 import { UserPostsController } from './user-posts/user-posts.controller';
 import {
-  CreateUserPostHandler,
-  DeleteUserPostHandler,
-  UpdateUserPostHandler,
+  CreatePostHandler,
+  DeletePostHandler,
+  UpdatePostHandler,
 } from './user-posts/application/command-handlers';
 import {
-  GetMyUserPostsHandler,
+  GetMyPostsHandler,
   GetUserPostByIdHandler,
 } from './user-posts/application/query-handlers';
 
 const userProfileHandlers = [UpdateUserProfileHandler];
 
-const userProfileQueryHandlers = [
-  GetMyUserProfileHandler,
-  GetUserProfileByIdHandler,
-];
+const userProfileQueryHandlers = [GetMyProfileHandler, GetProfileByIdHandler];
 
 const userPostsHandlers = [
-  CreateUserPostHandler,
-  UpdateUserPostHandler,
-  DeleteUserPostHandler,
+  CreatePostHandler,
+  UpdatePostHandler,
+  DeletePostHandler,
 ];
 
-const userPostsQueryHandlers = [GetMyUserPostsHandler, GetUserPostByIdHandler];
+const userPostsQueryHandlers = [GetMyPostsHandler, GetUserPostByIdHandler];
 
 @Module({
   imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],

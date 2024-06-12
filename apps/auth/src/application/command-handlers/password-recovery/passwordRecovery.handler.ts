@@ -3,13 +3,11 @@ import { BcryptService } from '../../../utils/bcrypt.service';
 import { PasswordRecoveryUtils } from './passwordRecoveryUtils';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 
 export class PasswordRecoveryCommand {
   constructor(
-    public readonly data: {
-      newPassword: string;
-      passwordRecoveryCode: string;
-    },
+    public readonly data: AuthGatewayControllerTypes.PasswordRecoveryDTO,
   ) {}
 }
 
@@ -25,7 +23,7 @@ export class PasswordRecoveryHandler
 
   async execute(command: PasswordRecoveryCommand): Promise<void> {
     const {
-      data: { newPassword, passwordRecoveryCode },
+      data: { password: newPassword, passwordRecoveryCode },
     } = command;
 
     const passwordRecoveryUtils: PasswordRecoveryUtils =

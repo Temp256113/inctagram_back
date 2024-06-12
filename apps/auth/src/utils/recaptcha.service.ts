@@ -2,7 +2,7 @@ import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import appConfig from '@libs/config/app.config.service';
 import { ConfigType } from '@nestjs/config';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
 
 type RecaptchaResponseType =
   | {
@@ -37,7 +37,7 @@ export class RecaptchaService {
     );
 
     if (!data.success) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'reCAPTCHA token is missing or invalid',
         status: HttpStatus.BAD_REQUEST,
       });

@@ -2,23 +2,27 @@ import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserContentMicroservicePatterns } from '../../../gateway/src/controllers/user-content/userContentMicroservice.patterns';
-import * as GatewayControllerTypes from '@libs/common-types/user-content/controller';
+import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 import {
-  CreateUserPostCommand,
-  CreateUserPostServiceDTO,
-  DeleteUserPostCommand,
-  DeleteUserPostServiceDTO,
-  UpdateUserPostCommand,
-  UpdateUserPostServiceDTO,
+  CreatePostCommand,
+  DeletePostCommand,
+  UpdatePostCommand,
 } from './application/command-handlers';
 import {
-  GetMyUserPostsQuery,
-  GetMyUserPostsServiceDTO,
+  GetMyPostsQuery,
+  GetPostByIdQuery,
 } from './application/query-handlers';
-import {
-  GetUserPostByIdQuery,
-  GetUserPostByIdServiceDTO,
-} from './application/query-handlers';
+
+//TODO перенес всю логику которая была из монолита на микросервисы
+// нужно убрать сокеты и перевести на webhook сообщения про количество зареганных юзеров и последние созданные посты
+// также надо перенести гарды на gateway из библиотеки потому что используются только на http протоколе, а приложение такое одно - gateway
+// надо перенести из библиотеки common-decorators тоже в gateway потому что могут использоваться только на gateway (http protocol)
+// типы юзеров из гардов оставить в common-types. они могут использоваться в нескольких микросервисах (по крайней мере в common-types используются эти типы)
+
+// common-types готово. больше микросервисы не импортируют друг у друга типы, берут все из библиотеки
+// также рефакторить common-types, сделать gatewayTypes, перенести типы из handlers в common-types чтобы не экспортировать типы из микросервисов
+// микросервисы не должны быть связаны между собой, в том числе и типы не должны использоваться из микросервисов между собой
 
 @Controller()
 export class UserPostsController {
@@ -27,10 +31,10 @@ export class UserPostsController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @MessagePattern(UserContentMicroservicePatterns.CREATE_USER_POST)
+  @MessagePattern(UserContentMicroservicePatterns.CREATE_POST)
   async createPost(
-    @Payload() payload: CreateUserPostServiceDTO,
-  ): Promise<GatewayControllerTypes.UserPostResponseDTO> {
+    @Payload() payload: UserContentMicroserviceTypes.CreatePostDTO,
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
     // rabbitmq для того чтобы передавать данные по очередям сериализует тип данных buffer в json
     // поэтому нужно получившийся в результате массив с числами десериализовать обратно в buffer
     payload.images.forEach((image) => {
@@ -38,7 +42,7 @@ export class UserPostsController {
     });
 
     return this.commandBus.execute(
-      new CreateUserPostCommand({
+      new CreatePostCommand({
         userId: payload.userId,
         images: payload.images,
         description: payload.description,
@@ -46,10 +50,12 @@ export class UserPostsController {
     );
   }
 
-  @MessagePattern(UserContentMicroservicePatterns.UPDATE_USER_POST)
-  async updatePost(@Payload() payload: UpdateUserPostServiceDTO) {
+  @MessagePattern(UserContentMicroservicePatterns.UPDATE_POST)
+  async updatePost(
+    @Payload() payload: UserContentMicroserviceTypes.UpdatePostDTO,
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
     return this.commandBus.execute(
-      new UpdateUserPostCommand({
+      new UpdatePostCommand({
         userId: payload.userId,
         userPostId: payload.userPostId,
         description: payload.description,
@@ -57,31 +63,33 @@ export class UserPostsController {
     );
   }
 
-  @MessagePattern(UserContentMicroservicePatterns.DELETE_USER_POST)
+  @MessagePattern(UserContentMicroservicePatterns.DELETE_POST)
   async deletePost(
-    @Payload() payload: DeleteUserPostServiceDTO,
+    @Payload() payload: UserContentMicroserviceTypes.DeletePostDTO,
   ): Promise<void> {
     await this.commandBus.execute(
-      new DeleteUserPostCommand({
+      new DeletePostCommand({
         userPostId: payload.userPostId,
         userId: payload.userId,
       }),
     );
   }
 
-  @MessagePattern(UserContentMicroservicePatterns.GET_MY_USER_POSTS)
+  @MessagePattern(UserContentMicroservicePatterns.GET_MY_POSTS)
   async getMyPosts(
-    @Payload() payload: GetMyUserPostsServiceDTO,
-  ): Promise<GatewayControllerTypes.UserPostResponseDTO[]> {
+    @Payload() payload: UserContentMicroserviceTypes.GetMyPostsDTO,
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO[]> {
     return this.queryBus.execute(
-      new GetMyUserPostsQuery({ userId: payload.userId, page: payload.page }),
+      new GetMyPostsQuery({ userId: payload.userId, page: payload.page }),
     );
   }
 
-  @MessagePattern(UserContentMicroservicePatterns.GET_USER_POST_BY_ID)
-  async getPostById(@Payload() payload: GetUserPostByIdServiceDTO) {
+  @MessagePattern(UserContentMicroservicePatterns.GET_POST_BY_ID)
+  async getPostById(
+    @Payload() payload: UserContentMicroserviceTypes.GetPostByIdDTO,
+  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
     return this.queryBus.execute(
-      new GetUserPostByIdQuery({
+      new GetPostByIdQuery({
         postId: payload.postId,
         accessToken: payload.accessToken,
       }),

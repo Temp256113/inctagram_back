@@ -5,16 +5,16 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UserPostResponseDTO } from '@libs/common-types/user-content/controller';
+import { PostResponseDTO } from 'libs/common-types/src/user-content/gateway';
 
-export const GetUserPostById = () => {
+export const GetPostById = () => {
   return applyDecorators(
     ApiOperation({
       summary: 'Get user post by id',
     }),
     ApiOkResponse({
       description: 'User post found successfully',
-      type: UserPostResponseDTO,
+      type: PostResponseDTO,
     }),
     ApiNotFoundResponse({
       description: 'User post with provided id is not found',

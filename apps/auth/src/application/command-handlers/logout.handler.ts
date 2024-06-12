@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
-import { LogoutServiceDTO } from '@libs/common-types/auth/controller';
+import * as AuthMicroserviceTypes from 'libs/common-types/src/auth/microservice';
 
 export class LogoutCommand {
-  constructor(public readonly data: LogoutServiceDTO) {}
+  constructor(public readonly data: AuthMicroserviceTypes.LogoutDTO) {}
 }
 
 @CommandHandler(LogoutCommand)

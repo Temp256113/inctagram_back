@@ -1,35 +1,30 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { FileResource } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { HttpStatus } from '@nestjs/common';
 import {
   UserProfileRepository,
   UserProfileUpdateDbDTO,
 } from '@libs/repositories/repos/userProfile.repository';
-import {
-  UpdateUserProfileDTO,
-  UserProfileResponseGatewayDTO,
-} from '@libs/common-types/user-content/controller';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
 import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
 import _ from 'lodash';
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 
-export type UpdateUserProfileServiceDTO = UpdateUserProfileDTO & {
-  newProfileImage?: Express.Multer.File & { buffer: any };
-  currentProfileImage?: FileResource | null;
-  currentProfileImageId?: number | null;
-  userId: number;
-};
-
-export class UpdateUserProfileCommand {
-  constructor(public readonly data: UpdateUserProfileServiceDTO) {}
+export class UpdateProfileCommand {
+  constructor(
+    public readonly data: UserContentMicroserviceTypes.UpdateProfileDTO,
+  ) {}
 }
 
-@CommandHandler(UpdateUserProfileCommand)
+@CommandHandler(UpdateProfileCommand)
 export class UpdateUserProfileHandler
   implements
-    ICommandHandler<UpdateUserProfileCommand, UserProfileResponseGatewayDTO>
+    ICommandHandler<
+      UpdateProfileCommand,
+      UserContentGatewayControllerTypes.ProfileResponseDTO
+    >
 {
   constructor(
     private readonly userProfileRepository: UserProfileRepository,
@@ -38,8 +33,8 @@ export class UpdateUserProfileHandler
   ) {}
 
   async execute(
-    command: UpdateUserProfileCommand,
-  ): Promise<UserProfileResponseGatewayDTO> {
+    command: UpdateProfileCommand,
+  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
     const dateOfBirth = command.data.dateOfBirth;
     const newProfileImage = command.data.newProfileImage;
     const userId = command.data.userId;
@@ -143,27 +138,28 @@ export class UpdateUserProfileHandler
   async updateAndMapProfile(
     userId: number,
     updateProfileDTO: UserProfileUpdateDbDTO,
-  ): Promise<UserProfileResponseGatewayDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
     const userProfile = await this.userProfileRepository.updateProfile(
       userId,
       updateProfileDTO,
     );
 
-    const userProfileMapped: UserProfileResponseGatewayDTO = {
-      userId: userProfile?.userId,
-      username: userProfile?.username,
-      firstName: userProfile?.firstName,
-      lastName: userProfile?.lastName,
-      dateOfBirth: userProfile?.dateOfBirth,
-      country: userProfile?.country,
-      city: userProfile?.city,
-      aboutMe: userProfile?.aboutMe,
-      createdAt: userProfile?.createdAt,
-      updatedAt: userProfile?.updatedAt,
-      deletedAt: userProfile?.deletedAt,
-      profileImageURL: userProfile?.profileImage?.url ?? null,
-      canModify: true,
-    };
+    const userProfileMapped: UserContentGatewayControllerTypes.ProfileResponseDTO =
+      {
+        userId: userProfile?.userId,
+        username: userProfile?.username,
+        firstName: userProfile?.firstName,
+        lastName: userProfile?.lastName,
+        dateOfBirth: userProfile?.dateOfBirth,
+        country: userProfile?.country,
+        city: userProfile?.city,
+        aboutMe: userProfile?.aboutMe,
+        createdAt: userProfile?.createdAt,
+        updatedAt: userProfile?.updatedAt,
+        deletedAt: userProfile?.deletedAt,
+        profileImageURL: userProfile?.profileImage?.url ?? null,
+        canModify: true,
+      };
 
     return userProfileMapped;
   }
@@ -172,7 +168,7 @@ export class UpdateUserProfileHandler
     const age = differenceInYears(new Date(), dateOfBirth);
 
     if (age < 13) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'A user under 13 cannot create a profile',
         status: HttpStatus.FORBIDDEN,
       });
@@ -184,7 +180,7 @@ export class UpdateUserProfileHandler
       await this.userProfileQueryRepository.getProfileByUsername(username);
 
     if (foundUser) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: `Username ${username} is already exists`,
         status: HttpStatus.FORBIDDEN,
       });

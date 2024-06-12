@@ -2,22 +2,23 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus } from '@nestjs/common';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
-import { UserPostResponseDTO } from '@libs/common-types/user-content/controller';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 
-export type UpdateUserPostServiceDTO = {
-  userId: number;
-  userPostId: number;
-  description: string;
-};
-
-export class UpdateUserPostCommand {
-  constructor(public readonly data: UpdateUserPostServiceDTO) {}
+export class UpdatePostCommand {
+  constructor(
+    public readonly data: UserContentMicroserviceTypes.UpdatePostDTO,
+  ) {}
 }
 
-@CommandHandler(UpdateUserPostCommand)
-export class UpdateUserPostHandler
-  implements ICommandHandler<UpdateUserPostCommand, UserPostResponseDTO>
+@CommandHandler(UpdatePostCommand)
+export class UpdatePostHandler
+  implements
+    ICommandHandler<
+      UpdatePostCommand,
+      UserContentGatewayControllerTypes.PostResponseDTO
+    >
 {
   constructor(
     private readonly postsRepository: UserPostsRepository,
@@ -26,20 +27,20 @@ export class UpdateUserPostHandler
 
   async execute({
     data: command,
-  }: UpdateUserPostCommand): Promise<UserPostResponseDTO> {
+  }: UpdatePostCommand): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
     const foundPost = await this.postsQueryRepository.getPostById(
       command.userPostId,
     );
 
     if (!foundPost) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'Not found user post with provided id',
         status: HttpStatus.NOT_FOUND,
       });
     }
 
     if (foundPost.userId !== command.userId) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'The user post with the provided id does not belong to you',
         status: HttpStatus.FORBIDDEN,
       });

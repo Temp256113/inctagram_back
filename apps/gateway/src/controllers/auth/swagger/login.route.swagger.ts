@@ -4,7 +4,7 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { LoginResponseGatewayDTO } from '@libs/common-types/auth/controller';
+import { LoginResponseGatewayDTO } from 'libs/common-types/src/auth/gateway';
 
 export const Login = () => {
   return applyDecorators(

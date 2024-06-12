@@ -5,8 +5,9 @@ import * as crypto from 'crypto';
 import { JwtTokensService, RefreshTokenCreateType } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
-import * as AuthControllerTypes from '@libs/common-types/auth/controller';
-import { CustomRpcException } from '@libs/common-exceptions';
+import * as AuthControllerTypes from '@libs/common-types/auth/gateway';
+import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
+import { RpcCustomException } from '@libs/common-exceptions';
 
 export class LoginCommand {
   constructor(public readonly data: AuthControllerTypes.LoginDTO) {}
@@ -15,7 +16,7 @@ export class LoginCommand {
 @CommandHandler(LoginCommand)
 export class LoginHandler
   implements
-    ICommandHandler<LoginCommand, AuthControllerTypes.LoginResponseServiceDTO>
+    ICommandHandler<LoginCommand, AuthMicroserviceTypes.LoginResponseDTO>
 {
   constructor(
     private readonly userRepository: UserRepository,
@@ -26,7 +27,7 @@ export class LoginHandler
 
   async execute(
     command: LoginCommand,
-  ): Promise<AuthControllerTypes.LoginResponseServiceDTO> {
+  ): Promise<AuthMicroserviceTypes.LoginResponseDTO> {
     const { data } = command;
 
     const user = await this.getUser({
@@ -82,7 +83,7 @@ export class LoginHandler
     };
 
     if (!foundUser) {
-      throw new CustomRpcException(unauthorizedErr);
+      throw new RpcCustomException(unauthorizedErr);
     }
 
     const passwordIsCorrect: boolean =
@@ -92,7 +93,7 @@ export class LoginHandler
       });
 
     if (!passwordIsCorrect) {
-      throw new CustomRpcException(unauthorizedErr);
+      throw new RpcCustomException(unauthorizedErr);
     }
 
     return foundUser;

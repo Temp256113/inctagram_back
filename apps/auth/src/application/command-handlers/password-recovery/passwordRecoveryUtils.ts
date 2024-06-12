@@ -4,7 +4,7 @@ import { isBefore } from 'date-fns';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import {
-  CustomRpcException,
+  RpcCustomException,
   CustomRpcExceptionDTO,
 } from '@libs/common-exceptions';
 import { ApiProperty } from '@nestjs/swagger';
@@ -64,7 +64,7 @@ export class PasswordRecoveryUtils {
     const foundChangePasswordRequest = this.changePasswordRequest;
 
     if (!foundChangePasswordRequest) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'Change password request is not found',
         status: HttpStatus.NOT_FOUND,
       });
@@ -90,7 +90,7 @@ export class PasswordRecoveryUtils {
         userEmail: foundChangePasswordRequest.user.email,
       };
 
-    throw new CustomRpcException(passwordRecoveryCodeIsExpiredErr);
+    throw new RpcCustomException(passwordRecoveryCodeIsExpiredErr);
   }
 
   public getChangePasswordRequest(): Prisma.UserChangePasswordRequestGetPayload<{

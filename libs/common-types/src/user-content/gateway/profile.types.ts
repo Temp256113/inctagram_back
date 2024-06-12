@@ -38,7 +38,7 @@ class BaseUserProfileDTO {
   aboutMe?: string;
 }
 
-export class UserProfileResponseGatewayDTO extends BaseUserProfileDTO {
+export class ProfileResponseDTO extends BaseUserProfileDTO {
   @ApiProperty({ example: 1 })
   userId: number;
 

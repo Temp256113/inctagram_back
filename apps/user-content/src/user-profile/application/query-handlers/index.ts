@@ -1,2 +1,2 @@
-export * from './getMyUserProfile.handler';
-export * from './getUserProfileById.handler';
+export * from './getMyProfileHandler';
+export * from './getProfileByIdHandler';

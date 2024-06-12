@@ -5,10 +5,11 @@ import { NodemailerService } from '../../utils/nodemailer.service';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import {
-  CustomRpcException,
+  RpcCustomException,
   CustomRpcExceptionDTO,
 } from '@libs/common-exceptions';
 import { ApiProperty } from '@nestjs/swagger';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 
 export class RegisterCodeCheckResponseErrorType
   implements CustomRpcExceptionDTO
@@ -28,7 +29,9 @@ export class RegisterCodeCheckResponseErrorType
 }
 
 export class RegisterCodeCheckCommand {
-  constructor(public readonly code: string) {}
+  constructor(
+    public readonly data: AuthGatewayControllerTypes.RegisterCodeCheckDTO,
+  ) {}
 }
 
 @CommandHandler(RegisterCodeCheckCommand)
@@ -42,11 +45,11 @@ export class RegisterCodeCheckHandler
   ) {}
   async execute(command: RegisterCodeCheckCommand): Promise<void> {
     const foundUser = await this.userQueryRepository.getUserByConfirmEmailCode(
-      command.code,
+      command.data.code,
     );
 
     if (!foundUser) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'User with provided code is not found',
         status: HttpStatus.NOT_FOUND,
       });
@@ -64,7 +67,7 @@ export class RegisterCodeCheckHandler
         userEmail: foundUser.email,
       };
 
-      throw new CustomRpcException(codeIsExpiredErr);
+      throw new RpcCustomException(codeIsExpiredErr);
     }
 
     const updateUserEmailInfo = this.userRepository.updateEmailInfoByUserId(

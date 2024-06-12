@@ -3,17 +3,18 @@ import { HttpStatus } from '@nestjs/common';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
+import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 
-export type DeleteUserPostServiceDTO = { userId: number; userPostId: number };
-
-export class DeleteUserPostCommand {
-  constructor(public readonly data: DeleteUserPostServiceDTO) {}
+export class DeletePostCommand {
+  constructor(
+    public readonly data: UserContentMicroserviceTypes.DeletePostDTO,
+  ) {}
 }
 
-@CommandHandler(DeleteUserPostCommand)
-export class DeleteUserPostHandler
-  implements ICommandHandler<DeleteUserPostCommand, void>
+@CommandHandler(DeletePostCommand)
+export class DeletePostHandler
+  implements ICommandHandler<DeletePostCommand, void>
 {
   constructor(
     private readonly postsRepository: UserPostsRepository,
@@ -21,20 +22,20 @@ export class DeleteUserPostHandler
     private readonly s3StorageService: S3StorageService,
   ) {}
 
-  async execute({ data: command }: DeleteUserPostCommand): Promise<void> {
+  async execute({ data: command }: DeletePostCommand): Promise<void> {
     const foundPost = await this.postsQueryRepository.getPostById(
       command.userPostId,
     );
 
     if (!foundPost) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'Not found user post with provided id',
         status: HttpStatus.NOT_FOUND,
       });
     }
 
     if (foundPost.userId !== command.userId) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'The user post with the provided id does not belong to you',
         status: HttpStatus.FORBIDDEN,
       });

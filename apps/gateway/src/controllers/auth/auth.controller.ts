@@ -16,11 +16,11 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Response as Res } from 'express';
 import { JwtTokensService } from '@libs/jwt-token';
 import { lastValueFrom } from 'rxjs';
-import * as ControllerTypes from '@libs/common-types/auth/controller';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
+import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 import * as SwaggerRouteDecorators from './swagger';
 import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
 import { User } from '@libs/common-decorators';
-import { Cookies } from '../../decorators/cookies.decorator';
 import { AuthMicroservicePatterns } from './authMicroservice.patterns';
 
 @Controller('auth')
@@ -35,14 +35,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.SideAuth()
   async authViaGoogle(
-    @Body() googleAuthCode: ControllerTypes.SideAuthDTO,
+    @Body() googleAuthCode: AuthGatewayControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
-    const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
+  ): Promise<AuthGatewayControllerTypes.LoginResponseDTO> {
+    const authViaGooglePayload: AuthGatewayControllerTypes.SideAuthDTO = {
+      code: googleAuthCode.code,
+    };
+
+    const tokensAndUserData: AuthMicroserviceTypes.SideAuthResponseDTO =
       await lastValueFrom(
         this.authClient.send(
           AuthMicroservicePatterns.GOOGLE_AUTH,
-          googleAuthCode,
+          authViaGooglePayload,
         ),
       );
 
@@ -61,14 +65,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.SideAuth()
   async authViaGithub(
-    @Body() githubAuthCode: ControllerTypes.SideAuthDTO,
+    @Body() githubAuthCode: AuthGatewayControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
-    const tokensAndUserData: ControllerTypes.SideAuthResponseServiceDTO =
+  ): Promise<AuthGatewayControllerTypes.LoginResponseDTO> {
+    const authViaGithubPayload: AuthGatewayControllerTypes.SideAuthDTO = {
+      code: githubAuthCode.code,
+    };
+
+    const tokensAndUserData: AuthMicroserviceTypes.SideAuthResponseDTO =
       await lastValueFrom(
         this.authClient.send(
           AuthMicroservicePatterns.GITHUB_AUTH,
-          githubAuthCode,
+          authViaGithubPayload,
         ),
       );
 
@@ -87,12 +95,18 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @SwaggerRouteDecorators.Register()
   async register(
-    @Body() userRegisterDTO: ControllerTypes.RegisterDTO,
+    @Body() userRegisterDTO: AuthGatewayControllerTypes.RegisterDTO,
   ): Promise<void> {
+    const registerPayload: AuthGatewayControllerTypes.RegisterDTO = {
+      email: userRegisterDTO.email,
+      password: userRegisterDTO.password,
+      username: userRegisterDTO.username,
+    };
+
     await lastValueFrom(
       this.authClient.send(
         AuthMicroservicePatterns.USER_REGISTER,
-        userRegisterDTO,
+        registerPayload,
       ),
       {
         defaultValue: null,
@@ -104,12 +118,17 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.RegisterCodeCheck()
   async checkRegisterCode(
-    @Body() registerCode: ControllerTypes.RegisterCodeCheckDTO,
+    @Body() registerCode: AuthGatewayControllerTypes.RegisterCodeCheckDTO,
   ): Promise<void> {
+    const registerCodeCheckPayload: AuthGatewayControllerTypes.RegisterCodeCheckDTO =
+      {
+        code: registerCode.code,
+      };
+
     await lastValueFrom(
       this.authClient.send(
         AuthMicroservicePatterns.REGISTER_CODE_CHECK,
-        registerCode,
+        registerCodeCheckPayload,
       ),
       {
         defaultValue: null,
@@ -121,12 +140,17 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.ResendRegisterEmail()
   async sendEmail(
-    @Body() resendEmailInfo: ControllerTypes.ResendRegisterEmailDTO,
+    @Body() resendEmailInfo: AuthGatewayControllerTypes.ResendRegisterEmailDTO,
   ): Promise<void> {
+    const resendRegisterEmailPayload: AuthGatewayControllerTypes.ResendRegisterEmailDTO =
+      {
+        userEmail: resendEmailInfo.userEmail,
+      };
+
     await lastValueFrom(
       this.authClient.send(
         AuthMicroservicePatterns.RESEND_REGISTER_EMAIL,
-        resendEmailInfo,
+        resendRegisterEmailPayload,
       ),
       {
         defaultValue: null,
@@ -138,12 +162,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @SwaggerRouteDecorators.Login()
   async login(
-    @Body() userLoginDTO: ControllerTypes.LoginDTO,
+    @Body() userLoginDTO: AuthGatewayControllerTypes.LoginDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.LoginResponseGatewayDTO> {
-    const tokensAndUserData: ControllerTypes.LoginResponseServiceDTO =
+  ): Promise<AuthGatewayControllerTypes.LoginResponseDTO> {
+    const loginPayload: AuthGatewayControllerTypes.LoginDTO = {
+      email: userLoginDTO.email,
+      password: userLoginDTO.password,
+    };
+
+    const tokensAndUserData: AuthMicroserviceTypes.LoginResponseDTO =
       await lastValueFrom(
-        this.authClient.send(AuthMicroservicePatterns.USER_LOGIN, userLoginDTO),
+        this.authClient.send(AuthMicroservicePatterns.USER_LOGIN, loginPayload),
       );
 
     this.jwtTokensService.setRefreshTokenInCookie({
@@ -162,13 +191,17 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @SwaggerRouteDecorators.UpdateTokensPair()
   async updateTokensPair(
-    @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
     @User() user: RefreshTokenUserType,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<ControllerTypes.UpdateTokensPairResponseGatewayDTO> {
-    const newTokensPair: ControllerTypes.UpdateTokensPairResponseServiceDTO =
+  ): Promise<AuthGatewayControllerTypes.UpdateTokensPairResponseDTO> {
+    const updateTokensPairPayload: RefreshTokenUserType = user;
+
+    const newTokensPair: AuthMicroserviceTypes.UpdateTokensPairResponseDTO =
       await lastValueFrom(
-        this.authClient.send(AuthMicroservicePatterns.UPDATE_TOKENS_PAIR, user),
+        this.authClient.send(
+          AuthMicroservicePatterns.UPDATE_TOKENS_PAIR,
+          updateTokensPairPayload,
+        ),
       );
 
     this.jwtTokensService.setRefreshTokenInCookie({
@@ -185,15 +218,14 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.Logout()
-  async logout(
-    @Cookies(JwtTokensService.refreshTokenCookieTitle) refreshToken: string,
-    @User() refreshTokenData: RefreshTokenUserType,
-  ): Promise<void> {
+  async logout(@User() refreshTokenData: RefreshTokenUserType): Promise<void> {
+    const logoutPayload: AuthMicroserviceTypes.LogoutDTO = {
+      userId: refreshTokenData.user.id,
+      refreshTokenUuid: refreshTokenData.refreshTokenUuid,
+    };
+
     await lastValueFrom(
-      this.authClient.send(
-        AuthMicroservicePatterns.USER_LOGOUT,
-        refreshTokenData,
-      ),
+      this.authClient.send(AuthMicroservicePatterns.USER_LOGOUT, logoutPayload),
       {
         defaultValue: null,
       },
@@ -205,12 +237,18 @@ export class AuthController {
   @SwaggerRouteDecorators.PasswordRecoveryRequest()
   async passwordRecoveryRequest(
     @Body()
-    passwordRecoveryRequestDTO: ControllerTypes.PasswordRecoveryRequestDTO,
+    passwordRecoveryRequestDTO: AuthGatewayControllerTypes.PasswordRecoveryRequestDTO,
   ): Promise<void> {
+    const passwordRecoveryRequestPayload: AuthGatewayControllerTypes.PasswordRecoveryRequestDTO =
+      {
+        email: passwordRecoveryRequestDTO.email,
+        recaptchaToken: passwordRecoveryRequestDTO.recaptchaToken,
+      };
+
     await lastValueFrom(
       this.authClient.send(
         AuthMicroservicePatterns.CREATE_PASSWORD_RECOVERY_REQUEST,
-        passwordRecoveryRequestDTO,
+        passwordRecoveryRequestPayload,
       ),
       { defaultValue: null },
     );
@@ -221,12 +259,17 @@ export class AuthController {
   @SwaggerRouteDecorators.PasswordRecoveryCodeCheck()
   async passwordRecoveryCodeCheck(
     @Body()
-    passwordRecoveryCodeCheckDTO: ControllerTypes.PasswordRecoveryCodeCheckDTO,
+    passwordRecoveryCodeCheckDTO: AuthGatewayControllerTypes.PasswordRecoveryCodeCheckDTO,
   ): Promise<void> {
+    const passwordRecoveryCodeCheckPayload: AuthGatewayControllerTypes.PasswordRecoveryCodeCheckDTO =
+      {
+        passwordRecoveryCode: passwordRecoveryCodeCheckDTO.passwordRecoveryCode,
+      };
+
     await lastValueFrom(
       this.authClient.send(
         AuthMicroservicePatterns.PASSWORD_RECOVERY_CODE_CHECK,
-        passwordRecoveryCodeCheckDTO,
+        passwordRecoveryCodeCheckPayload,
       ),
       { defaultValue: null },
     );
@@ -236,12 +279,18 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @SwaggerRouteDecorators.PasswordRecovery()
   async passwordRecovery(
-    @Body() passwordRecoveryDTO: ControllerTypes.PasswordRecoveryDTO,
+    @Body() passwordRecoveryDTO: AuthGatewayControllerTypes.PasswordRecoveryDTO,
   ): Promise<void> {
+    const passwordRecoveryPayload: AuthGatewayControllerTypes.PasswordRecoveryDTO =
+      {
+        passwordRecoveryCode: passwordRecoveryDTO.passwordRecoveryCode,
+        password: passwordRecoveryDTO.password,
+      };
+
     await lastValueFrom(
       this.authClient.send(
         AuthMicroservicePatterns.PASSWORD_RECOVERY,
-        passwordRecoveryDTO,
+        passwordRecoveryPayload,
       ),
       { defaultValue: null },
     );

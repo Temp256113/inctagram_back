@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from '@libs/repositories/prisma.service';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
 import { FileResourceTypes } from '@prisma/client';
 
 export type UserProfileUpdateDbDTO = Partial<{
@@ -52,7 +52,7 @@ export class UserProfileRepository {
       .catch((err) => {
         if (err instanceof PrismaClientKnownRequestError) {
           if (err.code === 'P2002') {
-            throw new CustomRpcException({
+            throw new RpcCustomException({
               message: `Username already exists`,
               status: HttpStatus.BAD_REQUEST,
             });

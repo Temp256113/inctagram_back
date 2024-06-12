@@ -8,22 +8,23 @@ import axios from 'axios';
 import { JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
-import { SideAuthResponseServiceDTO } from '@libs/common-types/auth/controller';
 import { SideAuthUtils } from './sideAuthUtils';
-import { CustomRpcException } from '@libs/common-exceptions';
+import { RpcCustomException } from '@libs/common-exceptions';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
+import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 
 export class GithubAuthCommand {
-  constructor(
-    public readonly data: {
-      githubCode: string;
-    },
-  ) {}
+  constructor(public readonly data: AuthGatewayControllerTypes.SideAuthDTO) {}
 }
 
 @CommandHandler(GithubAuthCommand)
 export class GithubAuthHandler
   extends SideAuthUtils
-  implements ICommandHandler<GithubAuthCommand, SideAuthResponseServiceDTO>
+  implements
+    ICommandHandler<
+      GithubAuthCommand,
+      AuthMicroserviceTypes.SideAuthResponseDTO
+    >
 {
   constructor(
     @Inject(authConfig.KEY)
@@ -43,9 +44,9 @@ export class GithubAuthHandler
 
   async execute(
     command: GithubAuthCommand,
-  ): Promise<SideAuthResponseServiceDTO> {
+  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
     const {
-      data: { githubCode },
+      data: { code: githubCode },
     } = command;
 
     const userInfoFromGithub: {
@@ -123,7 +124,7 @@ export class GithubAuthHandler
     })
       .then((res) => res.data)
       .catch((err) => {
-        throw new CustomRpcException({
+        throw new RpcCustomException({
           message: 'Github error response',
           status: HttpStatus.UNAUTHORIZED,
           ...err.response?.data,
@@ -131,7 +132,7 @@ export class GithubAuthHandler
       });
 
     if (accessToken.error) {
-      throw new CustomRpcException({
+      throw new RpcCustomException({
         message: 'Github error response',
         status: HttpStatus.UNAUTHORIZED,
         ...accessToken,
@@ -150,7 +151,7 @@ export class GithubAuthHandler
     })
       .then((response) => response.data)
       .catch((err) => {
-        throw new CustomRpcException({
+        throw new RpcCustomException({
           message: 'Github error response',
           status: HttpStatus.UNAUTHORIZED,
           ...err.response?.data,
@@ -164,7 +165,7 @@ export class GithubAuthHandler
     })
       .then((response) => response.data)
       .catch((err) => {
-        throw new CustomRpcException({
+        throw new RpcCustomException({
           message: 'Github error response',
           status: HttpStatus.UNAUTHORIZED,
           ...err.response?.data,

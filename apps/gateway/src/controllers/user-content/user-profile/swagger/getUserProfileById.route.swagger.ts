@@ -4,7 +4,7 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UserProfileResponseGatewayDTO } from '@libs/common-types/user-content/controller';
+import { UserProfileResponseGatewayDTO } from 'libs/common-types/src/user-content/gateway';
 
 export const GetUserProfileById = () => {
   return applyDecorators(
