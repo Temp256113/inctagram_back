@@ -48,6 +48,12 @@
       ],
       "@libs/common-types/*": [
         "libs/common-types/src/*"
+      ],
+      "@libs/microservice-patterns": [
+        "libs/microservice-patterns/src"
+      ],
+      "@libs/microservice-patterns/*": [
+        "libs/microservice-patterns/src/*"
       ]
     }
   }

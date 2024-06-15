@@ -109,7 +109,8 @@
       "^@libs/jwt-token(|/.*)$": "<rootDir>/libs/jwt-token/src/$1",
       "^@libs/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
       "^@libs/common-exceptions(|/.*)$": "<rootDir>/libs/common-exceptions/src/$1",
-      "^@libs/common-types(|/.*)$": "<rootDir>/libs/common-types/src/$1"
+      "^@libs/common-types(|/.*)$": "<rootDir>/libs/common-types/src/$1",
+      "^@libs/microservice-patterns(|/.*)$": "<rootDir>/libs/microservice-patterns/src/$1"
     }
   }
 }

@@ -99,6 +99,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/user-content/tsconfig.app.json"
       }
+    },
+    "microservice-patterns": {
+      "type": "library",
+      "root": "libs/microservice-patterns",
+      "entryFile": "index",
+      "sourceRoot": "libs/microservice-patterns/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/microservice-patterns/tsconfig.lib.json"
+      }
     }
   }
 }

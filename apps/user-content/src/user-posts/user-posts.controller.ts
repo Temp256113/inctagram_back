@@ -1,7 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { UserContentMicroservicePatterns } from '../../../gateway/src/controllers/user-content/userContentMicroservice.patterns';
 import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 import {
@@ -13,6 +12,7 @@ import {
   GetMyPostsQuery,
   GetPostByIdQuery,
 } from './application/query-handlers';
+import { UserContentMicroservicePatterns } from '@libs/microservice-patterns';
 
 //TODO перенес всю логику которая была из монолита на микросервисы
 // нужно убрать сокеты и перевести на webhook сообщения про количество зареганных юзеров и последние созданные посты
