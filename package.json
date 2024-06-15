@@ -106,9 +106,7 @@
     ],
     "moduleNameMapper": {
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@libs/common-decorators(|/.*)$": "<rootDir>/libs/common-decorators/src/$1",
       "^@libs/jwt-token(|/.*)$": "<rootDir>/libs/jwt-token/src/$1",
-      "^@libs/common-guards(|/.*)$": "<rootDir>/libs/common-guards/src/$1",
       "^@libs/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
       "^@libs/common-exceptions(|/.*)$": "<rootDir>/libs/common-exceptions/src/$1",
       "^@libs/common-types(|/.*)$": "<rootDir>/libs/common-types/src/$1"

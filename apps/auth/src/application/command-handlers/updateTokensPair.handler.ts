@@ -4,7 +4,7 @@ import { RefreshTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { RpcCustomException } from '@libs/common-exceptions';
 import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
-import { RefreshTokenUserType } from '@libs/common-guards';
+import { RefreshTokenUserType } from '@libs/common-types/guards/refreshToken.guard.types';
 
 export class UpdateTokensPairCommand {
   constructor(public readonly data: RefreshTokenUserType) {}

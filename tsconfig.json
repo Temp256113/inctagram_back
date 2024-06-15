@@ -25,23 +25,11 @@
       "@libs/config/*": [
         "libs/config/src/*"
       ],
-      "@libs/common-decorators": [
-        "libs/common-decorators/src"
-      ],
-      "@libs/common-decorators/*": [
-        "libs/common-decorators/src/*"
-      ],
       "@libs/jwt-token": [
         "libs/jwt-token/src"
       ],
       "@libs/jwt-token/*": [
         "libs/jwt-token/src/*"
-      ],
-      "@libs/common-guards": [
-        "libs/common-guards/src"
-      ],
-      "@libs/common-guards/*": [
-        "libs/common-guards/src/*"
       ],
       "@libs/repositories": [
         "libs/repositories/src"

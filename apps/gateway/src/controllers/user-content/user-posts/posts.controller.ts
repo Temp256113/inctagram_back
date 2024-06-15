@@ -15,16 +15,18 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { AccessToken, User } from '@libs/common-decorators';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
 import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
 import * as SwaggerRouteDecorators from './swagger';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import { AccessTokenGuard } from '../../../guards/accessToken.guard';
+import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard.types';
+import { User } from '../../../decorators/user.decorator';
+import { AccessToken } from '../../../decorators/accessToken.decorator';
 
 @ApiTags('user-posts controller')
 @Controller('user-posts')

@@ -7,14 +7,7 @@ import {
 import { Request } from 'express';
 import { AccessTokenPayloadType, JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
-import { Prisma } from '@prisma/client';
-
-export type AccessTokenUserType = Prisma.UserGetPayload<{
-  include: {
-    emailInfo: true;
-    profile: { include: { profileImage: true } };
-  };
-}>;
+import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard.types';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {

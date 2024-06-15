@@ -7,17 +7,7 @@ import {
 import { JwtTokensService, RefreshTokenPayloadType } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { Request } from 'express';
-import { Prisma } from '@prisma/client';
-
-export type RefreshTokenUserType = {
-  user: Prisma.UserGetPayload<{
-    include: {
-      emailInfo: true;
-      profile: { include: { profileImage: true } };
-    };
-  }>;
-  refreshTokenUuid: string;
-};
+import { RefreshTokenUserType } from '@libs/common-types/guards/refreshToken.guard.types';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {

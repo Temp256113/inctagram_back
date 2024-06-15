@@ -4,8 +4,8 @@ import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 import * as Commands from './application/command-handlers/index';
 import { CommandBus } from '@nestjs/cqrs';
-import { RefreshTokenUserType } from '@libs/common-guards';
 import { AuthMicroservicePatterns } from '../../gateway/src/controllers/auth/authMicroservice.patterns';
+import { RefreshTokenUserType } from '@libs/common-types/guards/refreshToken.guard.types';
 
 @Controller()
 export class AuthController {

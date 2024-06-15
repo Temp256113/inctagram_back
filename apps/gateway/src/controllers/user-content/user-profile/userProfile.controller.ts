@@ -16,15 +16,17 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy } from '@nestjs/microservices';
-import { AccessTokenGuard, AccessTokenUserType } from '@libs/common-guards';
 import * as SwaggerRouteDecorators from './swagger';
-import { AccessToken, User } from '@libs/common-decorators';
 import { lastValueFrom } from 'rxjs';
 import { UserContentMicroservicePatterns } from '../userContentMicroservice.patterns';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import _ from 'lodash';
 import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import { AccessTokenGuard } from '../../../guards/accessToken.guard';
+import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard.types';
+import { User } from '../../../decorators/user.decorator';
+import { AccessToken } from '../../../decorators/accessToken.decorator';
 
 @Controller('user-profile')
 @ApiTags('user profile controller')

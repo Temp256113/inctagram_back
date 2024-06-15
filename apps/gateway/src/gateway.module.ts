@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EnvModule } from '@libs/config';
 import { JwtTokensModule } from '@libs/jwt-token';
-import { CommonGuardsModule } from '@libs/common-guards';
 import { AuthController } from './controllers/auth/auth.controller';
 import { UserProfileController } from './controllers/user-content/user-profile/userProfile.controller';
 import { PostsController } from './controllers/user-content/user-posts/posts.controller';
+import { GatewayGuardsModule } from './guards/gatewayGuards.module';
 
 const userContentControllers = [UserProfileController, PostsController];
 
@@ -13,7 +13,7 @@ const userContentControllers = [UserProfileController, PostsController];
   imports: [
     EnvModule,
     JwtTokensModule,
-    CommonGuardsModule,
+    GatewayGuardsModule,
     ClientsModule.register([
       {
         name: 'AUTH_SERVICE',

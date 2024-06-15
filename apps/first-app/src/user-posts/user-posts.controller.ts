@@ -14,12 +14,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AccessTokenGuard } from '@libs/common-guards';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateUserPostDto } from './dto/createUserPost.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { User, UserDecoratorType } from '@libs/common-decorators';
+import { User } from '@libs/common-decorators';
 import { CreateUserPostRouteSwaggerDescription } from './swagger/controller/createUserPost.route.swagger';
 import { UpdateUserPostDto } from './dto/updateUserPost.dto';
 import { UpdateUserPostRouteSwaggerDescription } from './swagger/controller/updateUserPost.route.swagger';

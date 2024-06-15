@@ -1,6 +1,6 @@
 import { UpdateUserProfileDTO } from '@libs/common-types/user-content/gateway';
 import { FileResource } from '@prisma/client';
-import { AccessTokenUserType } from '@libs/common-guards';
+import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard.types';
 
 export type UpdateProfileDTO = UpdateUserProfileDTO & {
   newProfileImage?: Express.Multer.File & { buffer: any };

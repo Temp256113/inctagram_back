@@ -3,7 +3,7 @@ import { AccessTokenGuard } from './accessToken.guard';
 import { EnvModule } from '@libs/config';
 import { JwtTokensModule } from '@libs/jwt-token';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
-import { RefreshTokenGuard } from '@libs/common-guards/refreshToken.guard';
+import { RefreshTokenGuard } from './refreshToken.guard';
 
 const guards = [AccessTokenGuard, RefreshTokenGuard];
 
@@ -16,4 +16,4 @@ const guards = [AccessTokenGuard, RefreshTokenGuard];
   // если экспортировать модуль то экспортируются все providers которые экспортирует этот модуль
   exports: [...guards, JwtTokensModule, RepositoriesModule],
 })
-export class CommonGuardsModule {}
+export class GatewayGuardsModule {}

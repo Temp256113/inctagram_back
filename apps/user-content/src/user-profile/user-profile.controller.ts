@@ -1,7 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { AccessTokenUserType } from '@libs/common-guards';
 import { UserContentMicroservicePatterns } from '../../../gateway/src/controllers/user-content/userContentMicroservice.patterns';
 import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
@@ -10,6 +9,7 @@ import {
   GetProfileByIdQuery,
 } from './application/query-handlers';
 import { UpdateProfileCommand } from './application/command-handlers';
+import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard.types';
 
 @Controller()
 export class UserProfileController {

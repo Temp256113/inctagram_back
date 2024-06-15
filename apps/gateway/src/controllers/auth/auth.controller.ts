@@ -19,9 +19,10 @@ import { lastValueFrom } from 'rxjs';
 import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
 import * as SwaggerRouteDecorators from './swagger';
-import { RefreshTokenGuard, RefreshTokenUserType } from '@libs/common-guards';
-import { User } from '@libs/common-decorators';
 import { AuthMicroservicePatterns } from './authMicroservice.patterns';
+import { RefreshTokenGuard } from '../../guards/refreshToken.guard';
+import { RefreshTokenUserType } from '@libs/common-types/guards/refreshToken.guard.types';
+import { User } from '../../decorators/user.decorator';
 
 @Controller('auth')
 @ApiTags('auth controller')
