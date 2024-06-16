@@ -32,7 +32,8 @@ import { UserContentMicroservicePatterns } from '@libs/microservice-patterns';
 @Controller('user-posts')
 export class PostsController {
   constructor(
-    @Inject('USER_CONTENT_SERVICE') private userContentClient: ClientProxy,
+    @Inject('USER_CONTENT_SERVICE')
+    private userContentMicroserviceClient: ClientProxy,
   ) {}
 
   @Post()
@@ -70,7 +71,7 @@ export class PostsController {
 
     const post: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
       lastValueFrom(
-        this.userContentClient.send(
+        this.userContentMicroserviceClient.send(
           UserContentMicroservicePatterns.CREATE_POST,
           createPostPayload,
         ),
@@ -95,7 +96,7 @@ export class PostsController {
 
     const post: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
       lastValueFrom(
-        this.userContentClient.send(
+        this.userContentMicroserviceClient.send(
           UserContentMicroservicePatterns.UPDATE_POST,
           updatePostPayload,
         ),
@@ -118,7 +119,7 @@ export class PostsController {
     };
 
     await lastValueFrom(
-      this.userContentClient.send(
+      this.userContentMicroserviceClient.send(
         UserContentMicroservicePatterns.DELETE_POST,
         deletePostPayload,
       ),
@@ -142,7 +143,7 @@ export class PostsController {
     const foundPosts: Promise<
       UserContentGatewayControllerTypes.PostResponseDTO[]
     > = lastValueFrom(
-      this.userContentClient.send(
+      this.userContentMicroserviceClient.send(
         UserContentMicroservicePatterns.GET_MY_POSTS,
         getMyPostsPayload,
       ),
@@ -165,7 +166,7 @@ export class PostsController {
 
     const foundPost: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
       lastValueFrom(
-        this.userContentClient.send(
+        this.userContentMicroserviceClient.send(
           UserContentMicroservicePatterns.GET_POST_BY_ID,
           getPostByIdPayload,
         ),

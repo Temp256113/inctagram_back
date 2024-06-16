@@ -1,20 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FileResourceTypes, Prisma } from '@prisma/client';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@libs/repositories/prisma.service';
-import { websocketsMainPageStateEvents } from '../../../../apps/first-app/src/websocket/main-page/websocketsMainPage.service';
 
 @Injectable()
 export class UserPostsRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async createPost(data: { userId: number; description?: string }) {
     try {
-      this.eventEmitter.emit(websocketsMainPageStateEvents.CREATE_POST);
-
       return this.prisma.userPost.create({
         data: {
           userId: data.userId,

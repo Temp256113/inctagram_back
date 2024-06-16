@@ -4,7 +4,7 @@ import authConfig from '@libs/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
 import { NodemailerService } from '../../../utils/nodemailer.service';
 import axios from 'axios';
-import { Prisma } from '@prisma/client';
+import { Prisma, Providers } from '@prisma/client';
 import { JwtTokensService } from '@libs/jwt-token';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
@@ -12,6 +12,7 @@ import { RpcCustomException } from '@libs/common-exceptions';
 import { SideAuthUtils } from './sideAuthUtils';
 import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
+import { ClientProxy } from '@nestjs/microservices';
 
 export class GoogleAuthCommand {
   constructor(public readonly data: AuthGatewayControllerTypes.SideAuthDTO) {}
@@ -33,12 +34,15 @@ export class GoogleAuthHandler
     protected readonly userRepository: UserRepository,
     protected readonly jwtTokensService: JwtTokensService,
     protected readonly nodemailerService: NodemailerService,
+    @Inject('WEBHOOKS_SERVICE')
+    protected readonly webhooksMicroserviceClient: ClientProxy,
   ) {
     super({
       userQueryRepository,
       userRepository,
       nodemailerService,
       jwtTokensService,
+      webhooksMicroserviceClient,
     });
   }
 
@@ -60,6 +64,7 @@ export class GoogleAuthHandler
     }> = await this.getOrCreateUser({
       username: userInfoFromGoogle.username,
       userEmail: userInfoFromGoogle.userEmail,
+      provider: Providers.Google,
     });
 
     const newRefreshToken: string = await this.createNewSession({

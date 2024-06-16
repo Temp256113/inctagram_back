@@ -21,6 +21,7 @@ import {
   GetMyPostsHandler,
   GetUserPostByIdHandler,
 } from './user-posts/application/query-handlers';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 const userProfileHandlers = [UpdateUserProfileHandler];
 
@@ -35,7 +36,22 @@ const userPostsHandlers = [
 const userPostsQueryHandlers = [GetMyPostsHandler, GetUserPostByIdHandler];
 
 @Module({
-  imports: [CqrsModule, RepositoriesModule, EnvModule, JwtTokensModule],
+  imports: [
+    ClientsModule.register([
+      {
+        name: 'WEBHOOKS_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RABBITMQ_URL],
+          queue: 'webhooks_queue',
+        },
+      },
+    ]),
+    CqrsModule,
+    RepositoriesModule,
+    EnvModule,
+    JwtTokensModule,
+  ],
   controllers: [UserProfileController, UserPostsController],
   providers: [
     S3StorageService,

@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus, Inject } from '@nestjs/common';
 import authConfig from '@libs/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
+import { Prisma, Providers } from '@prisma/client';
 import { NodemailerService } from '../../../utils/nodemailer.service';
 import axios from 'axios';
 import { JwtTokensService } from '@libs/jwt-token';
@@ -12,6 +12,7 @@ import { SideAuthUtils } from './sideAuthUtils';
 import { RpcCustomException } from '@libs/common-exceptions';
 import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 import * as AuthMicroserviceTypes from '@libs/common-types/auth/microservice';
+import { ClientProxy } from '@nestjs/microservices';
 
 export class GithubAuthCommand {
   constructor(public readonly data: AuthGatewayControllerTypes.SideAuthDTO) {}
@@ -33,12 +34,15 @@ export class GithubAuthHandler
     protected readonly userRepository: UserRepository,
     protected readonly jwtTokensService: JwtTokensService,
     protected readonly nodemailerService: NodemailerService,
+    @Inject('WEBHOOKS_SERVICE')
+    protected readonly webhooksMicroserviceClient: ClientProxy,
   ) {
     super({
       userQueryRepository,
       userRepository,
       jwtTokensService,
       nodemailerService,
+      webhooksMicroserviceClient,
     });
   }
 
@@ -54,14 +58,10 @@ export class GithubAuthHandler
       userEmail: string;
     } = await this.getUserInfoFromGithub(githubCode);
 
-    const user: Prisma.UserGetPayload<{
-      include: {
-        emailInfo: true;
-        profile: { include: { profileImage: true } };
-      };
-    }> = await this.getOrCreateUser({
+    const user = await this.getOrCreateUser({
       username: userInfoFromGithub.username,
       userEmail: userInfoFromGithub.userEmail,
+      provider: Providers.Github,
     });
 
     const newRefreshToken: string = await this.createNewSession({

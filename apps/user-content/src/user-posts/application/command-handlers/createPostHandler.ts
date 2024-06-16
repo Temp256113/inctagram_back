@@ -3,6 +3,9 @@ import { UserPostsRepository } from '@libs/repositories/repos/userPosts.reposito
 import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
 import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import { Inject } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { WebhooksMicroservicePatterns } from '@libs/microservice-patterns';
 
 export class CreatePostCommand {
   constructor(
@@ -21,6 +24,8 @@ export class CreatePostHandler
   constructor(
     private readonly s3StorageService: S3StorageService,
     private readonly postsRepository: UserPostsRepository,
+    @Inject('WEBHOOKS_SERVICE')
+    protected readonly webhooksMicroserviceClient: ClientProxy,
   ) {}
 
   async execute({
@@ -36,6 +41,11 @@ export class CreatePostHandler
       userId: command.userId,
       postId: createdPost.id,
     });
+
+    this.webhooksMicroserviceClient.emit(
+      WebhooksMicroservicePatterns.CREATE_POST_EVENT,
+      null,
+    );
 
     return {
       postId: createdPost.id,

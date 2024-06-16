@@ -3,11 +3,13 @@ import { BcryptService } from '../../utils/bcrypt.service';
 import { NodemailerService } from '../../utils/nodemailer.service';
 import { add } from 'date-fns';
 import * as crypto from 'crypto';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { RegisterDTO } from 'libs/common-types/src/auth/gateway';
 import { RpcCustomException } from '@libs/common-exceptions';
+import { ClientProxy } from '@nestjs/microservices';
+import { WebhooksMicroservicePatterns } from '@libs/microservice-patterns';
 
 export class RegisterCommand {
   constructor(public readonly userRegisterDTO: RegisterDTO) {}
@@ -20,6 +22,8 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
     private readonly nodemailerService: NodemailerService,
     private readonly userRepository: UserRepository,
     private readonly userQueryRepository: UserQueryRepository,
+    @Inject('WEBHOOKS_SERVICE')
+    protected readonly webhooksMicroserviceClient: ClientProxy,
   ) {}
 
   async execute(command: RegisterCommand): Promise<void> {
@@ -28,6 +32,46 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
     } = command;
 
     await this.registerNewUser({ email, username, password });
+  }
+
+  async registerNewUser(userRegisterDTO: RegisterDTO): Promise<void> {
+    const { username, email, password } = userRegisterDTO;
+
+    const needToCreateNewUser: boolean =
+      await this.checkNeedRegisterNewUserOrNot({
+        email,
+        username,
+        password,
+      });
+
+    if (!needToCreateNewUser) {
+      return;
+    }
+
+    const emailConfirmationCode: string = crypto.randomUUID();
+
+    await this.userRepository.createUser({
+      user: {
+        email,
+        username,
+        password: await this.bcryptService.encryptPassword(password),
+      },
+      emailInfo: {
+        registrationConfirmCode: emailConfirmationCode,
+        registrationCodeEndDate: add(new Date(), { days: 3 }),
+        emailIsConfirmed: false,
+      },
+    });
+
+    await this.nodemailerService.sendRegistrationConfirmMessage({
+      email,
+      confirmCode: emailConfirmationCode,
+    });
+
+    this.webhooksMicroserviceClient.emit(
+      WebhooksMicroservicePatterns.REGISTER_USER_EVENT,
+      null,
+    );
   }
 
   async checkNeedRegisterNewUserOrNot(data: {
@@ -62,21 +106,15 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
     if (canSendConfirmationEmail) {
       const emailConfirmCode: string = crypto.randomUUID();
 
-      const updateUserEmailInfo = this.userRepository.updateEmailInfoByUserId(
-        foundUser.id,
-        {
-          emailConfirmCodeExpiresAt: add(new Date(), { days: 3 }),
-          emailConfirmCode,
-        },
-      );
+      await this.userRepository.updateEmailInfoByUserId(foundUser.id, {
+        emailConfirmCodeExpiresAt: add(new Date(), { days: 3 }),
+        emailConfirmCode,
+      });
 
-      const sendConfirmationEmail =
-        this.nodemailerService.sendRegistrationConfirmMessage({
-          email,
-          confirmCode: emailConfirmCode,
-        });
-
-      await Promise.all([updateUserEmailInfo, sendConfirmationEmail]);
+      await this.nodemailerService.sendRegistrationConfirmMessage({
+        email,
+        confirmCode: emailConfirmCode,
+      });
 
       return false;
     }
@@ -94,43 +132,5 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
     }
 
     return true;
-  }
-
-  async registerNewUser(userRegisterDTO: RegisterDTO): Promise<void> {
-    const { username, email, password } = userRegisterDTO;
-
-    const createNewUserOrNot: boolean =
-      await this.checkNeedRegisterNewUserOrNot({
-        email,
-        username,
-        password,
-      });
-
-    if (!createNewUserOrNot) {
-      return;
-    }
-
-    const emailConfirmationCode: string = crypto.randomUUID();
-
-    const createUser = this.userRepository.createUser({
-      user: {
-        email,
-        username,
-        password: await this.bcryptService.encryptPassword(password),
-      },
-      emailInfo: {
-        registrationConfirmCode: emailConfirmationCode,
-        registrationCodeEndDate: add(new Date(), { days: 3 }),
-        emailIsConfirmed: false,
-      },
-    });
-
-    const sendConfirmationEmail =
-      this.nodemailerService.sendRegistrationConfirmMessage({
-        email,
-        confirmCode: emailConfirmationCode,
-      });
-
-    await Promise.all([createUser, sendConfirmationEmail]);
   }
 }

@@ -5,6 +5,8 @@ import { NodemailerService } from '../../../utils/nodemailer.service';
 import * as crypto from 'node:crypto';
 import { JwtTokensService, RefreshTokenCreateType } from '@libs/jwt-token';
 import { secondsToMilliseconds } from 'date-fns';
+import { ClientProxy } from '@nestjs/microservices';
+import { WebhooksMicroservicePatterns } from '@libs/microservice-patterns';
 
 type UserFromDBType = Prisma.UserGetPayload<{
   include: { emailInfo: true; profile: { include: { profileImage: true } } };
@@ -17,41 +19,46 @@ export class SideAuthUtils {
       userRepository: UserRepository;
       nodemailerService: NodemailerService;
       jwtTokensService: JwtTokensService;
+      webhooksMicroserviceClient: ClientProxy;
     },
   ) {}
   async getOrCreateUser(data: {
     username: string;
     userEmail: string;
+    provider: Providers;
   }): Promise<UserFromDBType> {
-    const { username, userEmail } = data;
+    const { username, userEmail, provider } = data;
 
-    const userFromDB: UserFromDBType | null =
+    const foundUserFromDB: UserFromDBType | null =
       await this.data.userQueryRepository.getUserByEmail(userEmail);
 
-    let user: UserFromDBType;
-
-    if (userFromDB) {
-      user = userFromDB;
-    } else {
-      user = await this.data.userRepository.createUser({
-        user: {
-          email: userEmail,
-          username,
-        },
-        emailInfo: {
-          provider: Providers.Google,
-          emailIsConfirmed: true,
-          registrationConfirmCode: null,
-          registrationCodeEndDate: null,
-        },
-      });
-
-      await this.data.nodemailerService.sendRegistrationSuccessfulMessage(
-        user.email,
-      );
+    if (foundUserFromDB) {
+      return foundUserFromDB;
     }
 
-    return user;
+    const newCreatedUser = await this.data.userRepository.createUser({
+      user: {
+        email: userEmail,
+        username,
+      },
+      emailInfo: {
+        provider,
+        emailIsConfirmed: true,
+        registrationConfirmCode: null,
+        registrationCodeEndDate: null,
+      },
+    });
+
+    await this.data.nodemailerService.sendRegistrationSuccessfulMessage(
+      newCreatedUser.email,
+    );
+
+    this.data.webhooksMicroserviceClient.emit(
+      WebhooksMicroservicePatterns.REGISTER_USER_EVENT,
+      null,
+    );
+
+    return newCreatedUser;
   }
 
   async createNewSession(data: {
