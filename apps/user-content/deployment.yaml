@@ -97,6 +97,11 @@ spec:
                  secretKeyRef:
                    name: user-content-microservice-production-config-secret
                    key: RABBITMQ_URL
+             - name: YANDEX_REGION
+               valueFrom:
+                 secretKeyRef:
+                   name: user-content-microservice-production-config-secret
+                   key: YANDEX_REGION
              - name: DATABASE_URL
                valueFrom:
                  secretKeyRef:
