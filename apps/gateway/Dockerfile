@@ -24,10 +24,10 @@ COPY --chown=node yarn.lock ./
 
 RUN yarn
 
-RUN yarn prisma generate
-
 # Bundle app source code
 COPY --chown=node . .
+
+RUN yarn prisma generate
 
 RUN yarn build:${SERVICE}
 
