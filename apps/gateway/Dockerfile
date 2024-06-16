@@ -30,10 +30,10 @@ COPY --chown=node . .
 
 RUN yarn prisma generate
 
-RUN yarn build:${SERVICE}
+RUN yarn build ${SERVICE}
 
 # Bind to all network interfaces so that it can be mapped to the host OS
 
 EXPOSE ${PORT}
 
-CMD yarn 'start:gateway'
+CMD yarn start gateway
