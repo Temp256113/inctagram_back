@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MainPageEventsService } from './mainPageEvents.service';
 import { EventPattern } from '@nestjs/microservices';
 import { WebhooksMicroservicePatterns } from '@libs/microservice-patterns';

@@ -32,10 +32,14 @@ export class MainPageEventsService implements OnModuleInit {
     const mappedLastFourPosts: UserContentGatewayControllerTypes.PostResponseDTO[] =
       await this.getMappedLastFourPosts();
 
-    axios.post(this.frontendWebhooksUrl, {
-      lastCreatedPosts: mappedLastFourPosts,
-      registeredUsersAmount: this.registeredUsersAmount,
-    });
+    axios
+      .post(this.frontendWebhooksUrl, {
+        lastCreatedPosts: mappedLastFourPosts,
+        registeredUsersAmount: this.registeredUsersAmount,
+      })
+      .catch((err) => {
+        console.error('every minute send data to main page error', err.message);
+      });
   }
 
   increaseRegisteredUsersAmount(): void {
@@ -44,9 +48,16 @@ export class MainPageEventsService implements OnModuleInit {
     // надо обновлять счетчик юзеров на главной странице
     // каждые 5 новых зарегистрированных юзеров или раз в минуту
     if (this.registeredUsersAmount % 5 == 0) {
-      axios.post(this.frontendWebhooksUrl, {
-        registeredUsersAmount: this.registeredUsersAmount,
-      });
+      axios
+        .post(this.frontendWebhooksUrl, {
+          registeredUsersAmount: this.registeredUsersAmount,
+        })
+        .catch((err) => {
+          console.error(
+            'send data about registered users amount error',
+            err.message,
+          );
+        });
     }
   }
 
@@ -61,9 +72,13 @@ export class MainPageEventsService implements OnModuleInit {
       const mappedLastFourPosts: UserContentGatewayControllerTypes.PostResponseDTO[] =
         await this.getMappedLastFourPosts();
 
-      axios.post(this.frontendWebhooksUrl, {
-        lastCreatedPosts: mappedLastFourPosts,
-      });
+      axios
+        .post(this.frontendWebhooksUrl, {
+          lastCreatedPosts: mappedLastFourPosts,
+        })
+        .catch((err) => {
+          console.error('send data about new created posts error', err.message);
+        });
     }
   }
 

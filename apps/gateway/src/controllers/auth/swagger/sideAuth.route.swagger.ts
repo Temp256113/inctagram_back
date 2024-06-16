@@ -5,14 +5,14 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { LoginResponseGatewayDTO } from 'libs/common-types/src/auth/gateway';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 
 export const SideAuth = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Auth via side decisions' }),
     ApiOkResponse({
       description: 'Successful login/registration',
-      type: LoginResponseGatewayDTO,
+      type: AuthGatewayControllerTypes.LoginResponseDTO,
     }),
     ApiBadRequestResponse({
       description: 'Provided incorrect auth code',

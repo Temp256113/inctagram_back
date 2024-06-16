@@ -7,7 +7,7 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UserProfileResponseGatewayDTO } from 'libs/common-types/src/user-content/gateway';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 
 export const UpdateUserProfile = () => {
   return applyDecorators(
@@ -57,7 +57,7 @@ export const UpdateUserProfile = () => {
     }),
     ApiOkResponse({
       description: `User profile update successfully`,
-      type: UserProfileResponseGatewayDTO,
+      type: UserContentGatewayControllerTypes.ProfileResponseDTO,
     }),
     ApiForbiddenResponse({
       description: 'Something went wrong',

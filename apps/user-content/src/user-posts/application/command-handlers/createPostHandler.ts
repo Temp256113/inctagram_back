@@ -44,7 +44,7 @@ export class CreatePostHandler
 
     this.webhooksMicroserviceClient.emit(
       WebhooksMicroservicePatterns.CREATE_POST_EVENT,
-      null,
+      'null',
     );
 
     return {

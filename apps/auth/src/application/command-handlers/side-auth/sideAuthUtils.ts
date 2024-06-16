@@ -55,7 +55,7 @@ export class SideAuthUtils {
 
     this.data.webhooksMicroserviceClient.emit(
       WebhooksMicroservicePatterns.REGISTER_USER_EVENT,
-      null,
+      'null',
     );
 
     return newCreatedUser;

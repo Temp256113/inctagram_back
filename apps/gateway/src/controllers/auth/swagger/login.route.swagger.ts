@@ -4,14 +4,14 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { LoginResponseGatewayDTO } from 'libs/common-types/src/auth/gateway';
+import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 
 export const Login = () => {
   return applyDecorators(
     ApiOperation({ summary: 'Login' }),
     ApiOkResponse({
       description: 'Successful login',
-      type: LoginResponseGatewayDTO,
+      type: AuthGatewayControllerTypes.LoginResponseDTO,
     }),
     ApiUnauthorizedResponse({
       description: 'The email or password are incorrect. Try again',

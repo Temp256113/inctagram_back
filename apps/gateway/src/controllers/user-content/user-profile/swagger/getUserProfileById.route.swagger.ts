@@ -4,7 +4,7 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UserProfileResponseGatewayDTO } from 'libs/common-types/src/user-content/gateway';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 
 export const GetUserProfileById = () => {
   return applyDecorators(
@@ -13,7 +13,7 @@ export const GetUserProfileById = () => {
     }),
     ApiOkResponse({
       description: 'User profile found successfully',
-      type: UserProfileResponseGatewayDTO,
+      type: UserContentGatewayControllerTypes.ProfileResponseDTO,
     }),
     ApiNotFoundResponse({
       description: 'User profile with provided id is not found',

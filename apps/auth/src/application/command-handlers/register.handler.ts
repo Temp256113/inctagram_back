@@ -70,7 +70,7 @@ export class RegisterHandler implements ICommandHandler<RegisterCommand, void> {
 
     this.webhooksMicroserviceClient.emit(
       WebhooksMicroservicePatterns.REGISTER_USER_EVENT,
-      null,
+      'null',
     );
   }
 

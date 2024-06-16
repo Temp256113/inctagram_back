@@ -8,15 +8,6 @@ import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userP
 import { FileResourceRepository } from '@libs/repositories/repos/fileResource.repository';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserProfileRepository } from '@libs/repositories/repos/userProfile.repository';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-
-const modules = [
-  EventEmitterModule.forRoot({
-    delimiter: '.',
-    wildcard: true,
-    ignoreErrors: true,
-  }),
-];
 
 const queryRepos = [
   FileResourceQueryRepository,
@@ -35,8 +26,8 @@ const repos = [
 const providers = [PrismaService, ...queryRepos, ...repos];
 
 @Module({
-  imports: modules,
+  imports: [],
   providers: providers,
-  exports: [...providers, ...modules],
+  exports: [...providers],
 })
 export class RepositoriesModule {}
