@@ -29,7 +29,7 @@ COPY --chown=node . .
 
 RUN npm run build:${SERVICE}
 
-RUN #yarn prisma generate
+RUN yarn prisma generate
 
 # Bind to all network interfaces so that it can be mapped to the host OS
 
