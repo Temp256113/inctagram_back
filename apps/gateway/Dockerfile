@@ -22,12 +22,12 @@ WORKDIR /home/node/dist/${SERVICE}
 COPY --chown=node package*.json ./
 COPY --chown=node yarn.lock ./
 
-RUN npm install
+RUN yarn
 
 # Bundle app source code
 COPY --chown=node . .
 
-RUN npm run build:${SERVICE}
+RUN yarn build:${SERVICE}
 
 RUN yarn prisma generate
 
@@ -35,4 +35,4 @@ RUN yarn prisma generate
 
 EXPOSE ${PORT}
 
-CMD npm run 'start:gateway'
+CMD yarn 'start:gateway'
