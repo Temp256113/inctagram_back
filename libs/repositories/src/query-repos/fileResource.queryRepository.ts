@@ -14,7 +14,7 @@ export class FileResourceQueryRepository {
     return this.prismaService.fileResource.count({
       where: {
         id: { in: data.fileIds },
-        createdById: data.createdById,
+        creatorId: data.createdById,
         type: data.type,
       },
     });

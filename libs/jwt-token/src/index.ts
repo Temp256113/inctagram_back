@@ -1,2 +1,2 @@
-export * from './jwt-token.module';
-export * from './tokens.service';
+export * from './jwt-tokens.module';
+export * from './jwt-tokens.service';

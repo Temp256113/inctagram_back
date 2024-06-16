@@ -12,19 +12,18 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/apps/first-app/main",
+    "start:prod": "node dist/apps/gateway/main",
     "lint": "eslint \"{src,apps,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config apps/first-app/test/jest-e2e.json",
+    "test:e2e": "jest --config apps/gateway/test/jest-e2e.json",
     "db:migration": "npx prisma migrate deploy",
     "generate:migration": "npx prisma migrate dev --create-only",
-    "prisma_db_pull": "dotenv -e ./config/env/.env.development -- yarn prisma db pull",
-    "build:first-app": "nest build first-app",
-    "start:first-app": "node dist/apps/first-app/main",
-    "start:dev:first-app": "nest start first-app --watch",
+    "build:gateway": "nest build gateway",
+    "start:gateway": "node dist/apps/gateway/main",
+    "start:dev:gateway": "nest start gateway --watch",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -33,14 +32,16 @@
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
     "@nestjs/cqrs": "^10.2.6",
-    "@nestjs/event-emitter": "^2.0.4",
     "@nestjs/jwt": "^10.2.0",
-    "@nestjs/microservices": "^10.2.10",
+    "@nestjs/microservices": "^10.3.8",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-socket.io": "^10.3.7",
+    "@nestjs/schedule": "^4.0.2",
     "@nestjs/swagger": "^7.1.17",
     "@nestjs/websockets": "^10.3.7",
     "@prisma/client": "^5.7.0",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.4",
     "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -105,10 +106,11 @@
     ],
     "moduleNameMapper": {
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@libs/common-decorators(|/.*)$": "<rootDir>/libs/common-decorators/src/$1",
       "^@libs/jwt-token(|/.*)$": "<rootDir>/libs/jwt-token/src/$1",
-      "^@libs/common-guards(|/.*)$": "<rootDir>/libs/common-guards/src/$1",
-      "^@libs/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1"
+      "^@libs/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
+      "^@libs/common-exceptions(|/.*)$": "<rootDir>/libs/common-exceptions/src/$1",
+      "^@libs/common-types(|/.*)$": "<rootDir>/libs/common-types/src/$1",
+      "^@libs/microservice-patterns(|/.*)$": "<rootDir>/libs/microservice-patterns/src/$1"
     }
   }
 }

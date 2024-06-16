@@ -9,14 +9,20 @@ export class UserQueryRepository {
   async getUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
-      include: { userEmailInfo: true },
+      include: {
+        emailInfo: true,
+        profile: { include: { profileImage: true } },
+      },
     });
   }
 
   async getUserById(userId: number) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      include: { userEmailInfo: true },
+      include: {
+        emailInfo: true,
+        profile: { include: { profileImage: true } },
+      },
     });
   }
 
@@ -55,8 +61,8 @@ export class UserQueryRepository {
 
   async getUserByConfirmEmailCode(confirmEmailCode: string) {
     return this.prisma.user.findFirst({
-      where: { userEmailInfo: { emailConfirmCode: confirmEmailCode } },
-      include: { userEmailInfo: true },
+      where: { emailInfo: { emailConfirmCode: confirmEmailCode } },
+      include: { emailInfo: true },
     });
   }
 
@@ -67,12 +73,24 @@ export class UserQueryRepository {
     const { email, username } = data;
 
     return this.prisma.user.findFirst({
-      where: { OR: [{ username, email }] },
-      include: { userEmailInfo: true, userChangePasswordRequests: true },
+      where: { OR: [{ email, profile: { username } }] },
+      include: { emailInfo: true, changePasswordRequests: true, profile: true },
     });
   }
 
   async getUsersAmount() {
     return this.prisma.user.count();
+  }
+
+  async getUserSession(data: { userId: number; refreshTokenUuid: string }) {
+    return this.prisma.userSession.findUnique({
+      where: {
+        userId_refreshTokenUuid: {
+          userId: data.userId,
+          refreshTokenUuid: data.refreshTokenUuid,
+        },
+      },
+      include: { user: { include: { profile: true } } },
+    });
   }
 }

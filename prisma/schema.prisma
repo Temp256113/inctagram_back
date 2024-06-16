@@ -1,8 +1,5 @@
 // если надо стянуть существующие таблицы из бд то надо запустить команду
-// !!! ВАЖНО
-// прежде чем юзать команду надо посмотреть в package.json
-// какой путь к переменным окружения указан в команде
-// yarn prisma_db_pull
+// prisma db pull
 
 // в локальном окружении можно использовать prisma db push
 // чтобы внести новые модели в базу данных без создания миграций
@@ -33,17 +30,16 @@ datasource db {
 model User {
   id       Int     @id @default(autoincrement())
   email    String  @unique @db.Citext
-  username String  @unique
   password String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  userEmailInfo              UserEmailInfo?
-  userChangePasswordRequests UserChangePasswordRequest[]
-  userSessions               UserSession[]
-  UserProfile                UserProfile?
-  FileResource               FileResource[]
+  emailInfo              UserEmailInfo?
+  changePasswordRequests UserChangePasswordRequest[]
+  sessions               UserSession[]
+  profile                UserProfile?
+  fileResource               FileResource[]
   posts                      UserPost[]
 
   @@map("users")
@@ -72,8 +68,7 @@ model UserEmailInfo {
   userId           Int        @id
   emailIsConfirmed Boolean    @default(false)
   emailConfirmCode String?
-  // expiresAt это дата после которой код для подтверждения регистрации будет уже не актуален
-  expiresAt        DateTime?
+  emailConfirmCodeExpiresAt        DateTime?
   provider         Providers?
 
   createdAt DateTime @default(now())
@@ -91,7 +86,6 @@ enum UserChangePasswordRequestStates {
 
 model UserChangePasswordRequest {
   id                   Int                             @id @default(autoincrement())
-  userId               Int
   state                UserChangePasswordRequestStates @default(pending)
   passwordRecoveryCode String?
   expiresAt            DateTime?
@@ -100,16 +94,16 @@ model UserChangePasswordRequest {
   updatedAt DateTime? @default(now()) @updatedAt
   deletedAt DateTime?
 
+  userId               Int
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_change_password_requests")
 }
 
 model UserProfile {
-  userId      Int       @id @unique
   username    String    @unique @db.Citext
-  firstName   String    @db.VarChar(255)
-  lastName    String    @db.VarChar(255)
+  firstName   String?    @db.VarChar(255)
+  lastName    String?    @db.VarChar(255)
   dateOfBirth DateTime? @db.Date()
   country     String?   @db.VarChar(255)
   city        String?   @db.VarChar(255)
@@ -118,9 +112,10 @@ model UserProfile {
   updatedAt   DateTime  @default(now()) @updatedAt
   deletedAt   DateTime?
 
+  userId      Int       @id @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  profileImage ProfileImage[]
+  profileImage   FileResource?
 
   @@map("user_profiles")
 }
@@ -151,38 +146,21 @@ model FileResource {
   size        Int?
   path        String            @db.Text
   url         String            @db.Text
-  metadata    Json?
+  metadata    Json?             @db.JsonB
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @default(now()) @updatedAt
   deletedAt   DateTime?
-  createdById Int
 
-  profileImage ProfileImage[]
-  postId       Int?
-  userPost     UserPost?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   Int?
+  userPost UserPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  createdBy User @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  profileId Int? @unique
+  userProfile UserProfile? @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+
+  creatorId Int
+  creator   User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   @@map("file_resources")
-}
-
-enum ProfileImagesKind {
-  avatar
-}
-
-model ProfileImage {
-  id        Int               @id @default(autoincrement())
-  kind      ProfileImagesKind
-  imageId   Int
-  profileId Int
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @default(now()) @updatedAt
-  deletedAt DateTime?
-
-  image   FileResource @relation(fields: [imageId], references: [id])
-  profile UserProfile  @relation(fields: [profileId], references: [userId])
-
-  @@map("profile_images")
 }
 
 model playing_with_neon {
