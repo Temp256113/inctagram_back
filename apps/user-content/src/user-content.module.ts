@@ -2,38 +2,37 @@ import { Module } from '@nestjs/common';
 import { UserProfileController } from './user-profile/user-profile.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RepositoriesModule } from '@libs/repositories/repositories.module';
-import { UpdateUserProfileHandler } from './user-profile/application/command-handlers';
-import { S3StorageService } from './infrastructure/s3-storage/s3Storage.service';
-import { S3StorageAdapter } from './infrastructure/s3-storage/s3Storage.adapter';
+import { UpdateUserProfileUsecase } from './user-profile/application/command-handlers';
 import { EnvModule } from '@libs/config';
 import { JwtTokensModule } from '@libs/jwt-token';
 import {
-  GetMyProfileHandler,
-  GetProfileByIdHandler,
+  GetMyProfileUsecase,
+  GetProfileByIdUsecase,
 } from './user-profile/application/query-handlers';
 import { UserPostsController } from './user-posts/user-posts.controller';
 import {
-  CreatePostHandler,
-  DeletePostHandler,
-  UpdatePostHandler,
+  CreatePostUsecase,
+  DeletePostUsecase,
+  UpdatePostUsecase,
 } from './user-posts/application/command-handlers';
 import {
-  GetMyPostsHandler,
-  GetUserPostByIdHandler,
+  GetMyPostsUsecase,
+  GetUserPostByIdUsecase,
 } from './user-posts/application/query-handlers';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { GoogleDriveService } from './infrastructure/google-drive-storage/googleDrive.service';
 
-const userProfileHandlers = [UpdateUserProfileHandler];
+const userProfileUsecases = [UpdateUserProfileUsecase];
 
-const userProfileQueryHandlers = [GetMyProfileHandler, GetProfileByIdHandler];
+const userProfileQueryUsecases = [GetMyProfileUsecase, GetProfileByIdUsecase];
 
-const userPostsHandlers = [
-  CreatePostHandler,
-  UpdatePostHandler,
-  DeletePostHandler,
+const userPostsUsecases = [
+  CreatePostUsecase,
+  UpdatePostUsecase,
+  DeletePostUsecase,
 ];
 
-const userPostsQueryHandlers = [GetMyPostsHandler, GetUserPostByIdHandler];
+const userPostsQueryUsecases = [GetMyPostsUsecase, GetUserPostByIdUsecase];
 
 @Module({
   imports: [
@@ -54,12 +53,11 @@ const userPostsQueryHandlers = [GetMyPostsHandler, GetUserPostByIdHandler];
   ],
   controllers: [UserProfileController, UserPostsController],
   providers: [
-    S3StorageService,
-    S3StorageAdapter,
-    ...userProfileHandlers,
-    ...userProfileQueryHandlers,
-    ...userPostsHandlers,
-    ...userPostsQueryHandlers,
+    GoogleDriveService,
+    ...userProfileUsecases,
+    ...userProfileQueryUsecases,
+    ...userPostsUsecases,
+    ...userPostsQueryUsecases,
   ],
 })
 export class UserContentModule {}

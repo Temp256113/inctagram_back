@@ -13,11 +13,11 @@ export class GetProfileByIdQuery {
 }
 
 @QueryHandler(GetProfileByIdQuery)
-export class GetProfileByIdHandler
+export class GetProfileByIdUsecase
   implements
     IQueryHandler<
       GetProfileByIdQuery,
-      UserContentGatewayControllerTypes.ProfileResponseDTO
+      UserContentGatewayControllerTypes.ProfileSchema
     >
 {
   constructor(
@@ -27,7 +27,7 @@ export class GetProfileByIdHandler
 
   async execute(
     query: GetProfileByIdQuery,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     const accessTokenPayload: AccessTokenPayloadType | null =
       await this.jwtTokensService.verifyAccessToken(query.data.accessToken);
 
@@ -53,7 +53,7 @@ export class GetProfileByIdHandler
       username: foundProfile.username,
       firstName: foundProfile.firstName,
       lastName: foundProfile.lastName,
-      dateOfBirth: foundProfile.dateOfBirth,
+      dateOfBirth: foundProfile.dateOfBirth?.toISOString(),
       country: foundProfile.country,
       city: foundProfile.city,
       aboutMe: foundProfile.aboutMe,

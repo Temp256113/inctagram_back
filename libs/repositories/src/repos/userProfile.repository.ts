@@ -22,7 +22,7 @@ export class UserProfileRepository {
   async createProfileImage(data: {
     userId: number;
     image: Express.Multer.File;
-    path: string;
+    googleFileId: string;
     url: string;
   }) {
     return this.prismaService.fileResource.create({
@@ -30,7 +30,7 @@ export class UserProfileRepository {
         type: FileResourceTypes.profilePhoto,
         contentType: data.image.mimetype,
         size: data.image.size,
-        path: data.path,
+        googleFileId: data.googleFileId,
         url: data.url,
         creatorId: data.userId,
         profileId: data.userId,
@@ -42,9 +42,7 @@ export class UserProfileRepository {
     return this.prismaService.userProfile
       .update({
         where: { userId },
-        data: {
-          ...data,
-        },
+        data,
         include: {
           profileImage: true,
         },
@@ -65,14 +63,19 @@ export class UserProfileRepository {
 
   async updateProfileImage(
     profileImageId: number,
-    data: { contentType: string; size: number; path: string; url: string },
+    data: {
+      contentType: string;
+      size: number;
+      googleFileId: string;
+      url: string;
+    },
   ) {
     return this.prismaService.fileResource.update({
       where: { id: profileImageId },
       data: {
         contentType: data.contentType,
         size: data.size,
-        path: data.path,
+        googleFileId: data.googleFileId,
         url: data.url,
       },
     });

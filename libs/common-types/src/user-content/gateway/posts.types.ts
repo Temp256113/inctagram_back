@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString, Length } from 'class-validator';
 
-class PostImagesResponseDTO {
+class PostImagesSchema {
   @ApiProperty({ type: 'string' })
   imageUrl: string;
 }
 
-export class PostResponseDTO {
+export class PostSchema {
   @ApiProperty({ type: 'number', example: 33 })
   postId: number;
 
@@ -19,8 +19,8 @@ export class PostResponseDTO {
   @ApiProperty({ example: '2024-02-03T09:19:30.434Z' })
   updatedAt: Date;
 
-  @ApiProperty({ type: [PostImagesResponseDTO] })
-  postImages: PostImagesResponseDTO[];
+  @ApiProperty({ type: [PostImagesSchema] })
+  postImages: PostImagesSchema[];
 
   @ApiProperty({ type: 'boolean', example: true })
   canModify: boolean;

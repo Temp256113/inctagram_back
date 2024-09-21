@@ -1,16 +1,16 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { differenceInYears } from 'date-fns';
+import { differenceInYears, parseISO } from 'date-fns';
 import { HttpStatus } from '@nestjs/common';
 import {
   UserProfileRepository,
   UserProfileUpdateDbDTO,
 } from '@libs/repositories/repos/userProfile.repository';
 import { RpcCustomException } from '@libs/common-exceptions';
-import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
 import _ from 'lodash';
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import { GoogleDriveService } from '../../../infrastructure/google-drive-storage/googleDrive.service';
 
 export class UpdateProfileCommand {
   constructor(
@@ -19,26 +19,26 @@ export class UpdateProfileCommand {
 }
 
 @CommandHandler(UpdateProfileCommand)
-export class UpdateUserProfileHandler
+export class UpdateUserProfileUsecase
   implements
     ICommandHandler<
       UpdateProfileCommand,
-      UserContentGatewayControllerTypes.ProfileResponseDTO
+      UserContentGatewayControllerTypes.ProfileSchema
     >
 {
   constructor(
     private readonly userProfileRepository: UserProfileRepository,
     private readonly userProfileQueryRepository: UserProfileQueryRepository,
-    private readonly s3StorageService: S3StorageService,
+    private readonly googleDriveService: GoogleDriveService,
   ) {}
 
-  async execute(
-    command: UpdateProfileCommand,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
-    const dateOfBirth = command.data.dateOfBirth;
-    const newProfileImage = command.data.newProfileImage;
-    const userId = command.data.userId;
-    const username = command.data.username;
+  async execute({
+    data: dto,
+  }: UpdateProfileCommand): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
+    const dateOfBirth = dto.dateOfBirth;
+    const newProfileImage = dto.newProfileImage;
+    const userId = dto.userId;
+    const username = dto.username;
 
     if (dateOfBirth) {
       this.checkAge(dateOfBirth);
@@ -51,12 +51,12 @@ export class UpdateUserProfileHandler
     const profileUpdateDTO: UserProfileUpdateDbDTO = _.omitBy(
       {
         username,
-        firstName: command.data.firstName,
-        lastName: command.data.lastName,
-        dateOfBirth: command.data.dateOfBirth,
-        country: command.data.country,
-        city: command.data.city,
-        aboutMe: command.data.aboutMe,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        dateOfBirth: dto.dateOfBirth,
+        country: dto.country,
+        city: dto.city,
+        aboutMe: dto.aboutMe,
       },
       _.isNil,
     );
@@ -65,14 +65,13 @@ export class UpdateUserProfileHandler
       return this.updateAndMapProfile(userId, profileUpdateDTO);
     }
 
-    const currentProfileImage = command.data.currentProfileImage;
-    const currentProfileImageId = command.data.currentProfileImageId;
+    const currentProfileImage = dto.currentProfileImage;
 
-    if (currentProfileImage && currentProfileImageId) {
+    if (currentProfileImage) {
       await this.updateProfileImage({
         currentProfileImageData: {
-          id: currentProfileImageId,
-          path: currentProfileImage.path,
+          id: currentProfileImage.id,
+          googleFileId: currentProfileImage.googleFileId,
         },
         profileImageUpdateDTO: {
           userId,
@@ -91,23 +90,20 @@ export class UpdateUserProfileHandler
     userId: number;
     image: Express.Multer.File;
   }): Promise<void> {
-    const newImageData = await this.s3StorageService.uploadProfileImage({
-      userId: data.userId,
-      image: data.image,
-    });
+    const newImageData = await this.googleDriveService.upload(data.image);
 
     await this.userProfileRepository.createProfileImage({
       userId: data.userId,
       image: data.image,
-      path: newImageData.path,
-      url: newImageData.url,
+      googleFileId: newImageData.uploadedFileId,
+      url: newImageData.directLink,
     });
   }
 
   async updateProfileImage(data: {
     currentProfileImageData: {
       id: number;
-      path: string;
+      googleFileId: string;
     };
     profileImageUpdateDTO: {
       userId: number;
@@ -116,21 +112,19 @@ export class UpdateUserProfileHandler
   }): Promise<void> {
     const newProfileImage = data.profileImageUpdateDTO.image;
 
-    await this.s3StorageService.deleteFile(data.currentProfileImageData.path);
+    await this.googleDriveService.deleteFile(
+      data.currentProfileImageData.googleFileId,
+    );
 
-    const newProfileImageS3Data =
-      await this.s3StorageService.uploadProfileImage({
-        userId: data.profileImageUpdateDTO.userId,
-        image: newProfileImage,
-      });
+    const newImageData = await this.googleDriveService.upload(newProfileImage);
 
     await this.userProfileRepository.updateProfileImage(
       data.currentProfileImageData.id,
       {
         contentType: newProfileImage.mimetype,
         size: newProfileImage.size,
-        path: newProfileImageS3Data.path,
-        url: newProfileImageS3Data.url,
+        googleFileId: newImageData.uploadedFileId,
+        url: newImageData.directLink,
       },
     );
   }
@@ -138,34 +132,33 @@ export class UpdateUserProfileHandler
   async updateAndMapProfile(
     userId: number,
     updateProfileDTO: UserProfileUpdateDbDTO,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     const userProfile = await this.userProfileRepository.updateProfile(
       userId,
       updateProfileDTO,
     );
 
-    const userProfileMapped: UserContentGatewayControllerTypes.ProfileResponseDTO =
-      {
-        userId: userProfile?.userId,
-        username: userProfile?.username,
-        firstName: userProfile?.firstName,
-        lastName: userProfile?.lastName,
-        dateOfBirth: userProfile?.dateOfBirth,
-        country: userProfile?.country,
-        city: userProfile?.city,
-        aboutMe: userProfile?.aboutMe,
-        createdAt: userProfile?.createdAt,
-        updatedAt: userProfile?.updatedAt,
-        deletedAt: userProfile?.deletedAt,
-        profileImageURL: userProfile?.profileImage?.url ?? null,
-        canModify: true,
-      };
+    const userProfileMapped: UserContentGatewayControllerTypes.ProfileSchema = {
+      userId: userProfile?.userId,
+      username: userProfile?.username,
+      firstName: userProfile?.firstName,
+      lastName: userProfile?.lastName,
+      dateOfBirth: userProfile?.dateOfBirth?.toISOString(),
+      country: userProfile?.country,
+      city: userProfile?.city,
+      aboutMe: userProfile?.aboutMe,
+      createdAt: userProfile?.createdAt,
+      updatedAt: userProfile?.updatedAt,
+      deletedAt: userProfile?.deletedAt,
+      profileImageURL: userProfile?.profileImage?.url ?? null,
+      canModify: true,
+    };
 
     return userProfileMapped;
   }
 
-  checkAge(dateOfBirth: Date): void {
-    const age = differenceInYears(new Date(), dateOfBirth);
+  checkAge(dateOfBirth: string): void {
+    const age = differenceInYears(new Date(), parseISO(dateOfBirth));
 
     if (age < 13) {
       throw new RpcCustomException({

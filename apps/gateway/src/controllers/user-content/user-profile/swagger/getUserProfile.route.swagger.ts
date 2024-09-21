@@ -14,7 +14,7 @@ export const GetUserProfile = () => {
     }),
     ApiOkResponse({
       description: `User profile found successfully`,
-      type: UserContentGatewayControllerTypes.ProfileResponseDTO,
+      type: UserContentGatewayControllerTypes.ProfileSchema,
     }),
     ApiBadRequestResponse({
       description: 'Something went wrong',

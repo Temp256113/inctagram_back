@@ -1,2 +1,2 @@
-export * from './getMyProfileHandler';
-export * from './getProfileByIdHandler';
+export * from './getMyProfile.usecase';
+export * from './getProfileById.usecase';

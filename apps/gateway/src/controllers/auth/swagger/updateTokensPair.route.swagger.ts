@@ -12,7 +12,7 @@ export const UpdateTokensPair = () => {
     ApiOperation({ summary: 'Update tokens pair' }),
     ApiCreatedResponse({
       description: 'The tokens pair successfully updated',
-      type: AuthGatewayControllerTypes.LoginResponseDTO,
+      type: AuthGatewayControllerTypes.LoginSchema,
     }),
     ApiUnauthorizedResponse({
       description:

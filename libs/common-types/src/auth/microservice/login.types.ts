@@ -1,15 +1,14 @@
 import * as AuthGatewayControllerTypes from '@libs/common-types/auth/gateway';
 
-export type SideAuthResponseDTO =
-  AuthGatewayControllerTypes.LoginResponseDTO & {
-    refreshToken: string;
-  };
-
-export type LoginResponseDTO = AuthGatewayControllerTypes.LoginResponseDTO & {
+export type SideAuthSchema = AuthGatewayControllerTypes.LoginSchema & {
   refreshToken: string;
 };
 
-export type UpdateTokensPairResponseDTO = {
+export type LoginSchema = AuthGatewayControllerTypes.LoginSchema & {
+  refreshToken: string;
+};
+
+export type UpdateTokensPairSchema = {
   accessToken: string;
   refreshToken: string;
 };

@@ -11,7 +11,7 @@ export const Login = () => {
     ApiOperation({ summary: 'Login' }),
     ApiOkResponse({
       description: 'Successful login',
-      type: AuthGatewayControllerTypes.LoginResponseDTO,
+      type: AuthGatewayControllerTypes.LoginSchema,
     }),
     ApiUnauthorizedResponse({
       description: 'The email or password are incorrect. Try again',

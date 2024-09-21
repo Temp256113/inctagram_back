@@ -24,7 +24,7 @@ export class UserPostsRepository {
     userId: number;
     postId: number;
     image: Express.Multer.File;
-    path: string;
+    googleFileId: string;
     url: string;
   }) {
     return this.prisma.fileResource.create({
@@ -32,7 +32,7 @@ export class UserPostsRepository {
         type: FileResourceTypes.postPhoto,
         contentType: data.image.mimetype,
         size: data.image.size,
-        path: data.path,
+        googleFileId: data.googleFileId,
         url: data.url,
         creatorId: data.userId,
         postId: data.postId,

@@ -4,30 +4,25 @@ import { UserPostsRepository } from '@libs/repositories/repos/userPosts.reposito
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 import { RpcCustomException } from '@libs/common-exceptions';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
-import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
+import { GoogleDriveService } from '../../../infrastructure/google-drive-storage/googleDrive.service';
 
-export class UpdatePostCommand {
+export class DeletePostCommand {
   constructor(
-    public readonly data: UserContentMicroserviceTypes.UpdatePostDTO,
+    public readonly data: UserContentMicroserviceTypes.DeletePostDTO,
   ) {}
 }
 
-@CommandHandler(UpdatePostCommand)
-export class UpdatePostHandler
-  implements
-    ICommandHandler<
-      UpdatePostCommand,
-      UserContentGatewayControllerTypes.PostResponseDTO
-    >
+@CommandHandler(DeletePostCommand)
+export class DeletePostUsecase
+  implements ICommandHandler<DeletePostCommand, void>
 {
   constructor(
     private readonly postsRepository: UserPostsRepository,
     private readonly postsQueryRepository: UserPostsQueryRepository,
+    private readonly googleDriveService: GoogleDriveService,
   ) {}
 
-  async execute({
-    data: command,
-  }: UpdatePostCommand): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  async execute({ data: command }: DeletePostCommand): Promise<void> {
     const foundPost = await this.postsQueryRepository.getPostById(
       command.userPostId,
     );
@@ -46,21 +41,17 @@ export class UpdatePostHandler
       });
     }
 
-    const updatedPost =
-      await this.postsRepository.updatePostDescriptionByPostId({
-        postId: command.userPostId,
-        description: command.description,
-      });
+    const deleteImagesFromGoogleDrivePromises = foundPost.images.map((image) =>
+      this.googleDriveService.deleteFile(image.googleFileId),
+    );
 
-    return {
-      postId: updatedPost.id,
-      postDescription: updatedPost.description,
-      createdAt: updatedPost.createdAt,
-      updatedAt: updatedPost.updatedAt,
-      postImages: updatedPost.images.map((image) => {
-        return { imageUrl: image.url };
-      }),
-      canModify: true,
-    };
+    const deletePostFromDBPromise = await this.postsRepository.deletePostById(
+      foundPost.id,
+    );
+
+    await Promise.all([
+      ...deleteImagesFromGoogleDrivePromises,
+      deletePostFromDBPromise,
+    ]);
   }
 }

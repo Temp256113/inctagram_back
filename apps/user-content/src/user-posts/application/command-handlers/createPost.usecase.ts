@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
-import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
 import * as UserContentGatewayControllerTypes from 'libs/common-types/src/user-content/gateway';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
 import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { WebhooksMicroservicePatterns } from '@libs/microservice-patterns';
+import { GoogleDriveService } from '../../../infrastructure/google-drive-storage/googleDrive.service';
 
 export class CreatePostCommand {
   constructor(
@@ -14,31 +14,31 @@ export class CreatePostCommand {
 }
 
 @CommandHandler(CreatePostCommand)
-export class CreatePostHandler
+export class CreatePostUsecase
   implements
     ICommandHandler<
       CreatePostCommand,
-      UserContentGatewayControllerTypes.PostResponseDTO
+      UserContentGatewayControllerTypes.PostSchema
     >
 {
   constructor(
-    private readonly s3StorageService: S3StorageService,
+    private readonly googleDriveService: GoogleDriveService,
     private readonly postsRepository: UserPostsRepository,
     @Inject('WEBHOOKS_SERVICE')
     protected readonly webhooksMicroserviceClient: ClientProxy,
   ) {}
 
   async execute({
-    data: command,
-  }: CreatePostCommand): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+    data: dto,
+  }: CreatePostCommand): Promise<UserContentGatewayControllerTypes.PostSchema> {
     const createdPost = await this.postsRepository.createPost({
-      userId: command.userId,
-      description: command.description,
+      userId: dto.userId,
+      description: dto.description,
     });
 
     const loadedImagesForPost = await this.loadPostImages({
-      images: command.images,
-      userId: command.userId,
+      images: dto.images,
+      userId: dto.userId,
       postId: createdPost.id,
     });
 
@@ -53,7 +53,7 @@ export class CreatePostHandler
       createdAt: createdPost.createdAt,
       updatedAt: createdPost.updatedAt,
       postImages: loadedImagesForPost.map((loadedImage) => {
-        return { imageUrl: loadedImage.url };
+        return { imageUrl: loadedImage.directLink };
       }),
       canModify: true,
     };
@@ -64,32 +64,26 @@ export class CreatePostHandler
     postId: number;
     userId: number;
   }) {
-    const saveImagesToS3Promises = data.images.map((image) => {
-      return this.s3StorageService
-        .uploadPostImage({
-          image,
-          postId: data.postId,
-          userId: data.userId,
-        })
-        .then((res) => {
-          return { ...res, image };
-        });
-    });
+    const saveImagesToGoogleDrivePromises = data.images.map((image) =>
+      this.googleDriveService.upload(image).then((res) => ({ ...res, image })),
+    );
 
-    const savedImagesToS3 = await Promise.all(saveImagesToS3Promises);
+    const savedImagesToGoogleDrive = await Promise.all(
+      saveImagesToGoogleDrivePromises,
+    );
 
-    const saveImagesToDbPromises = savedImagesToS3.map((image) => {
+    const saveImagesToDbPromises = savedImagesToGoogleDrive.map((image) => {
       return this.postsRepository.createPostImage({
         userId: data.userId,
         postId: data.postId,
         image: image.image,
-        url: image.url,
-        path: image.path,
+        url: image.directLink,
+        googleFileId: image.uploadedFileId,
       });
     });
 
     await Promise.all(saveImagesToDbPromises);
 
-    return savedImagesToS3;
+    return savedImagesToGoogleDrive;
   }
 }

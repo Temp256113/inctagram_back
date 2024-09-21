@@ -41,11 +41,11 @@ export class UserProfileController {
   @SwaggerRouteDecorators.GetUserProfile()
   async getMyProfile(
     @User() user: AccessTokenUserType,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     const getMyProfilePayload: UserContentMicroserviceTypes.GetMyProfileDTO =
       user;
 
-    const userProfile: Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> =
+    const userProfile: Promise<UserContentGatewayControllerTypes.ProfileSchema> =
       lastValueFrom(
         this.userContentClient.send(
           UserContentMicroservicePatterns.GET_MY_PROFILE,
@@ -62,14 +62,14 @@ export class UserProfileController {
   async getProfileById(
     @Param('id') profileId: number,
     @AccessToken() accessToken: string | null,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     const getProfileByIdPayload: UserContentMicroserviceTypes.GetProfileByIdDTO =
       {
         profileId,
         accessToken,
       };
 
-    const userProfile: Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> =
+    const userProfile: Promise<UserContentGatewayControllerTypes.ProfileSchema> =
       lastValueFrom(
         this.userContentClient.send(
           UserContentMicroservicePatterns.GET_PROFILE_BY_ID,
@@ -107,7 +107,7 @@ export class UserProfileController {
     @Body()
     updateProfileDTO: UserContentGatewayControllerTypes.UpdateUserProfileDTO,
     @User() user: AccessTokenUserType,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     if (newProfileImage?.length > 1) {
       throw new BadRequestException(
         'You can set no more than 1 photo as a profile picture',
@@ -128,11 +128,10 @@ export class UserProfileController {
         userId: user.id,
         newProfileImage: newProfileImage[0],
         currentProfileImage: user?.profile?.profileImage,
-        currentProfileImageId: user?.profile?.profileImage?.id,
         ...updateProfileDTO,
       };
 
-    const updatedProfile: Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> =
+    const updatedProfile: Promise<UserContentGatewayControllerTypes.ProfileSchema> =
       lastValueFrom(
         this.userContentClient.send(
           UserContentMicroservicePatterns.UPDATE_PROFILE,

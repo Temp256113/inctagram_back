@@ -9,16 +9,16 @@ export class GetMyProfileQuery {
 }
 
 @QueryHandler(GetMyProfileQuery)
-export class GetMyProfileHandler
+export class GetMyProfileUsecase
   implements
     IQueryHandler<
       GetMyProfileQuery,
-      UserContentGatewayControllerTypes.ProfileResponseDTO
+      UserContentGatewayControllerTypes.ProfileSchema
     >
 {
   async execute(
     query: GetMyProfileQuery,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     const user: UserContentMicroserviceTypes.GetMyProfileDTO = query.data;
 
     return {
@@ -26,7 +26,7 @@ export class GetMyProfileHandler
       username: user.profile.username,
       firstName: user.profile.firstName,
       lastName: user.profile.lastName,
-      dateOfBirth: user.profile.dateOfBirth,
+      dateOfBirth: user.profile.dateOfBirth?.toISOString(),
       country: user.profile.country,
       city: user.profile.city,
       aboutMe: user.profile.aboutMe,

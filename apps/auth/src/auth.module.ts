@@ -11,7 +11,7 @@ import * as Commands from './application/command-handlers/index';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 const commandHandlers = [
-  Commands.LoginHandler,
+  Commands.LoginUsecase,
   Commands.UpdateTokensPairHandler,
   Commands.LogoutHandler,
   Commands.PasswordRecoveryRequestHandler,

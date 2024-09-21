@@ -1,3 +1,3 @@
-export * from './createPostHandler';
-export * from './updatePostHandler';
-export * from './deletePostHandler';
+export * from './createPost.usecase';
+export * from './updatePost.usecase';
+export * from './deletePost.usecase';

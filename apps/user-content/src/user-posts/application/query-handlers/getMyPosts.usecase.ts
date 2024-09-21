@@ -10,11 +10,11 @@ export class GetMyPostsQuery {
 }
 
 @QueryHandler(GetMyPostsQuery)
-export class GetMyPostsHandler
+export class GetMyPostsUsecase
   implements
     IQueryHandler<
       GetMyPostsQuery,
-      UserContentGatewayControllerTypes.PostResponseDTO[]
+      UserContentGatewayControllerTypes.PostSchema[]
     >
 {
   constructor(
@@ -23,9 +23,7 @@ export class GetMyPostsHandler
 
   async execute({
     data: query,
-  }: GetMyPostsQuery): Promise<
-    UserContentGatewayControllerTypes.PostResponseDTO[]
-  > {
+  }: GetMyPostsQuery): Promise<UserContentGatewayControllerTypes.PostSchema[]> {
     const howManyPostsToTakePerRequest = 8;
 
     // 8 потому что за каждый запрос нужно возвращать по 8 постов
@@ -37,7 +35,7 @@ export class GetMyPostsHandler
       userId: query.userId,
     });
 
-    const mappedPosts: UserContentGatewayControllerTypes.PostResponseDTO[] =
+    const mappedPosts: UserContentGatewayControllerTypes.PostSchema[] =
       foundPosts.map((post) => {
         return {
           postId: post.id,
