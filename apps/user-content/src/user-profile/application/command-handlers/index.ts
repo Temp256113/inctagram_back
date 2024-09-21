@@ -1,1 +1,1 @@
-export * from './updateUserProfile.handler';
+export * from './updateUserProfile.usecase';

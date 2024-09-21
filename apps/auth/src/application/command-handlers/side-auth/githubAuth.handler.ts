@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus, Inject } from '@nestjs/common';
 import authConfig from '@libs/config/auth.config.service';
 import { ConfigType } from '@nestjs/config';
-import { Prisma, Providers } from '@prisma/client';
+import { Providers } from '@prisma/client';
 import { NodemailerService } from '../../../utils/nodemailer.service';
 import axios from 'axios';
 import { JwtTokensService } from '@libs/jwt-token';
@@ -22,10 +22,7 @@ export class GithubAuthCommand {
 export class GithubAuthHandler
   extends SideAuthUtils
   implements
-    ICommandHandler<
-      GithubAuthCommand,
-      AuthMicroserviceTypes.SideAuthResponseDTO
-    >
+    ICommandHandler<GithubAuthCommand, AuthMicroserviceTypes.SideAuthSchema>
 {
   constructor(
     @Inject(authConfig.KEY)
@@ -48,7 +45,7 @@ export class GithubAuthHandler
 
   async execute(
     command: GithubAuthCommand,
-  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.SideAuthSchema> {
     const {
       data: { code: githubCode },
     } = command;
@@ -81,7 +78,7 @@ export class GithubAuthHandler
         username: user.profile.username,
         firstName: user.profile.firstName,
         lastName: user.profile.lastName,
-        dateOfBirth: user.profile.dateOfBirth,
+        dateOfBirth: user.profile?.dateOfBirth?.toISOString(),
         country: user.profile.country,
         city: user.profile.city,
         aboutMe: user.profile.aboutMe,

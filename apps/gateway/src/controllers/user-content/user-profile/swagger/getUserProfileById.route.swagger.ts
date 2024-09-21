@@ -13,7 +13,7 @@ export const GetUserProfileById = () => {
     }),
     ApiOkResponse({
       description: 'User profile found successfully',
-      type: UserContentGatewayControllerTypes.ProfileResponseDTO,
+      type: UserContentGatewayControllerTypes.ProfileSchema,
     }),
     ApiNotFoundResponse({
       description: 'User profile with provided id is not found',

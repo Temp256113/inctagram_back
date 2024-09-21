@@ -15,7 +15,7 @@ export class UpdateTokensPairHandler
   implements
     ICommandHandler<
       UpdateTokensPairCommand,
-      AuthMicroserviceTypes.UpdateTokensPairResponseDTO
+      AuthMicroserviceTypes.UpdateTokensPairSchema
     >
 {
   constructor(
@@ -25,7 +25,7 @@ export class UpdateTokensPairHandler
 
   async execute(
     command: UpdateTokensPairCommand,
-  ): Promise<AuthMicroserviceTypes.UpdateTokensPairResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.UpdateTokensPairSchema> {
     const {
       data: { user, refreshTokenUuid: uuid },
     } = command;

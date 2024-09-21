@@ -14,7 +14,7 @@ export class AuthController {
   @MessagePattern(AuthMicroservicePatterns.GOOGLE_AUTH)
   async authViaGoogle(
     @Payload() payload: AuthGatewayControllerTypes.SideAuthDTO,
-  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.SideAuthSchema> {
     return this.commandBus.execute(
       new Commands.GoogleAuthCommand({ code: payload.code }),
     );
@@ -23,7 +23,7 @@ export class AuthController {
   @MessagePattern(AuthMicroservicePatterns.GITHUB_AUTH)
   async authViaGithub(
     @Payload() payload: AuthGatewayControllerTypes.SideAuthDTO,
-  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.SideAuthSchema> {
     return this.commandBus.execute(
       new Commands.GithubAuthCommand({ code: payload.code }),
     );
@@ -33,6 +33,8 @@ export class AuthController {
   async register(
     @Payload() payload: AuthGatewayControllerTypes.RegisterDTO,
   ): Promise<void> {
+    console.log('register route is executed');
+
     await this.commandBus.execute(
       new Commands.RegisterCommand({
         email: payload.email,
@@ -63,7 +65,7 @@ export class AuthController {
   @MessagePattern(AuthMicroservicePatterns.USER_LOGIN)
   async login(
     @Payload() payload: AuthGatewayControllerTypes.LoginDTO,
-  ): Promise<AuthMicroserviceTypes.LoginResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.LoginSchema> {
     return this.commandBus.execute(
       new Commands.LoginCommand({
         email: payload.email,
@@ -75,7 +77,7 @@ export class AuthController {
   @MessagePattern(AuthMicroservicePatterns.UPDATE_TOKENS_PAIR)
   async updateTokensPair(
     @Payload() payload: RefreshTokenUserType,
-  ): Promise<AuthMicroserviceTypes.UpdateTokensPairResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.UpdateTokensPairSchema> {
     return this.commandBus.execute(
       new Commands.UpdateTokensPairCommand(payload),
     );

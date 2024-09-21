@@ -6,7 +6,7 @@ import {
   Matches,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { ProfileResponseDTO } from '@libs/common-types/user-content/gateway';
+import { ProfileSchema } from '@libs/common-types/user-content/gateway';
 
 export class SideAuthDTO {
   @IsString({ message: 'Provide auth code' })
@@ -17,7 +17,7 @@ export class SideAuthDTO {
   code: string;
 }
 
-export class LoginResponseDTO {
+export class LoginSchema {
   @ApiProperty({
     description: 'Access token. Save it',
     example: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`,
@@ -27,12 +27,12 @@ export class LoginResponseDTO {
 
   @ApiProperty({
     description: 'User profile',
-    type: ProfileResponseDTO,
+    type: ProfileSchema,
   })
-  userProfile: ProfileResponseDTO;
+  userProfile: ProfileSchema;
 }
 
-export class UpdateTokensPairResponseDTO {
+export class UpdateTokensPairSchema {
   @ApiProperty({
     description: 'Access token. Save it',
     example: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`,

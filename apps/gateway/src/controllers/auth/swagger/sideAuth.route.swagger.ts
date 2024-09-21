@@ -12,7 +12,7 @@ export const SideAuth = () => {
     ApiOperation({ summary: 'Auth via side decisions' }),
     ApiOkResponse({
       description: 'Successful login/registration',
-      type: AuthGatewayControllerTypes.LoginResponseDTO,
+      type: AuthGatewayControllerTypes.LoginSchema,
     }),
     ApiBadRequestResponse({
       description: 'Provided incorrect auth code',

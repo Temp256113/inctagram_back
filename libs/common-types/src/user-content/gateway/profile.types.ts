@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { IsDateCustomValidator } from '../../../../../apps/gateway/src/custom-validators/isDateCustomValidator';
 
 class BaseUserProfileDTO {
   @IsString()
@@ -17,10 +18,10 @@ class BaseUserProfileDTO {
   @ApiProperty({ example: 'Snow' })
   lastName?: string;
 
-  @IsDate()
+  @IsDateCustomValidator()
   @IsOptional()
   @ApiProperty({ example: '2024-02-03T09:19:30.434Z' })
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
 
   @IsString()
   @IsOptional()
@@ -38,7 +39,7 @@ class BaseUserProfileDTO {
   aboutMe?: string;
 }
 
-export class ProfileResponseDTO extends BaseUserProfileDTO {
+export class ProfileSchema extends BaseUserProfileDTO {
   @ApiProperty({ example: 1 })
   userId: number;
 

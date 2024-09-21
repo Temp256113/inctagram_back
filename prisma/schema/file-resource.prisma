@@ -1,0 +1,28 @@
+enum FileResourceTypes {
+  profilePhoto
+  postPhoto
+}
+
+model FileResource {
+  id           Int               @id @default(autoincrement())
+  type         FileResourceTypes
+  contentType  String            @db.Text
+  size         Int?
+  googleFileId String            @db.Text // id который создает google drive. нужен для удаления файла
+  url          String            @db.Text
+  metadata     Json?             @db.JsonB
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @default(now()) @updatedAt
+  deletedAt    DateTime?
+
+  postId   Int?
+  userPost UserPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  profileId   Int?         @unique
+  userProfile UserProfile? @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@map("file_resources")
+}

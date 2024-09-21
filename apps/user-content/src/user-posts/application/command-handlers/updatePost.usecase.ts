@@ -2,27 +2,32 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { HttpStatus } from '@nestjs/common';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
-import { S3StorageService } from '../../../infrastructure/s3-storage/s3Storage.service';
 import { RpcCustomException } from '@libs/common-exceptions';
 import * as UserContentMicroserviceTypes from '@libs/common-types/user-content/microservice';
+import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 
-export class DeletePostCommand {
+export class UpdatePostCommand {
   constructor(
-    public readonly data: UserContentMicroserviceTypes.DeletePostDTO,
+    public readonly data: UserContentMicroserviceTypes.UpdatePostDTO,
   ) {}
 }
 
-@CommandHandler(DeletePostCommand)
-export class DeletePostHandler
-  implements ICommandHandler<DeletePostCommand, void>
+@CommandHandler(UpdatePostCommand)
+export class UpdatePostUsecase
+  implements
+    ICommandHandler<
+      UpdatePostCommand,
+      UserContentGatewayControllerTypes.PostSchema
+    >
 {
   constructor(
     private readonly postsRepository: UserPostsRepository,
     private readonly postsQueryRepository: UserPostsQueryRepository,
-    private readonly s3StorageService: S3StorageService,
   ) {}
 
-  async execute({ data: command }: DeletePostCommand): Promise<void> {
+  async execute({
+    data: command,
+  }: UpdatePostCommand): Promise<UserContentGatewayControllerTypes.PostSchema> {
     const foundPost = await this.postsQueryRepository.getPostById(
       command.userPostId,
     );
@@ -41,14 +46,21 @@ export class DeletePostHandler
       });
     }
 
-    const deleteImagesFromS3Promises = foundPost.images.map((image) => {
-      return this.s3StorageService.deleteFile(image.path);
-    });
+    const updatedPost =
+      await this.postsRepository.updatePostDescriptionByPostId({
+        postId: command.userPostId,
+        description: command.description,
+      });
 
-    const deletePostPromise = await this.postsRepository.deletePostById(
-      foundPost.id,
-    );
-
-    await Promise.all([...deleteImagesFromS3Promises, deletePostPromise]);
+    return {
+      postId: updatedPost.id,
+      postDescription: updatedPost.description,
+      createdAt: updatedPost.createdAt,
+      updatedAt: updatedPost.updatedAt,
+      postImages: updatedPost.images.map((image) => {
+        return { imageUrl: image.url };
+      }),
+      canModify: true,
+    };
   }
 }

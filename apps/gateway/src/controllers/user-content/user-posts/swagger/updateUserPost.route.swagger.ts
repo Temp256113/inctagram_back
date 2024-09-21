@@ -7,7 +7,7 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { PostResponseDTO } from 'libs/common-types/src/user-content/gateway';
+import { PostSchema } from 'libs/common-types/src/user-content/gateway';
 
 export const UpdateUserPost = () => {
   return applyDecorators(
@@ -15,7 +15,7 @@ export const UpdateUserPost = () => {
     ApiBearerAuth(),
     ApiOkResponse({
       description: 'User post was updated',
-      type: PostResponseDTO,
+      type: PostSchema,
     }),
     ApiUnauthorizedResponse({
       description: 'You must provide valid access token to access this route',

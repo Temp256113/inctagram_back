@@ -14,9 +14,8 @@ export class LoginCommand {
 }
 
 @CommandHandler(LoginCommand)
-export class LoginHandler
-  implements
-    ICommandHandler<LoginCommand, AuthMicroserviceTypes.LoginResponseDTO>
+export class LoginUsecase
+  implements ICommandHandler<LoginCommand, AuthMicroserviceTypes.LoginSchema>
 {
   constructor(
     private readonly userRepository: UserRepository,
@@ -27,7 +26,7 @@ export class LoginHandler
 
   async execute(
     command: LoginCommand,
-  ): Promise<AuthMicroserviceTypes.LoginResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.LoginSchema> {
     const { data } = command;
 
     const user = await this.getUser({
@@ -59,7 +58,7 @@ export class LoginHandler
         username: user.profile.username,
         firstName: user.profile.firstName,
         lastName: user.profile.lastName,
-        dateOfBirth: user.profile.dateOfBirth,
+        dateOfBirth: user.profile.dateOfBirth?.toISOString(),
         country: user.profile.country,
         city: user.profile.city,
         aboutMe: user.profile.aboutMe,
