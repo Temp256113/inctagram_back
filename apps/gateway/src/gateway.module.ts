@@ -6,6 +6,7 @@ import { AuthController } from './controllers/auth/auth.controller';
 import { UserProfileController } from './controllers/user-content/user-profile/userProfile.controller';
 import { PostsController } from './controllers/user-content/user-posts/posts.controller';
 import { GatewayGuardsModule } from './guards/gatewayGuards.module';
+import { PaymentController } from './controllers/payment/payment.controller';
 
 const userContentControllers = [UserProfileController, PostsController];
 
@@ -31,9 +32,17 @@ const userContentControllers = [UserProfileController, PostsController];
           queue: 'user_content_queue',
         },
       },
+      {
+        name: 'PAYMENT_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RABBITMQ_URL],
+          queue: 'payment_queue',
+        },
+      },
     ]),
   ],
-  controllers: [AuthController, ...userContentControllers],
+  controllers: [AuthController, PaymentController, ...userContentControllers],
   providers: [],
 })
 export class GatewayModule {}
