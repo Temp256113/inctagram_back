@@ -1,5 +1,5 @@
 # Check out https://hub.docker.com/_/node to select a new base image
-FROM node:20.11-alpine
+FROM node:20.17-alpine
 ARG port
 ARG service
 ENV SERVICE=$service
@@ -21,7 +21,7 @@ WORKDIR /home/node/dist/${SERVICE}
 
 COPY --chown=node package*.json ./
 COPY --chown=node yarn.lock ./
-COPY --chown=node prisma ./
+COPY --chown=node ./prisma ./prisma
 
 RUN yarn
 
