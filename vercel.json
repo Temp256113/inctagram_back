@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "apps/first-app/src/main.ts",
+      "src": "./apps/gateway/main.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "apps/first-app/src/main.ts",
+      "dest": "./apps/gateway/main.ts",
       "methods": ["GET","POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
