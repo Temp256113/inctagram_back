@@ -2,7 +2,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { GatewayModule } from './gateway.module';
 import { GatewayExceptionsFilter } from './gatewayExceptionsFilter';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { ValidationError } from 'class-validator';
+import { useContainer, ValidationError } from 'class-validator';
 import * as _ from 'lodash';
 import cookieParser from 'cookie-parser';
 import { SwaggerConfig } from './swagger.config';
@@ -11,6 +11,8 @@ async function bootstrap() {
   const app = await NestFactory.create(GatewayModule, {
     rawBody: true,
   });
+
+  useContainer(app.select(GatewayModule), { fallbackOnErrors: true });
 
   new SwaggerConfig(app).apply();
 
@@ -61,4 +63,5 @@ async function bootstrap() {
     console.log(`gateway app started on http://localhost:${port}`);
   });
 }
+
 bootstrap();

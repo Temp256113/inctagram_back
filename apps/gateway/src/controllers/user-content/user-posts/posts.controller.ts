@@ -62,14 +62,14 @@ export class PostsController {
     postImages: Express.Multer.File[],
     @Body() createPostDto: UserContentGatewayControllerTypes.CreatePostDTO,
     @User() user: AccessTokenUserType,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema> {
     const createPostPayload: UserContentMicroserviceTypes.CreatePostDTO = {
       userId: user.id,
       images: postImages,
       description: createPostDto.description,
     };
 
-    const post: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
+    const post: Promise<UserContentGatewayControllerTypes.PostSchema> =
       lastValueFrom(
         this.userContentMicroserviceClient.send(
           UserContentMicroservicePatterns.CREATE_POST,
@@ -87,14 +87,14 @@ export class PostsController {
   async updatePost(
     @Body() updatePostDto: UserContentGatewayControllerTypes.UpdatePostDTO,
     @User() user: AccessTokenUserType,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema> {
     const updatePostPayload: UserContentMicroserviceTypes.UpdatePostDTO = {
       userId: user.id,
       userPostId: updatePostDto.userPostId,
       description: updatePostDto.description,
     };
 
-    const post: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
+    const post: Promise<UserContentGatewayControllerTypes.PostSchema> =
       lastValueFrom(
         this.userContentMicroserviceClient.send(
           UserContentMicroservicePatterns.UPDATE_POST,
@@ -134,20 +134,19 @@ export class PostsController {
   async getMyPosts(
     @Param('page') page: number,
     @User() user: AccessTokenUserType,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO[]> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema[]> {
     const getMyPostsPayload: UserContentMicroserviceTypes.GetMyPostsDTO = {
       userId: user.id,
       page,
     };
 
-    const foundPosts: Promise<
-      UserContentGatewayControllerTypes.PostResponseDTO[]
-    > = lastValueFrom(
-      this.userContentMicroserviceClient.send(
-        UserContentMicroservicePatterns.GET_MY_POSTS,
-        getMyPostsPayload,
-      ),
-    );
+    const foundPosts: Promise<UserContentGatewayControllerTypes.PostSchema[]> =
+      lastValueFrom(
+        this.userContentMicroserviceClient.send(
+          UserContentMicroservicePatterns.GET_MY_POSTS,
+          getMyPostsPayload,
+        ),
+      );
 
     return foundPosts;
   }
@@ -158,13 +157,13 @@ export class PostsController {
   async getPostById(
     @Param('id') postId: number,
     @AccessToken() accessToken: string | undefined,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema> {
     const getPostByIdPayload: UserContentMicroserviceTypes.GetPostByIdDTO = {
       postId,
       accessToken,
     };
 
-    const foundPost: Promise<UserContentGatewayControllerTypes.PostResponseDTO> =
+    const foundPost: Promise<UserContentGatewayControllerTypes.PostSchema> =
       lastValueFrom(
         this.userContentMicroserviceClient.send(
           UserContentMicroservicePatterns.GET_POST_BY_ID,

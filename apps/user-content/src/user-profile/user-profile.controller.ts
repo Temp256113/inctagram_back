@@ -21,14 +21,14 @@ export class UserProfileController {
   @MessagePattern(UserContentMicroservicePatterns.GET_MY_PROFILE)
   async getMyProfile(
     @Payload() user: AccessTokenUserType,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     return this.queryBus.execute(new GetMyProfileQuery(user));
   }
 
   @MessagePattern(UserContentMicroservicePatterns.GET_PROFILE_BY_ID)
   async getProfileById(
     @Payload() payload: { accessToken: string | null; profileId: number },
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     return this.queryBus.execute(
       new GetProfileByIdQuery({
         accessToken: payload.accessToken,
@@ -40,7 +40,7 @@ export class UserProfileController {
   @MessagePattern(UserContentMicroservicePatterns.UPDATE_PROFILE)
   async updateProfile(
     @Payload() updateProfileDTO: UserContentMicroserviceTypes.UpdateProfileDTO,
-  ): Promise<UserContentGatewayControllerTypes.ProfileResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.ProfileSchema> {
     if (updateProfileDTO.newProfileImage) {
       // rabbitmq для того чтобы передавать данные по очередям сериализует тип данных buffer в json
       // поэтому нужно получившийся в результате массив с числами десериализовать обратно в buffer

@@ -1,9 +1,11 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPosts.queryRepository';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import * as UserContentGatewayControllerTypes from '@libs/common-types/user-content/gateway';
 import axios from 'axios';
 import { Cron } from '@nestjs/schedule';
+import { ConfigType } from '@nestjs/config';
+import appConfig from '@libs/config/app.config.service';
 
 @Injectable()
 export class MainPageEventsService implements OnModuleInit {
@@ -14,10 +16,12 @@ export class MainPageEventsService implements OnModuleInit {
   constructor(
     private readonly userPostsQueryRepository: UserPostsQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
+    @Inject(appConfig.KEY)
+    private readonly config: ConfigType<typeof appConfig>,
   ) {}
 
   async onModuleInit(): Promise<void> {
-    this.frontendWebhooksUrl = 'https://inctagram-front.vercel.app';
+    this.frontendWebhooksUrl = this.config.FRONTEND_URL;
 
     this.registeredUsersAmount =
       await this.userQueryRepository.getUsersAmount();
@@ -29,7 +33,7 @@ export class MainPageEventsService implements OnModuleInit {
   async sendActualDataEveryMinute(): Promise<void> {
     this.newCreatedPostsAmount = 0;
 
-    const mappedLastFourPosts: UserContentGatewayControllerTypes.PostResponseDTO[] =
+    const mappedLastFourPosts: UserContentGatewayControllerTypes.PostSchema[] =
       await this.getMappedLastFourPosts();
 
     axios
@@ -69,7 +73,7 @@ export class MainPageEventsService implements OnModuleInit {
     if (this.newCreatedPostsAmount % 4 == 0) {
       this.newCreatedPostsAmount = 0;
 
-      const mappedLastFourPosts: UserContentGatewayControllerTypes.PostResponseDTO[] =
+      const mappedLastFourPosts: UserContentGatewayControllerTypes.PostSchema[] =
         await this.getMappedLastFourPosts();
 
       axios
@@ -83,12 +87,12 @@ export class MainPageEventsService implements OnModuleInit {
   }
 
   private async getMappedLastFourPosts(): Promise<
-    UserContentGatewayControllerTypes.PostResponseDTO[]
+    UserContentGatewayControllerTypes.PostSchema[]
   > {
     const lastFourPosts =
       await this.userPostsQueryRepository.getLastFourPosts();
 
-    const mappedLastFourPosts: UserContentGatewayControllerTypes.PostResponseDTO[] =
+    const mappedLastFourPosts: UserContentGatewayControllerTypes.PostSchema[] =
       lastFourPosts.map((post) => {
         return {
           postId: post.id,

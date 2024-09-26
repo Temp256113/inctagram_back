@@ -22,10 +22,7 @@ export class GoogleAuthCommand {
 export class GoogleAuthHandler
   extends SideAuthUtils
   implements
-    ICommandHandler<
-      GoogleAuthCommand,
-      AuthMicroserviceTypes.SideAuthResponseDTO
-    >
+    ICommandHandler<GoogleAuthCommand, AuthMicroserviceTypes.SideAuthSchema>
 {
   constructor(
     @Inject(authConfig.KEY)
@@ -48,7 +45,7 @@ export class GoogleAuthHandler
 
   async execute(
     command: GoogleAuthCommand,
-  ): Promise<AuthMicroserviceTypes.SideAuthResponseDTO> {
+  ): Promise<AuthMicroserviceTypes.SideAuthSchema> {
     const {
       data: { code: googleCode },
     } = command;
@@ -84,7 +81,7 @@ export class GoogleAuthHandler
         username: user.profile.username,
         firstName: user.profile.firstName,
         lastName: user.profile.lastName,
-        dateOfBirth: user.profile.dateOfBirth,
+        dateOfBirth: user.profile?.dateOfBirth?.toISOString(),
         country: user.profile.country,
         city: user.profile.city,
         aboutMe: user.profile.aboutMe,

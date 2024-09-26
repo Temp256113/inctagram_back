@@ -38,12 +38,12 @@ export class AuthController {
   async authViaGoogle(
     @Body() googleAuthCode: AuthGatewayControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthGatewayControllerTypes.LoginResponseDTO> {
+  ): Promise<AuthGatewayControllerTypes.LoginSchema> {
     const authViaGooglePayload: AuthGatewayControllerTypes.SideAuthDTO = {
       code: googleAuthCode.code,
     };
 
-    const tokensAndUserData: AuthMicroserviceTypes.SideAuthResponseDTO =
+    const tokensAndUserData: AuthMicroserviceTypes.SideAuthSchema =
       await lastValueFrom(
         this.authClient.send(
           AuthMicroservicePatterns.GOOGLE_AUTH,
@@ -68,12 +68,12 @@ export class AuthController {
   async authViaGithub(
     @Body() githubAuthCode: AuthGatewayControllerTypes.SideAuthDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthGatewayControllerTypes.LoginResponseDTO> {
+  ): Promise<AuthGatewayControllerTypes.LoginSchema> {
     const authViaGithubPayload: AuthGatewayControllerTypes.SideAuthDTO = {
       code: githubAuthCode.code,
     };
 
-    const tokensAndUserData: AuthMicroserviceTypes.SideAuthResponseDTO =
+    const tokensAndUserData: AuthMicroserviceTypes.SideAuthSchema =
       await lastValueFrom(
         this.authClient.send(
           AuthMicroservicePatterns.GITHUB_AUTH,
@@ -165,13 +165,13 @@ export class AuthController {
   async login(
     @Body() userLoginDTO: AuthGatewayControllerTypes.LoginDTO,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthGatewayControllerTypes.LoginResponseDTO> {
+  ): Promise<AuthGatewayControllerTypes.LoginSchema> {
     const loginPayload: AuthGatewayControllerTypes.LoginDTO = {
       email: userLoginDTO.email,
       password: userLoginDTO.password,
     };
 
-    const tokensAndUserData: AuthMicroserviceTypes.LoginResponseDTO =
+    const tokensAndUserData: AuthMicroserviceTypes.LoginSchema =
       await lastValueFrom(
         this.authClient.send(AuthMicroservicePatterns.USER_LOGIN, loginPayload),
       );
@@ -194,10 +194,10 @@ export class AuthController {
   async updateTokensPair(
     @User() user: RefreshTokenUserType,
     @Response({ passthrough: true }) res: Res,
-  ): Promise<AuthGatewayControllerTypes.UpdateTokensPairResponseDTO> {
+  ): Promise<AuthGatewayControllerTypes.UpdateTokensPairSchema> {
     const updateTokensPairPayload: RefreshTokenUserType = user;
 
-    const newTokensPair: AuthMicroserviceTypes.UpdateTokensPairResponseDTO =
+    const newTokensPair: AuthMicroserviceTypes.UpdateTokensPairSchema =
       await lastValueFrom(
         this.authClient.send(
           AuthMicroservicePatterns.UPDATE_TOKENS_PAIR,

@@ -36,7 +36,7 @@ export class UserPostsController {
   @MessagePattern(UserContentMicroservicePatterns.CREATE_POST)
   async createPost(
     @Payload() payload: UserContentMicroserviceTypes.CreatePostDTO,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema> {
     // rabbitmq для того чтобы передавать данные по очередям сериализует тип данных buffer в json
     // поэтому нужно получившийся в результате массив с числами десериализовать обратно в buffer
     payload.images.forEach((image) => {
@@ -55,7 +55,7 @@ export class UserPostsController {
   @MessagePattern(UserContentMicroservicePatterns.UPDATE_POST)
   async updatePost(
     @Payload() payload: UserContentMicroserviceTypes.UpdatePostDTO,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema> {
     return this.commandBus.execute(
       new UpdatePostCommand({
         userId: payload.userId,
@@ -80,7 +80,7 @@ export class UserPostsController {
   @MessagePattern(UserContentMicroservicePatterns.GET_MY_POSTS)
   async getMyPosts(
     @Payload() payload: UserContentMicroserviceTypes.GetMyPostsDTO,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO[]> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema[]> {
     return this.queryBus.execute(
       new GetMyPostsQuery({ userId: payload.userId, page: payload.page }),
     );
@@ -89,7 +89,7 @@ export class UserPostsController {
   @MessagePattern(UserContentMicroservicePatterns.GET_POST_BY_ID)
   async getPostById(
     @Payload() payload: UserContentMicroserviceTypes.GetPostByIdDTO,
-  ): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  ): Promise<UserContentGatewayControllerTypes.PostSchema> {
     return this.queryBus.execute(
       new GetPostByIdQuery({
         postId: payload.postId,

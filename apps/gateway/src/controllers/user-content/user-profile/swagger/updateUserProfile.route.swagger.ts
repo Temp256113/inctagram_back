@@ -57,7 +57,7 @@ export const UpdateUserProfile = () => {
     }),
     ApiOkResponse({
       description: `User profile update successfully`,
-      type: UserContentGatewayControllerTypes.ProfileResponseDTO,
+      type: UserContentGatewayControllerTypes.ProfileSchema,
     }),
     ApiForbiddenResponse({
       description: 'Something went wrong',

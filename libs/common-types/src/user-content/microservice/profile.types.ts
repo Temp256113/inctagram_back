@@ -5,7 +5,6 @@ import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard
 export type UpdateProfileDTO = UpdateUserProfileDTO & {
   newProfileImage?: Express.Multer.File & { buffer: any };
   currentProfileImage?: FileResource | null;
-  currentProfileImageId?: number | null;
   userId: number;
 };
 

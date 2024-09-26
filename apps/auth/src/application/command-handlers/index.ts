@@ -1,6 +1,6 @@
 export * from './side-auth/githubAuth.handler';
 export * from './side-auth/googleAuth.handler';
-export * from './login.handler';
+export * from './login.usecase';
 export * from './logout.handler';
 export * from './password-recovery/passwordRecovery.handler';
 export * from './password-recovery/passwordRecoveryCodeCheck.handler';

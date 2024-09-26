@@ -14,11 +14,11 @@ export class GetPostByIdQuery {
 }
 
 @QueryHandler(GetPostByIdQuery)
-export class GetUserPostByIdHandler
+export class GetUserPostByIdUsecase
   implements
     IQueryHandler<
       GetPostByIdQuery,
-      UserContentGatewayControllerTypes.PostResponseDTO
+      UserContentGatewayControllerTypes.PostSchema
     >
 {
   constructor(
@@ -29,7 +29,7 @@ export class GetUserPostByIdHandler
 
   async execute({
     data: query,
-  }: GetPostByIdQuery): Promise<UserContentGatewayControllerTypes.PostResponseDTO> {
+  }: GetPostByIdQuery): Promise<UserContentGatewayControllerTypes.PostSchema> {
     const userId: number | undefined = await this.getUserId(query.accessToken);
 
     const foundPost = await this.postsQueryRepository.getPostById(query.postId);
