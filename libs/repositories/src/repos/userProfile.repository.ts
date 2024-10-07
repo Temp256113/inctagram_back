@@ -44,6 +44,7 @@ export class UserProfileRepository {
         where: { userId },
         data,
         include: {
+          user: { include: { userAccountType: true } },
           profileImage: true,
         },
       })

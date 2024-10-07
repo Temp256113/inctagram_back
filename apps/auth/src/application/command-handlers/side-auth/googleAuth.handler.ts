@@ -55,6 +55,7 @@ export class GoogleAuthHandler
 
     const user: Prisma.UserGetPayload<{
       include: {
+        userAccountType: true;
         emailInfo: true;
         profile: { include: { profileImage: true } };
       };
@@ -90,6 +91,12 @@ export class GoogleAuthHandler
         updatedAt: user.profile.updatedAt,
         deletedAt: user.profile.deletedAt,
         canModify: true,
+        userAccountType: {
+          accountType: user.userAccountType.accountType,
+          autoRenewal: user.userAccountType.autoRenewal,
+          expireAt: user.userAccountType.expireAt,
+          nextPayment: user.userAccountType.nextPayment,
+        },
       },
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,

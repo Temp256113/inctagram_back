@@ -152,6 +152,12 @@ export class UpdateUserProfileUsecase
       deletedAt: userProfile?.deletedAt,
       profileImageURL: userProfile?.profileImage?.url ?? null,
       canModify: true,
+      userAccountType: {
+        accountType: userProfile.user.userAccountType.accountType,
+        autoRenewal: userProfile.user.userAccountType.autoRenewal,
+        expireAt: userProfile.user.userAccountType.expireAt,
+        nextPayment: userProfile.user.userAccountType.nextPayment,
+      },
     };
 
     return userProfileMapped;

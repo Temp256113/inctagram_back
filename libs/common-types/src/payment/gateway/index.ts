@@ -1,2 +1,2 @@
 export * from './payment.types';
-export * from '../gateway/payment.output.types';
+export * from './payment.output.types';

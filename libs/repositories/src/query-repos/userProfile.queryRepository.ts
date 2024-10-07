@@ -23,7 +23,10 @@ export class UserProfileQueryRepository {
   async getProfileById(profileId: number) {
     return this.prismaService.userProfile.findUnique({
       where: { userId: profileId },
-      include: { profileImage: true },
+      include: {
+        profileImage: true,
+        user: { include: { userAccountType: true } },
+      },
     });
   }
 }

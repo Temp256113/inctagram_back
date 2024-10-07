@@ -35,6 +35,12 @@ export class GetMyProfileUsecase
       deletedAt: user.profile.deletedAt,
       profileImageURL: user?.profile?.profileImage?.url ?? null,
       canModify: true,
+      userAccountType: {
+        accountType: user.userAccountType.accountType,
+        autoRenewal: user.userAccountType.autoRenewal,
+        expireAt: user.userAccountType.expireAt,
+        nextPayment: user.userAccountType.nextPayment,
+      },
     };
   }
 }

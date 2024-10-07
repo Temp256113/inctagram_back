@@ -10,6 +10,7 @@ export class UserQueryRepository {
     return this.prisma.user.findUnique({
       where: { email },
       include: {
+        userAccountType: true,
         emailInfo: true,
         profile: { include: { profileImage: true } },
       },
@@ -20,6 +21,7 @@ export class UserQueryRepository {
     return this.prisma.user.findUnique({
       where: { id: userId },
       include: {
+        userAccountType: true,
         emailInfo: true,
         profile: { include: { profileImage: true } },
       },

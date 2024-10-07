@@ -9,7 +9,11 @@ import { ClientProxy } from '@nestjs/microservices';
 import { WebhooksMicroservicePatterns } from '@libs/microservice-patterns';
 
 type UserFromDBType = Prisma.UserGetPayload<{
-  include: { emailInfo: true; profile: { include: { profileImage: true } } };
+  include: {
+    userAccountType: true;
+    emailInfo: true;
+    profile: { include: { profileImage: true } };
+  };
 }>;
 
 export class SideAuthUtils {

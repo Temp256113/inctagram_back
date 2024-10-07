@@ -1,0 +1,48 @@
+enum PaymentStatuses {
+  Pending
+  Confirmed
+  Failed
+}
+
+enum PaymentSystems {
+  Paypal
+  Stripe
+}
+
+model PaymentTransaction {
+  priceCents    Int
+  status        PaymentStatuses @default(Pending)
+  paymentSystem PaymentSystems
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  paymentSystemData        Json
+  confirmPaymentSystemData Json?
+
+  orderId Int               @id @unique
+  order   SubscriptionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payment_transactions")
+}
+
+model SubscriptionOrder {
+  id                    Int       @id @default(autoincrement())
+  productName           String
+  priceCents            Int
+  subscriptionType      String
+  isPaid                Boolean   @default(false)
+  dateOfPayments        DateTime?
+  endDateOfSubscription DateTime?
+  expireAt              DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  PaymentTransaction PaymentTransaction?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscription_orders")
+}

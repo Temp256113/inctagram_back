@@ -10,7 +10,13 @@ export class StripeAdapter {
       apiVersion: '2024-06-20',
     });
   }
-  async createSession(productId: string): Promise<any> {
+  async createSession(data: {
+    transacrionId: string;
+    description: string;
+    clientId: number;
+    autoRenewal: boolean;
+    priceCents: number;
+  }): Promise<any> {
     const session = await this.stripeInstance.checkout.sessions.create({
       success_url: 'http://localhost:3000/stripe/success',
       cancel_url: 'http://localhost:3000/stripe/cancel',
@@ -18,17 +24,17 @@ export class StripeAdapter {
         {
           price_data: {
             product_data: {
-              name: 'products id: ' + productId,
-              description: 'product description',
+              name: 'client id: ' + data.clientId,
+              description: data.description,
             },
-            unit_amount: 100 * 100,
+            unit_amount: data.priceCents,
             currency: 'USD',
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      client_reference_id: '123',
+      client_reference_id: data.transacrionId.toString(),
     });
 
     return session;
