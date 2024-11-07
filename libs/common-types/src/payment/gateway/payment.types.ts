@@ -6,7 +6,7 @@ import {
   SubscriptionType,
 } from '../microservice/payment.types';
 
-const paymentMethod = ['PayPal', 'Stripe'];
+const paymentMethod = ['Paypal', 'Stripe'];
 
 export class PurchasingSubscriptionDTO {
   @ApiProperty({ enum: PaymentSystems, example: 'Stripe' })

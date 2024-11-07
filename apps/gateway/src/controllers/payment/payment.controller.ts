@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   RawBodyRequest,
+  Redirect,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -24,6 +25,8 @@ import { AccessTokenUserType } from '@libs/common-types/guards/accessToken.guard
 import * as PaymentContentMicroserviceTypes from '@libs/common-types/payment/microservice';
 import { User } from '../../decorators/user.decorator';
 
+import 'dotenv/config';
+
 @Controller('payment')
 @ApiTags('payment controller')
 export class PaymentController {
@@ -31,8 +34,6 @@ export class PaymentController {
 
   @Post('stripe/webhook')
   async stripeWebhook(@Req() req: RawBodyRequest<Request>): Promise<void> {
-    console.log('webhook Stripe');
-
     const stripeWebhookPayload = {
       signature: req.headers['stripe-signature'],
       rawBody: req.rawBody,
@@ -44,6 +45,40 @@ export class PaymentController {
     );
 
     return;
+  }
+
+  @Post('paypal/webhook')
+  async paypalWebhook(@Req() request): Promise<void> {
+    const paypalWebhookPayload: PaymentContentMicroserviceTypes.PaypalWebhookDTO =
+      {
+        eventType: request.body.event_type,
+        id:
+          request.body.event_type === 'PAYMENT.SALE.COMPLETED'
+            ? request.body.resource.billing_agreement_id
+            : request.body.resource.id,
+        paymentData:
+          request.body.event_type === 'PAYMENT.SALE.COMPLETED'
+            ? request.body.resource.update_time
+            : '',
+        data: request.body,
+      };
+
+    await this.paymentClient.emit(
+      PaymentMicroservicePatterns.PAYPAL_WEBHOOK,
+      paypalWebhookPayload,
+    );
+
+    return;
+  }
+
+  @Get('paypal/success')
+  @Redirect(process.env.FRONTEND_SUCCESS_PAYMENT_URL)
+  async paypalSuccess(
+    @Query() query: PaymentGatewayTypes.PaypalSuccessQuery,
+  ): Promise<string> {
+    this.paymentClient.emit(PaymentMicroservicePatterns.PAYPAL_SUCCESS, query);
+
+    return 'success';
   }
 
   @Post('purchasingSubscription')

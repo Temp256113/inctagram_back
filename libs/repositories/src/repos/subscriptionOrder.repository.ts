@@ -7,8 +7,9 @@ export class SubscriptionOrderRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createSubscriptionOrder(data: {
+    transactionId: string;
     productName: string;
-    priceCents: number;
+    price: number;
     userId: number;
     subscriptionType: SubscriptionType;
     endDateOfSubscription: Date;
@@ -16,8 +17,9 @@ export class SubscriptionOrderRepository {
   }) {
     return this.prismaService.subscriptionOrder.create({
       data: {
+        id: data.transactionId,
         productName: data.productName,
-        priceCents: data.priceCents,
+        price: data.price,
         userId: data.userId,
         subscriptionType: data.subscriptionType,
         expireAt: data.expireAt,
@@ -26,10 +28,11 @@ export class SubscriptionOrderRepository {
     });
   }
 
-  async updateSubscriptionOrder(userId: number) {
+  async updateSubscriptionOrder(transactionId: string, dateOfPayments: Date) {
     return this.prismaService.subscriptionOrder.update({
-      where: { id: userId },
+      where: { id: transactionId },
       data: {
+        dateOfPayments: dateOfPayments,
         isPaid: true,
       },
     });

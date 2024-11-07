@@ -14,6 +14,9 @@ export class SubscriptionOrdersQueryRepository {
 
     const subscriptionOrders = await this.prisma.subscriptionOrder.findMany({
       where: { userId: data.userId },
+      include: {
+        PaymentTransaction: true,
+      },
       take: data.queryParams.pageSize,
       skip: skip,
       orderBy: { createdAt: data.queryParams.sortDirection },
@@ -31,9 +34,13 @@ export class SubscriptionOrdersQueryRepository {
 
     return paginator;
   }
-}
 
-//исправить тип подписки
+  async getSubscriptionOrderById(subscriptionOrderId: string) {
+    return this.prisma.subscriptionOrder.findUnique({
+      where: { id: subscriptionOrderId },
+    });
+  }
+}
 
 const subscriptionOrdersmapper = (
   subscriptionOrder,
@@ -41,7 +48,7 @@ const subscriptionOrdersmapper = (
   return {
     dateOfPayments: subscriptionOrder.dateOfPayments,
     endDateOfSubscription: subscriptionOrder.endDateOfSubscription,
-    paymentType: 'Stripe',
+    paymentType: subscriptionOrder.PaymentTransaction.paymentSystem,
     price: subscriptionOrder.priceCents,
     subscriptionType: subscriptionOrder.subscriptionType,
   };

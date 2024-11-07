@@ -6,6 +6,24 @@ export type StripeWebhookDTO = {
   rawBody: Buffer;
 };
 
+export type PaypalWebhookDTO = {
+  eventType: string;
+  id: string;
+  paymentData: string;
+  data: any;
+};
+
+export type PaypalSubscriptionWebhookHandlerDTO = {
+  id: string;
+  paymentDate: string;
+  data: any;
+};
+
+export type PaypalPaymentWebhookHandlerDTO = {
+  id: string;
+  data: any;
+};
+
 export type PurchasingSubscriptionDTO = {
   userId: number;
   subscriptionType: SubscriptionType;
@@ -13,18 +31,9 @@ export type PurchasingSubscriptionDTO = {
   autoRenewal: boolean;
 };
 
-export type SubscriptionType =
-  | 'one day'
-  | 'two days'
-  | 'three days'
-  | 'four days';
+export type SubscriptionType = 'day' | 'week' | 'month';
 
-export const subscriptionType = [
-  'one day',
-  'two days',
-  'three days',
-  'four days',
-];
+export const subscriptionType = ['day', 'week', 'month'];
 
 // export type GetCurrentSubscription = {
 //   userId: number;

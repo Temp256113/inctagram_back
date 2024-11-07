@@ -10,7 +10,7 @@ enum PaymentSystems {
 }
 
 model PaymentTransaction {
-  priceCents    Int
+  price         Int
   status        PaymentStatuses @default(Pending)
   paymentSystem PaymentSystems
 
@@ -20,16 +20,16 @@ model PaymentTransaction {
   paymentSystemData        Json
   confirmPaymentSystemData Json?
 
-  orderId Int               @id @unique
+  orderId String            @id @unique
   order   SubscriptionOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("payment_transactions")
 }
 
 model SubscriptionOrder {
-  id                    Int       @id @default(autoincrement())
+  id                    String    @id
   productName           String
-  priceCents            Int
+  price                 Int
   subscriptionType      String
   isPaid                Boolean   @default(false)
   dateOfPayments        DateTime?

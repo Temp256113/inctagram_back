@@ -234,6 +234,17 @@ export class UserRepository {
     });
   }
 
+  async checkUserAccountType() {
+    const currentDate = new Date();
+
+    return this.prisma.userAccountType.updateMany({
+      where: { expireAt: { lt: currentDate } },
+      data: {
+        accountType: 'Personal',
+      },
+    });
+  }
+
   async deleteSession(data: {
     userId: number;
     refreshTokenUuid: string;

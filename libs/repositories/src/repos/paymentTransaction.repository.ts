@@ -2,21 +2,26 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from '@libs/repositories/prisma.service';
 import { RpcCustomException } from '@libs/common-exceptions';
-import { FileResourceTypes, PaymentSystems, Prisma } from '@prisma/client';
+import {
+  FileResourceTypes,
+  PaymentStatuses,
+  PaymentSystems,
+  Prisma,
+} from '@prisma/client';
 
 @Injectable()
 export class PaymentTransactionRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createPaymentTransaction(data: {
-    priceCents: number;
+    price: number;
     paymentSystem: PaymentSystems;
     paymentSystemData: Prisma.JsonObject;
-    orderId: number;
+    orderId: string;
   }) {
     return this.prismaService.paymentTransaction.create({
       data: {
-        priceCents: data.priceCents,
+        price: data.price,
         paymentSystem: data.paymentSystem,
         paymentSystemData: data.paymentSystemData,
         orderId: data.orderId,
@@ -25,12 +30,14 @@ export class PaymentTransactionRepository {
   }
 
   async updatePaymentTransaction(
-    paymentTransactionId: number,
+    paymentTransactionId: string,
     confirmPaymentSystemData: Prisma.JsonObject,
+    status: PaymentStatuses,
   ) {
     return this.prismaService.paymentTransaction.update({
       where: { orderId: paymentTransactionId },
       data: {
+        status: status,
         confirmPaymentSystemData: confirmPaymentSystemData,
       },
     });

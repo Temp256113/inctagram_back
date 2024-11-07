@@ -3,6 +3,7 @@ import * as PaymentContentMicroserviceTypes from '@libs/common-types/payment/mic
 import * as CommonTypes from '@libs/common-types/common';
 import * as PaymentContentGatewayTypes from '@libs/common-types/payment/gateway';
 import { SubscriptionOrdersQueryRepository } from '@libs/repositories/query-repos/subscriptionOrders.query.repository';
+import { PaypalAdapter } from 'libs/infrastructure/paypal/paypal-adapter';
 
 export class GetMySubscriptionPaymentsQuery {
   constructor(
@@ -20,6 +21,7 @@ export class GetMySubscriptionPaymentsUsecase
 {
   constructor(
     private readonly subscriptionOrdersQueryRepository: SubscriptionOrdersQueryRepository,
+    private readonly paypalAdapter: PaypalAdapter,
   ) {}
 
   async execute({

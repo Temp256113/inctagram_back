@@ -4,7 +4,10 @@ import { StripeAdapter } from 'libs/infrastructure/stripe/stripe-adapter';
 import { PaymentTransactionRepository } from '@libs/repositories/repos/PaymentTransaction.repository';
 import { SubscriptionOrderRepository } from '@libs/repositories/repos/subscriptionOrder.repository';
 import { UserRepository } from '@libs/repositories/repos/user.repository';
-import add from 'date-fns/add';
+import * as dateFns from 'date-fns';
+import { PaymentManager } from 'libs/infrastructure/paymentManager';
+import { PaypalAdapter } from 'libs/infrastructure/paypal/paypal-adapter';
+import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 
 export class PurchasingSubscriptionCommand {
   constructor(
@@ -19,66 +22,90 @@ export class PurchasingSubscriptionUseCase
   constructor(
     private readonly paymentTransactionRepository: PaymentTransactionRepository,
     private readonly subscriptionOrderRepository: SubscriptionOrderRepository,
-    private readonly userRepository: UserRepository,
-    private readonly stripeAdapter: StripeAdapter,
+    private readonly userQueryRepository: UserQueryRepository,
+    private readonly paymentManager: PaymentManager,
+    private readonly paypalAdapter: PaypalAdapter,
   ) {}
 
   async execute({
     data: command,
   }: PurchasingSubscriptionCommand): Promise<string> {
-    let priceCents;
-    let seconds;
+    const user = await this.userQueryRepository.getUserById(command.userId);
 
-    if (command.subscriptionType === 'one day') {
-      priceCents = 100;
-      seconds = 100;
-    } else if (command.subscriptionType === 'two days') {
-      priceCents = 200;
-      seconds = 200;
-    } else if (command.subscriptionType === 'three days') {
-      priceCents = 300;
-      seconds = 300;
-    } else if (command.subscriptionType === 'four days') {
-      priceCents = 400;
-      seconds = 400;
+    let price;
+    const addDate = {
+      days: 0,
+      weeks: 0,
+      months: 0,
+    };
+
+    if (command.subscriptionType === 'day') {
+      price = 1;
+      addDate.days = 1;
+    } else if (command.subscriptionType === 'week') {
+      price = 7;
+      addDate.weeks = 1;
+    } else if (command.subscriptionType === 'month') {
+      price = 30;
+      addDate.months = 1;
     }
 
-    const endDateOfSubscription = add(new Date(), {
-      seconds: seconds,
+    const expireAt = dateFns.add(new Date(), {
+      hours: 1,
     });
 
-    const expireAt = add(new Date(), {
-      seconds: seconds,
+    // const payment = await this.paymentManager.createPayment({
+    //   paymentSystem: command.paymentMethod,
+    //   autoRenewal: false,
+    //   clientId: command.userId,
+    //   description: command.subscriptionType,
+    //   priceCents: priceCents,
+    // });
+
+    let accountTypeExpireAt;
+
+    if (user.userAccountType.expireAt) {
+      if (dateFns.isPast(user.userAccountType.expireAt)) {
+        accountTypeExpireAt = new Date();
+      } else {
+        accountTypeExpireAt = user.userAccountType.expireAt;
+      }
+    } else {
+      accountTypeExpireAt = new Date();
+    }
+
+    const startDate = dateFns.add(accountTypeExpireAt, { minutes: 1 });
+    const endDateOfSubscription = dateFns.add(accountTypeExpireAt, addDate);
+
+    const payment = await this.paymentManager.createPayment({
+      autoRenewal: command.autoRenewal,
+      clientId: command.userId,
+      description: command.subscriptionType,
+      price: price,
+      startTime: startDate,
+      subscriptionType: command.subscriptionType,
+      paymentSystem: command.paymentMethod,
     });
 
     const subscriptionOrder =
       await this.subscriptionOrderRepository.createSubscriptionOrder({
+        transactionId: payment.sessionId,
         productName: 'subscription',
-        priceCents: priceCents,
+        price: price,
         userId: command.userId,
         subscriptionType: command.subscriptionType,
         endDateOfSubscription: endDateOfSubscription,
         expireAt: expireAt,
       });
 
-    const result = await this.stripeAdapter.createSession({
-      autoRenewal: false,
-      clientId: subscriptionOrder.userId,
-      description: subscriptionOrder.subscriptionType,
-      priceCents: subscriptionOrder.priceCents,
-      transacrionId: subscriptionOrder.id.toString(),
-    });
-
     const paymentTransaction =
       await this.paymentTransactionRepository.createPaymentTransaction({
-        priceCents: priceCents,
+        price: price,
         paymentSystem: command.paymentMethod,
-        paymentSystemData: result,
+        paymentSystemData: payment.data,
         orderId: subscriptionOrder.id,
       });
 
-    console.log(result);
-
-    return result.url;
+    return payment.url;
   }
 }

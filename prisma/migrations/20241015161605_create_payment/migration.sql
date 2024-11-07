@@ -9,23 +9,23 @@ CREATE TYPE "AccountTypes" AS ENUM ('Business', 'Personal');
 
 -- CreateTable
 CREATE TABLE "payment_transactions" (
-    "priceCents" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL,
     "status" "PaymentStatuses" NOT NULL DEFAULT 'Pending',
     "paymentSystem" "PaymentSystems" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "paymentSystemData" JSONB NOT NULL,
     "confirmPaymentSystemData" JSONB,
-    "orderId" INTEGER NOT NULL,
+    "orderId" TEXT NOT NULL,
 
     CONSTRAINT "payment_transactions_pkey" PRIMARY KEY ("orderId")
 );
 
 -- CreateTable
 CREATE TABLE "subscription_orders" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "productName" TEXT NOT NULL,
-    "priceCents" INTEGER NOT NULL,
+    "price" INTEGER NOT NULL,
     "subscriptionType" TEXT NOT NULL,
     "isPaid" BOOLEAN NOT NULL DEFAULT false,
     "dateOfPayments" TIMESTAMP(3),
