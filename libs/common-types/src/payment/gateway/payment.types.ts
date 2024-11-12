@@ -13,7 +13,7 @@ export class PurchasingSubscriptionDTO {
   @IsIn(paymentMethod)
   paymentMethod: PaymentSystems;
 
-  @ApiProperty({ enum: subscriptionType, example: 'one day' })
+  @ApiProperty({ enum: subscriptionType, example: 'day' })
   @IsIn(subscriptionType)
   subscriptionType: SubscriptionType;
 

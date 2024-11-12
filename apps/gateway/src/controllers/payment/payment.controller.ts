@@ -109,6 +109,7 @@ export class PaymentController {
 
   @Get('mySubscriptionPayments')
   @UseGuards(AccessTokenGuard)
+  @SwaggerRouteDecorators.GetMySubscriptionPayments()
   async getMySubscriptionPayments(
     @Query() query: CommonTypes.QueryFilter,
     @User() user: AccessTokenUserType,
