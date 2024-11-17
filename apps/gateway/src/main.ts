@@ -8,7 +8,9 @@ import cookieParser from 'cookie-parser';
 import { SwaggerConfig } from './swagger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(GatewayModule);
+  const app = await NestFactory.create(GatewayModule, {
+    rawBody: true,
+  });
 
   useContainer(app.select(GatewayModule), { fallbackOnErrors: true });
 

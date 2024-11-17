@@ -87,6 +87,12 @@ export class GithubAuthHandler
         updatedAt: user.profile.updatedAt,
         deletedAt: user.profile.deletedAt,
         canModify: true,
+        userAccountType: {
+          accountType: user.userAccountType.accountType,
+          autoRenewal: user.userAccountType.autoRenewal,
+          expireAt: user.userAccountType.expireAt,
+          nextPayment: user.userAccountType.nextPayment,
+        },
       },
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,

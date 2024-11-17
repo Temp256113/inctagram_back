@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 import { IsDateCustomValidator } from '../../../../../apps/gateway/src/custom-validators/isDateCustomValidator';
+import { AccountTypes } from '@prisma/client';
 
 class BaseUserProfileDTO {
   @IsString()
@@ -39,6 +40,20 @@ class BaseUserProfileDTO {
   aboutMe?: string;
 }
 
+class UserAccountType {
+  @ApiProperty({ example: 'Personal' })
+  accountType: AccountTypes;
+
+  @ApiProperty({ type: 'boolean', example: false })
+  autoRenewal: boolean;
+
+  @ApiProperty({ type: 'string', example: '2024-02-03T09:19:30.434Z' })
+  expireAt: Date;
+
+  @ApiProperty({ type: 'string', example: '2024-02-03T09:19:30.434Z' })
+  nextPayment: Date;
+}
+
 export class ProfileSchema extends BaseUserProfileDTO {
   @ApiProperty({ example: 1 })
   userId: number;
@@ -57,6 +72,9 @@ export class ProfileSchema extends BaseUserProfileDTO {
 
   @ApiProperty({ type: 'boolean', example: true })
   canModify: boolean;
+
+  @ApiProperty()
+  userAccountType: UserAccountType;
 }
 
 export class UpdateUserProfileDTO extends BaseUserProfileDTO {}

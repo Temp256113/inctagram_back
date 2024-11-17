@@ -62,6 +62,12 @@ export class GetProfileByIdUsecase
       deletedAt: foundProfile.deletedAt,
       profileImageURL: foundProfile?.profileImage?.url ?? null,
       canModify: userIdFromToken == query.data.profileId,
+      userAccountType: {
+        accountType: foundProfile.user.userAccountType.accountType,
+        autoRenewal: foundProfile.user.userAccountType.autoRenewal,
+        expireAt: foundProfile.user.userAccountType.expireAt,
+        nextPayment: foundProfile.user.userAccountType.nextPayment,
+      },
     };
   }
 }

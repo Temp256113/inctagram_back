@@ -6,14 +6,24 @@ import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPos
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserProfileRepository } from '@libs/repositories/repos/userProfile.repository';
+import { PaymentTransactionRepository } from './repos/PaymentTransaction.repository';
+import { SubscriptionOrderRepository } from './repos/subscriptionOrder.repository';
+import { SubscriptionOrdersQueryRepository } from './query-repos/subscriptionOrders.query.repository';
 
 const queryRepos = [
   UserQueryRepository,
   UserPostsQueryRepository,
   UserProfileQueryRepository,
+  SubscriptionOrdersQueryRepository,
 ];
 
-const repos = [UserRepository, UserPostsRepository, UserProfileRepository];
+const repos = [
+  UserRepository,
+  UserPostsRepository,
+  UserProfileRepository,
+  PaymentTransactionRepository,
+  SubscriptionOrderRepository,
+];
 
 const providers = [PrismaService, ...queryRepos, ...repos];
 

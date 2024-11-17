@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import {
+  AccountTypes,
   Providers,
   UserChangePasswordRequest,
   UserChangePasswordRequestStates,
@@ -56,8 +57,12 @@ export class UserRepository {
               username,
             },
           },
+          userAccountType: {
+            create: {},
+          },
         },
         include: {
+          userAccountType: true,
           emailInfo: true,
           profile: { include: { profileImage: true } },
         },
@@ -207,6 +212,35 @@ export class UserRepository {
       },
       data: {
         expiresAt: data.refreshTokenExpiresAt,
+      },
+    });
+  }
+
+  async updateUserAccountType(data: {
+    userId: number;
+    accountType: AccountTypes;
+    autoRenewal?: boolean;
+    expireAt: Date;
+    nextPayment?: Date;
+  }) {
+    return this.prisma.userAccountType.update({
+      where: { userId: data.userId },
+      data: {
+        accountType: data.accountType,
+        autoRenewal: data.autoRenewal,
+        expireAt: data.expireAt,
+        nextPayment: data.nextPayment,
+      },
+    });
+  }
+
+  async checkUserAccountType() {
+    const currentDate = new Date();
+
+    return this.prisma.userAccountType.updateMany({
+      where: { expireAt: { lt: currentDate } },
+      data: {
+        accountType: 'Personal',
       },
     });
   }

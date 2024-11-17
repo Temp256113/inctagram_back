@@ -12,6 +12,8 @@ model User {
   profile                UserProfile?
   fileResource           FileResource[]
   posts                  UserPost[]
+  userAccountType        UserAccountType?
+  subscriptionOrder      SubscriptionOrder[]
 
   @@map("users")
 }
@@ -89,4 +91,21 @@ model UserProfile {
   profileImage FileResource?
 
   @@map("user_profiles")
+}
+
+enum AccountTypes {
+  Business
+  Personal
+}
+
+model UserAccountType {
+  accountType AccountTypes @default(Personal)
+  autoRenewal Boolean      @default(false)
+  expireAt    DateTime?
+  nextPayment DateTime?
+
+  userId Int  @id @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_account_type")
 }
