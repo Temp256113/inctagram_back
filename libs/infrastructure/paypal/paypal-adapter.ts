@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import axios, { Axios } from 'axios';
 import * as PaymentContentMicroserviceTypes from '@libs/common-types/payment/microservice';
 import { startWith } from 'rxjs';
-import * as dateFns from 'date-fns';
 
 @Injectable()
 export class PaypalAdapter {
@@ -291,7 +290,6 @@ export class PaypalAdapter {
         });
       } catch (err) {
         console.log('createPayment ERR: ');
-        // console.log(err);
         return;
       }
 
