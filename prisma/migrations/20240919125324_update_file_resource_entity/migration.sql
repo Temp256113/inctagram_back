@@ -7,4 +7,4 @@
 */
 -- AlterTable
 ALTER TABLE "file_resources" DROP COLUMN "path",
-ADD COLUMN     "googleFileId" TEXT NOT NULL;
+ADD COLUMN     "googleFileId" TEXT NULL;
