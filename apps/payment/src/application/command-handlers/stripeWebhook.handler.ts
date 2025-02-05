@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import * as PaymentContentMicroserviceTypes from '@libs/common-types/payment/microservice';
-import * as dateFns from 'date-fns';
+import { fromUnixTime } from 'date-fns';
 import Stripe from 'stripe';
 import { SubscriptionOrderRepository } from '@libs/repositories/repos/subscriptionOrder.repository';
 import { PaymentTransactionRepository } from '@libs/repositories/repos/PaymentTransaction.repository';
@@ -55,7 +55,7 @@ export class StripeWebhookHandler
             session.subscription.toString(),
           );
 
-          nextPayment = dateFns.fromUnixTime(subscription.current_period_end);
+          nextPayment = fromUnixTime(subscription.current_period_end);
           autoRenewal = true;
         }
 
