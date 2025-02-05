@@ -6,7 +6,6 @@ import { PaypalAdapter } from 'libs/infrastructure/paypal/paypal-adapter';
 import * as PaymentContentMicroserviceTypes from '@libs/common-types/payment/microservice';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
 import { SubscriptionOrdersQueryRepository } from '@libs/repositories/query-repos/subscriptionOrders.query.repository';
-import * as dateFns from 'date-fns';
 
 export class PaypalSubscriptionWebhookCommand {
   constructor(

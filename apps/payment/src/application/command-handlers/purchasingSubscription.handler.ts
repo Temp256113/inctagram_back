@@ -1,10 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import * as PaymentContentMicroserviceTypes from '@libs/common-types/payment/microservice';
-import { StripeAdapter } from 'libs/infrastructure/stripe/stripe-adapter';
 import { PaymentTransactionRepository } from '@libs/repositories/repos/PaymentTransaction.repository';
 import { SubscriptionOrderRepository } from '@libs/repositories/repos/subscriptionOrder.repository';
-import { UserRepository } from '@libs/repositories/repos/user.repository';
-import * as dateFns from 'date-fns';
+import { add, isPast } from 'date-fns';
 import { PaymentManager } from 'libs/infrastructure/paymentManager';
 import { PaypalAdapter } from 'libs/infrastructure/paypal/paypal-adapter';
 import { UserQueryRepository } from '@libs/repositories/query-repos/user.queryRepository';
@@ -50,7 +48,7 @@ export class PurchasingSubscriptionUseCase
       addDate.months = 1;
     }
 
-    const expireAt = dateFns.add(new Date(), {
+    const expireAt = add(new Date(), {
       hours: 1,
     });
 
@@ -65,7 +63,7 @@ export class PurchasingSubscriptionUseCase
     let accountTypeExpireAt;
 
     if (user.userAccountType.expireAt) {
-      if (dateFns.isPast(user.userAccountType.expireAt)) {
+      if (isPast(user.userAccountType.expireAt)) {
         accountTypeExpireAt = new Date();
       } else {
         accountTypeExpireAt = user.userAccountType.expireAt;
@@ -74,8 +72,8 @@ export class PurchasingSubscriptionUseCase
       accountTypeExpireAt = new Date();
     }
 
-    const startDate = dateFns.add(accountTypeExpireAt, { minutes: 1 });
-    const endDateOfSubscription = dateFns.add(accountTypeExpireAt, addDate);
+    const startDate = add(accountTypeExpireAt, { minutes: 1 });
+    const endDateOfSubscription = add(accountTypeExpireAt, addDate);
 
     const payment = await this.paymentManager.createPayment({
       autoRenewal: command.autoRenewal,
