@@ -6,10 +6,9 @@ import { UserPostsQueryRepository } from '@libs/repositories/query-repos/userPos
 import { UserProfileQueryRepository } from '@libs/repositories/query-repos/userProfile.queryRepository';
 import { UserPostsRepository } from '@libs/repositories/repos/userPosts.repository';
 import { UserProfileRepository } from '@libs/repositories/repos/userProfile.repository';
-import { PaymentTransactionRepository } from '@libs/repositories/repos/PaymentTransaction.repository';
+import { PaymentTransactionRepository } from '@libs/repositories/repos/paymentTransaction.repository';
 import { SubscriptionOrderRepository } from '@libs/repositories/repos/subscriptionOrder.repository';
 import { SubscriptionOrdersQueryRepository } from '@libs/repositories/query-repos/subscriptionOrders.query.repository';
-
 
 const queryRepos = [
   UserQueryRepository,
