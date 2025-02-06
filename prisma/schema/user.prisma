@@ -1,0 +1,111 @@
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique @db.Citext
+  password String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  emailInfo              UserEmailInfo?
+  changePasswordRequests UserChangePasswordRequest[]
+  sessions               UserSession[]
+  profile                UserProfile?
+  fileResource           FileResource[]
+  posts                  UserPost[]
+  userAccountType        UserAccountType?
+  subscriptionOrder      SubscriptionOrder[]
+
+  @@map("users")
+}
+
+model UserSession {
+  userId           Int
+  refreshTokenUuid String
+  expiresAt        DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, refreshTokenUuid])
+  @@map("user_sessions")
+}
+
+enum Providers {
+  Google
+  Github
+}
+
+model UserEmailInfo {
+  userId                    Int        @id
+  emailIsConfirmed          Boolean    @default(false)
+  emailConfirmCode          String?
+  emailConfirmCodeExpiresAt DateTime?
+  provider                  Providers?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_email_info")
+}
+
+enum UserChangePasswordRequestStates {
+  pending
+  processed
+}
+
+model UserChangePasswordRequest {
+  id                   Int                             @id @default(autoincrement())
+  state                UserChangePasswordRequestStates @default(pending)
+  passwordRecoveryCode String?
+  expiresAt            DateTime?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
+  deletedAt DateTime?
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_change_password_requests")
+}
+
+model UserProfile {
+  username    String    @unique @db.Citext
+  firstName   String?   @db.VarChar(255)
+  lastName    String?   @db.VarChar(255)
+  dateOfBirth DateTime? @db.Date()
+  country     String?   @db.VarChar(255)
+  city        String?   @db.VarChar(255)
+  aboutMe     String?   @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+
+  userId Int  @id @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileImage FileResource?
+
+  @@map("user_profiles")
+}
+
+enum AccountTypes {
+  Business
+  Personal
+}
+
+model UserAccountType {
+  accountType AccountTypes @default(Personal)
+  autoRenewal Boolean      @default(false)
+  expireAt    DateTime?
+  nextPayment DateTime?
+
+  userId Int  @id @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_account_type")
+}

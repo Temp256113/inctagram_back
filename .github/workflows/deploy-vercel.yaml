@@ -12,7 +12,7 @@ jobs:
     name: Deploy-Prepare # название конктретной работы в pipeline
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout  # клонируем репозиторый
+      - name: Checkout  # клонируем репозиторий
         uses: actions/checkout@v2
 
       - name: Install dependencies
@@ -23,6 +23,9 @@ jobs:
 
       - name: Update prisma
         run: yarn prisma generate #обновляем orm
+
+#      - name: Nest build
+#        run: yarn build # собираем приложение
 
   Deploy-Preview:
     runs-on: ubuntu-latest
