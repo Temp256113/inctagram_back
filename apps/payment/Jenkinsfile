@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3747
+        PORT = 3760
         NAMESPACE = "deepwaterhorizon-ru"
         REGISTRY_HOSTNAME = "temp256113"
         PROJECT = "payment-microservice"
