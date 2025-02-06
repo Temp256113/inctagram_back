@@ -22,6 +22,11 @@ spec:
              - containerPort: PORT_CONTAINER
 
            env:
+             - name: EMAIL_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: user-content-microservice-production-config-secret
+                   key: EMAIL_USER
              - name: EMAIL_PASS
                valueFrom:
                  secretKeyRef:
@@ -72,11 +77,6 @@ spec:
                  secretKeyRef:
                    name: user-content-microservice-production-config-secret
                    key: RABBITMQ_URL
-             - name: DATABASE_URL
-               valueFrom:
-                 secretKeyRef:
-                   name: user-content-microservice-production-config-secret
-                   key: DATABASE_URL
              - name: GOOGLE_CLIENT_EMAIL
                valueFrom:
                  secretKeyRef:
@@ -87,8 +87,8 @@ spec:
                  secretKeyRef:
                    name: user-content-microservice-production-config-secret
                    key: GOOGLE_PRIVATE_KEY
-             - name: EMAIL_USER
+             - name: DATABASE_URL
                valueFrom:
                  secretKeyRef:
                    name: user-content-microservice-production-config-secret
-                   key: EMAIL_USER
+                   key: DATABASE_URL
